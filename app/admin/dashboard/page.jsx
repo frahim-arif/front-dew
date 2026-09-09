@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://backend-dew.onrender.com/api"";
 
 export default function AdminDashboard() {
   const [appointments, setAppointments] = useState([]);

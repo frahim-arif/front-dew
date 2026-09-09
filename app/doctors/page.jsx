@@ -1,7 +1,7 @@
 import Link from "next/link";
 import SectionTitle from "../Components/SectionTitle";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://backend-dew.onrender.com/api";
 const SERVER_URL = API.replace("/api", "");
 
 export const metadata = {

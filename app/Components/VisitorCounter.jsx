@@ -4,7 +4,7 @@ import CountUp from "react-countup";
 import { useEffect, useState } from "react";
 
 const API =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  process.env.NEXT_PUBLIC_API_URL || "https://backend-dew.onrender.com/api";
 
 export default function VisitorCounter() {
   const [count, setCount] = useState(0);
