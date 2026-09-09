@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { siteInfo } from "./data/siteData";
+// import { siteInfo } from "./data/siteData";
 import VisitorCounter from "./Components/VisitorCounter";
 import CountUp from "react-countup";
 import { useEffect, useState } from "react";
