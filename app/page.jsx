@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import AnimatedCount from "./Components/AnimatedCount";
 import HospitalPartnersSlider from "./Components/HospitalPartnersSlider";
 import DoctorOrbitShowcase from "./Components/DoctorOrbitShowcase";
-import HeroSection from "./components/HeroSection";
+import HeroSection from "./Components/HeroSection";
 import ServicesSect from "./Components/ServicesSect";
 import AboutVideoSection from "./Components/AboutVideoSection";
 
