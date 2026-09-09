@@ -1,25 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   GraduationCap,
   User,
   Phone,
-  Mail,
-  MapPin,
-  BookOpen,
-  FileText,
   CheckCircle2,
   ArrowLeft,
   Loader2,
 } from "lucide-react";
 
 const API =
-  process.env.NEXT_PUBLIC_API_URL || "https://backend-dew.onrender.com/api";
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://backend-dew.onrender.com/api";
 
-export default function TrainingApplicationForm() {
+// ======================================================
+// Main Form Content
+// ======================================================
+
+function TrainingApplicationFormContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -32,7 +33,6 @@ export default function TrainingApplicationForm() {
   const [loading, setLoading] = useState(false);
 
   const [success, setSuccess] = useState("");
-
 
   const [form, setForm] = useState({
     course: "",
@@ -54,12 +54,15 @@ export default function TrainingApplicationForm() {
     aadhaar: "",
   });
 
+  // ======================================================
+  // Load Courses
+  // ======================================================
 
   useEffect(() => {
-    fetchCourses();
+    loadCourses();
   }, []);
 
-  const fetchCourses = async () => {
+  const loadCourses = async () => {
     try {
       const res = await fetch(`${API}/training/courses`);
 
@@ -69,12 +72,15 @@ export default function TrainingApplicationForm() {
         setCourses(data.data);
       }
     } catch (err) {
-      console.log(err);
+      console.error("Course loading error:", err);
+    } finally {
+      setLoadingCourses(false);
     }
   };
-  useEffect(() => {
-    loadCourses();
-  }, []);
+
+  // ======================================================
+  // Select Course From URL
+  // ======================================================
 
   useEffect(() => {
     if (!courseId || courses.length === 0) return;
@@ -91,20 +97,9 @@ export default function TrainingApplicationForm() {
     }
   }, [courseId, courses]);
 
-  const loadCourses = async () => {
-    try {
-      const res = await fetch(`${API}/training/courses`);
-      const data = await res.json();
-
-      if (data.success) {
-        setCourses(data.data);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoadingCourses(false);
-    }
-  };
+  // ======================================================
+  // Handle Change
+  // ======================================================
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -116,9 +111,14 @@ export default function TrainingApplicationForm() {
 
     if (name === "course") {
       const found = courses.find((c) => c._id === value);
+
       setSelectedCourse(found || null);
     }
   };
+
+  // ======================================================
+  // Submit
+  // ======================================================
 
   const submitForm = async (e) => {
     e.preventDefault();
@@ -138,7 +138,7 @@ export default function TrainingApplicationForm() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message);
+        throw new Error(data.message || "Application submission failed");
       }
 
       setSuccess("Application submitted successfully.");
@@ -147,11 +147,16 @@ export default function TrainingApplicationForm() {
         router.push("/training/application-success");
       }, 1200);
     } catch (err) {
-      alert(err.message);
+      alert(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
+
+  // ======================================================
+  // UI
+  // ======================================================
+
   return (
     <section className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-emerald-50 py-16">
 
@@ -182,7 +187,9 @@ export default function TrainingApplicationForm() {
 
         <div className="grid gap-10 lg:grid-cols-3">
 
-          {/* LEFT */}
+          {/* ======================================================
+              LEFT
+          ====================================================== */}
 
           <div className="lg:col-span-2">
 
@@ -190,6 +197,8 @@ export default function TrainingApplicationForm() {
               onSubmit={submitForm}
               className="rounded-[30px] bg-white p-8 shadow-2xl"
             >
+
+              {/* Success */}
 
               {success && (
                 <div className="mb-8 flex items-center gap-3 rounded-2xl bg-green-50 p-5 text-green-700">
@@ -237,170 +246,209 @@ export default function TrainingApplicationForm() {
 
               </div>
 
-           {/* ================= Personal Information ================= */}
+              {/* ======================================================
+                  Personal Information
+              ====================================================== */}
 
-<div className="grid gap-6 md:grid-cols-2">
+              <div className="grid gap-6 md:grid-cols-2">
 
-  {/* Full Name */}
+                {/* Full Name */}
 
-  <div>
-    <label className="mb-2 block font-bold">
-      Full Name <span className="text-red-500">*</span>
-    </label>
+                <div>
 
-    <div className="relative">
-      <User
-        size={18}
-        className="absolute left-4 top-4 text-slate-400"
-      />
+                  <label className="mb-2 block font-bold">
+                    Full Name <span className="text-red-500">*</span>
+                  </label>
 
-      <input
-        type="text"
-        name="name"
-        value={form.name}
-        onChange={handleChange}
-        required
-        placeholder="Enter full name"
-        className="w-full rounded-2xl border pl-12 pr-4 py-4 outline-none focus:border-emerald-600"
-      />
-    </div>
-  </div>
+                  <div className="relative">
 
-  {/* Phone */}
+                    <User
+                      size={18}
+                      className="absolute left-4 top-4 text-slate-400"
+                    />
 
-  <div>
-    <label className="mb-2 block font-bold">
-      Phone Number <span className="text-red-500">*</span>
-    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      value={form.name}
+                      onChange={handleChange}
+                      required
+                      placeholder="Enter full name"
+                      className="w-full rounded-2xl border pl-12 pr-4 py-4 outline-none focus:border-emerald-600"
+                    />
 
-    <div className="relative">
-      <Phone
-        size={18}
-        className="absolute left-4 top-4 text-slate-400"
-      />
+                  </div>
 
-      <input
-        type="text"
-        name="phone"
-        value={form.phone}
-        onChange={handleChange}
-        required
-        placeholder="Phone Number"
-        className="w-full rounded-2xl border pl-12 pr-4 py-4 outline-none focus:border-emerald-600"
-      />
-    </div>
-  </div>
+                </div>
 
-  {/* Father Name */}
+                {/* Phone */}
 
-  <div>
-    <label className="mb-2 block font-bold">
-      Father Name
-    </label>
+                <div>
 
-    <div className="relative">
-      <User
-        size={18}
-        className="absolute left-4 top-4 text-slate-400"
-      />
+                  <label className="mb-2 block font-bold">
+                    Phone Number <span className="text-red-500">*</span>
+                  </label>
 
-      <input
-        type="text"
-        name="fatherName"
-        value={form.fatherName}
-        onChange={handleChange}
-        placeholder="Father Name"
-        className="w-full rounded-2xl border pl-12 pr-4 py-4 outline-none focus:border-emerald-600"
-      />
-    </div>
-  </div>
+                  <div className="relative">
 
-  {/* Mother Name */}
+                    <Phone
+                      size={18}
+                      className="absolute left-4 top-4 text-slate-400"
+                    />
 
-  <div>
-    <label className="mb-2 block font-bold">
-      Mother Name
-    </label>
+                    <input
+                      type="text"
+                      name="phone"
+                      value={form.phone}
+                      onChange={handleChange}
+                      required
+                      placeholder="Phone Number"
+                      className="w-full rounded-2xl border pl-12 pr-4 py-4 outline-none focus:border-emerald-600"
+                    />
 
-    <div className="relative">
-      <User
-        size={18}
-        className="absolute left-4 top-4 text-slate-400"
-      />
+                  </div>
 
-      <input
-        type="text"
-        name="motherName"
-        value={form.motherName}
-        onChange={handleChange}
-        placeholder="Mother Name"
-        className="w-full rounded-2xl border pl-12 pr-4 py-4 outline-none focus:border-emerald-600"
-      />
-    </div>
-  </div>
+                </div>
 
-  {/* Gender */}
+                {/* Father Name */}
 
-  <div>
-    <label className="mb-2 block font-bold">
-      Gender <span className="text-red-500">*</span>
-    </label>
+                <div>
 
-    <select
-      name="gender"
-      value={form.gender}
-      onChange={handleChange}
-      required
-      className="w-full rounded-2xl border px-4 py-4 outline-none focus:border-emerald-600"
-    >
-      <option value="">Select Gender</option>
-      <option value="Male">Male</option>
-      <option value="Female">Female</option>
-      <option value="Other">Other</option>
-    </select>
-  </div>
+                  <label className="mb-2 block font-bold">
+                    Father Name
+                  </label>
 
-  {/* DOB */}
+                  <div className="relative">
 
-  <div>
-    <label className="mb-2 block font-bold">
-      Date of Birth
-    </label>
+                    <User
+                      size={18}
+                      className="absolute left-4 top-4 text-slate-400"
+                    />
 
-    <input
-      type="date"
-      name="dob"
-      value={form.dob}
-      onChange={handleChange}
-      className="w-full rounded-2xl border px-4 py-4 outline-none focus:border-emerald-600"
-    />
-  </div>
+                    <input
+                      type="text"
+                      name="fatherName"
+                      value={form.fatherName}
+                      onChange={handleChange}
+                      placeholder="Father Name"
+                      className="w-full rounded-2xl border pl-12 pr-4 py-4 outline-none focus:border-emerald-600"
+                    />
 
-  {/* Alternate Phone */}
+                  </div>
 
-  <div>
-    <label className="mb-2 block font-bold">
-      Alternate Phone
-    </label>
+                </div>
 
-    <div className="relative">
-      <Phone
-        size={18}
-        className="absolute left-4 top-4 text-slate-400"
-      />
+                {/* Mother Name */}
 
-      <input
-        type="text"
-        name="alternatePhone"
-        value={form.alternatePhone}
-        onChange={handleChange}
-        placeholder="Alternate Phone"
-        className="w-full rounded-2xl border pl-12 pr-4 py-4 outline-none focus:border-emerald-600"
-      />
-    </div>
-  </div>
+                <div>
 
-</div>
+                  <label className="mb-2 block font-bold">
+                    Mother Name
+                  </label>
+
+                  <div className="relative">
+
+                    <User
+                      size={18}
+                      className="absolute left-4 top-4 text-slate-400"
+                    />
+
+                    <input
+                      type="text"
+                      name="motherName"
+                      value={form.motherName}
+                      onChange={handleChange}
+                      placeholder="Mother Name"
+                      className="w-full rounded-2xl border pl-12 pr-4 py-4 outline-none focus:border-emerald-600"
+                    />
+
+                  </div>
+
+                </div>
+
+                {/* Gender */}
+
+                <div>
+
+                  <label className="mb-2 block font-bold">
+                    Gender <span className="text-red-500">*</span>
+                  </label>
+
+                  <select
+                    name="gender"
+                    value={form.gender}
+                    onChange={handleChange}
+                    required
+                    className="w-full rounded-2xl border px-4 py-4 outline-none focus:border-emerald-600"
+                  >
+
+                    <option value="">
+                      Select Gender
+                    </option>
+
+                    <option value="Male">
+                      Male
+                    </option>
+
+                    <option value="Female">
+                      Female
+                    </option>
+
+                    <option value="Other">
+                      Other
+                    </option>
+
+                  </select>
+
+                </div>
+
+                {/* DOB */}
+
+                <div>
+
+                  <label className="mb-2 block font-bold">
+                    Date of Birth
+                  </label>
+
+                  <input
+                    type="date"
+                    name="dob"
+                    value={form.dob}
+                    onChange={handleChange}
+                    className="w-full rounded-2xl border px-4 py-4 outline-none focus:border-emerald-600"
+                  />
+
+                </div>
+
+                {/* Alternate Phone */}
+
+                <div>
+
+                  <label className="mb-2 block font-bold">
+                    Alternate Phone
+                  </label>
+
+                  <div className="relative">
+
+                    <Phone
+                      size={18}
+                      className="absolute left-4 top-4 text-slate-400"
+                    />
+
+                    <input
+                      type="text"
+                      name="alternatePhone"
+                      value={form.alternatePhone}
+                      onChange={handleChange}
+                      placeholder="Alternate Phone"
+                      className="w-full rounded-2xl border pl-12 pr-4 py-4 outline-none focus:border-emerald-600"
+                    />
+
+                  </div>
+
+                </div>
+
+              </div>
 
               {/* Buttons */}
 
@@ -410,7 +458,11 @@ export default function TrainingApplicationForm() {
                   href="/training"
                   className="flex items-center justify-center rounded-2xl border border-slate-300 px-6 py-4 font-semibold text-slate-700 transition hover:bg-slate-100"
                 >
-                  <ArrowLeft size={18} className="mr-2" />
+                  <ArrowLeft
+                    size={18}
+                    className="mr-2"
+                  />
+
                   Back to Courses
                 </Link>
 
@@ -419,14 +471,24 @@ export default function TrainingApplicationForm() {
                   disabled={loading}
                   className="flex-1 rounded-2xl bg-gradient-to-r from-emerald-600 to-cyan-600 px-8 py-4 text-lg font-bold text-white transition hover:scale-[1.02] hover:shadow-xl disabled:opacity-70"
                 >
+
                   {loading ? (
+
                     <span className="flex items-center justify-center gap-2">
-                      <Loader2 size={20} className="animate-spin" />
+
+                      <Loader2
+                        size={20}
+                        className="animate-spin"
+                      />
+
                       Submitting...
+
                     </span>
+
                   ) : (
                     "Submit Application"
                   )}
+
                 </button>
 
               </div>
@@ -435,7 +497,9 @@ export default function TrainingApplicationForm() {
 
           </div>
 
-          {/* RIGHT SIDEBAR */}
+          {/* ======================================================
+              RIGHT SIDEBAR
+          ====================================================== */}
 
           <div>
 
@@ -446,64 +510,68 @@ export default function TrainingApplicationForm() {
               </h2>
 
               {selectedCourse ? (
-                <>
-                  <div className="mt-6 rounded-2xl bg-emerald-50 p-6">
 
-                    <h3 className="text-xl font-bold text-emerald-700">
-                      {selectedCourse.title}
-                    </h3>
+                <div className="mt-6 rounded-2xl bg-emerald-50 p-6">
 
-                    <div className="mt-6 space-y-4">
+                  <h3 className="text-xl font-bold text-emerald-700">
+                    {selectedCourse.title}
+                  </h3>
 
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">
-                          Duration
-                        </span>
+                  <div className="mt-6 space-y-4">
 
-                        <span className="font-semibold">
-                          {selectedCourse.duration}
-                        </span>
-                      </div>
+                    <div className="flex justify-between gap-4">
+                      <span className="text-slate-500">
+                        Duration
+                      </span>
 
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">
-                          Fees
-                        </span>
+                      <span className="font-semibold">
+                        {selectedCourse.duration}
+                      </span>
+                    </div>
 
-                        <span className="font-semibold">
-                          ₹{selectedCourse.fees}
-                        </span>
-                      </div>
+                    <div className="flex justify-between gap-4">
+                      <span className="text-slate-500">
+                        Fees
+                      </span>
 
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">
-                          Seats
-                        </span>
+                      <span className="font-semibold">
+                        ₹{selectedCourse.fees}
+                      </span>
+                    </div>
 
-                        <span className="font-semibold">
-                          {selectedCourse.seats}
-                        </span>
-                      </div>
+                    <div className="flex justify-between gap-4">
+                      <span className="text-slate-500">
+                        Seats
+                      </span>
 
-                      <div className="flex justify-between">
-                        <span className="text-slate-500">
-                          Instructor
-                        </span>
+                      <span className="font-semibold">
+                        {selectedCourse.seats}
+                      </span>
+                    </div>
 
-                        <span className="font-semibold">
-                          {selectedCourse.instructor}
-                        </span>
-                      </div>
+                    <div className="flex justify-between gap-4">
+                      <span className="text-slate-500">
+                        Instructor
+                      </span>
 
+                      <span className="font-semibold">
+                        {selectedCourse.instructor}
+                      </span>
                     </div>
 
                   </div>
-                </>
+
+                </div>
+
               ) : (
+
                 <div className="mt-6 rounded-2xl border border-dashed p-6 text-center text-slate-500">
                   Please select a training course.
                 </div>
+
               )}
+
+              {/* Benefits */}
 
               <div className="mt-8 rounded-2xl bg-slate-50 p-6">
 
@@ -514,15 +582,10 @@ export default function TrainingApplicationForm() {
                 <ul className="mt-5 space-y-3 text-sm text-slate-600">
 
                   <li>✅ Practical Hospital Training</li>
-
                   <li>✅ Experienced Medical Faculty</li>
-
-                  <li>✅ Modern Lab & Equipment</li>
-
+                  <li>✅ Modern Lab &amp; Equipment</li>
                   <li>✅ Certificate After Completion</li>
-
                   <li>✅ Career Guidance</li>
-
                   <li>✅ Placement Assistance</li>
 
                 </ul>
@@ -538,5 +601,31 @@ export default function TrainingApplicationForm() {
       </div>
 
     </section>
+  );
+}
+
+// ======================================================
+// Page Wrapper
+// ======================================================
+
+export default function TrainingApplicationForm() {
+  return (
+    <Suspense
+      fallback={
+        <section className="flex min-h-screen items-center justify-center bg-slate-50">
+          <div className="flex items-center gap-3 text-emerald-700">
+            <Loader2
+              size={24}
+              className="animate-spin"
+            />
+            <span className="font-semibold">
+              Loading application form...
+            </span>
+          </div>
+        </section>
+      }
+    >
+      <TrainingApplicationFormContent />
+    </Suspense>
   );
 }
