@@ -1,4 +1,4 @@
-import { siteInfo } from "@/data/siteData";
+import { siteInfo } from "./data/siteData";
 
 export const metadata = {
   title: "Contact | Dew Care Hospital",
