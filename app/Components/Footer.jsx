@@ -182,14 +182,15 @@ export default function Footer() {
         <p className="mt-1 text-[10px] font-semibold leading-5 text-emerald-200/80 sm:mt-2 sm:text-xs">
           Powered by{" "}
           <span className="font-black text-emerald-300">
-            Rayyan Infotech
+            WebCoreCubeTech
+            
           </span>{" "}
           –{" "}
           <a
             href="tel:9058596626"
             className="font-black text-teal-300 transition hover:text-white"
           >
-            7002806581
+            9058596626
           </a>
         </p>
       </div>
