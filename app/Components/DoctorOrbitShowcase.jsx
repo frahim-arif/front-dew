@@ -218,14 +218,15 @@ export default function DoctorOrbitShowcase({ doctors = [] }) {
 
   const visibleDoctors =
 
-  console.log("TOTAL DOCTORS:", safeDoctors.length);
+
+    doctorGroups[activeGroup] || [];
+      console.log("TOTAL DOCTORS:", safeDoctors.length);
 console.log("MAIN DOCTOR:", mainDoctor?.name);
 console.log("OTHER DOCTORS:", otherDoctors.length);
 console.log(
   "VISIBLE DOCTORS:",
   visibleDoctors.map((d) => d?.name)
 );
-    doctorGroups[activeGroup] || [];
 
   /* ============================================================
      SPLIT:
