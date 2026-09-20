@@ -16,16 +16,16 @@ const SERVER_URL = API.replace(/\/api\/?$/, "");
    ORBIT SETTINGS
 ============================================================ */
 
-// Ek group mein maximum 8 doctors
+// Foridul ke around maximum 8 doctors
 const DOCTORS_PER_GROUP = 8;
 
-// 4 inner + remaining outer
+// 4 inner + 4 outer = 8 doctors
 const INNER_RING_COUNT = 4;
 
 // Orbit rotation speed
 const ROTATION_DURATION = 26000;
 
-// Multiple groups hone par group change
+// Agar 8 se zyada doctors hon to group change
 const GROUP_CHANGE_DURATION = 26000;
 
 /* ============================================================
@@ -72,14 +72,12 @@ function normalizeName(name) {
    MAIN COMPONENT
 ============================================================ */
 
-export default function DoctorOrbitShowcase({
-  doctors = [],
-}) {
+export default function DoctorOrbitShowcase({ doctors = [] }) {
   const [activeGroup, setActiveGroup] = useState(0);
 
-  /* ==========================================================
+  /* ============================================================
      SAFE DOCTORS
-  ========================================================== */
+  ============================================================ */
 
   const safeDoctors = useMemo(() => {
     if (!Array.isArray(doctors)) {
@@ -93,15 +91,17 @@ export default function DoctorOrbitShowcase({
     );
   }, [doctors]);
 
-  /* ==========================================================
-     FIND FORIDUL HUSSAIN
-  ========================================================== */
+  /* ============================================================
+     FIND DR. FORIDUL HUSSAIN
+     
+     Priority:
+     - foridul hussain
+     - foridul
+  ============================================================ */
 
   const foridulDoctor = useMemo(() => {
     return safeDoctors.find((doctor) => {
-      const name = normalizeName(
-        doctor?.name
-      );
+      const name = normalizeName(doctor?.name);
 
       return (
         name.includes("foridul hussain") ||
@@ -110,9 +110,12 @@ export default function DoctorOrbitShowcase({
     });
   }, [safeDoctors]);
 
-  /* ==========================================================
+  /* ============================================================
      CENTER DOCTOR
-  ========================================================== */
+
+     1. Dr. Foridul Hussain
+     2. Fallback first doctor
+  ============================================================ */
 
   const mainDoctor = useMemo(() => {
     return (
@@ -120,14 +123,13 @@ export default function DoctorOrbitShowcase({
       safeDoctors[0] ||
       null
     );
-  }, [
-    foridulDoctor,
-    safeDoctors,
-  ]);
+  }, [foridulDoctor, safeDoctors]);
 
-  /* ==========================================================
+  /* ============================================================
      OTHER DOCTORS
-  ========================================================== */
+
+     Center doctor orbit mein dobara nahi aayega.
+  ============================================================ */
 
   const otherDoctors = useMemo(() => {
     if (!mainDoctor) {
@@ -135,7 +137,7 @@ export default function DoctorOrbitShowcase({
     }
 
     return safeDoctors.filter((doctor) => {
-      // ID based comparison
+      // ID available ho to ID se compare
       if (
         doctor?._id &&
         mainDoctor?._id
@@ -151,12 +153,15 @@ export default function DoctorOrbitShowcase({
         return false;
       }
 
-      // Same-name duplicate protection
-      const doctorName =
-        normalizeName(doctor?.name);
+      // Extra protection:
+      // agar same naam ka duplicate Foridul record aa jaye
+      const doctorName = normalizeName(
+        doctor?.name
+      );
 
-      const mainName =
-        normalizeName(mainDoctor?.name);
+      const mainName = normalizeName(
+        mainDoctor?.name
+      );
 
       if (
         doctorName &&
@@ -168,13 +173,12 @@ export default function DoctorOrbitShowcase({
 
       return true;
     });
-  }, [
-    safeDoctors,
-    mainDoctor,
-  ]);
+  }, [safeDoctors, mainDoctor]);
 
-  /* ==========================================================
+  /* ============================================================
      GROUP DOCTORS
+
+     Example:
 
      8 doctors:
      Group 1 = 8
@@ -187,7 +191,7 @@ export default function DoctorOrbitShowcase({
      Group 1 = 8
      Group 2 = 8
      Group 3 = 2
-  ========================================================== */
+  ============================================================ */
 
   const doctorGroups = useMemo(() => {
     const groups = [];
@@ -208,101 +212,33 @@ export default function DoctorOrbitShowcase({
     return groups;
   }, [otherDoctors]);
 
-  /* ==========================================================
-     CURRENT GROUP
-  ========================================================== */
+  /* ============================================================
+     VISIBLE GROUP
+  ============================================================ */
 
   const visibleDoctors =
     doctorGroups[activeGroup] || [];
 
-  /* ==========================================================
-     SPLIT RINGS
-  ========================================================== */
+  /* ============================================================
+     SPLIT:
 
-  const innerDoctors =
-    visibleDoctors.slice(
-      0,
-      INNER_RING_COUNT
-    );
+     Inner = first 4
+     Outer = remaining 4
+  ============================================================ */
 
-  const outerDoctors =
-    visibleDoctors.slice(
-      INNER_RING_COUNT,
-      DOCTORS_PER_GROUP
-    );
+  const innerDoctors = visibleDoctors.slice(
+    0,
+    INNER_RING_COUNT
+  );
 
-  /* ==========================================================
-     DEBUG LOGS
-  ========================================================== */
+  const outerDoctors = visibleDoctors.slice(
+    INNER_RING_COUNT,
+    DOCTORS_PER_GROUP
+  );
 
-  useEffect(() => {
-    console.log(
-      "========== DOCTOR ORBIT =========="
-    );
-
-    console.log(
-      "TOTAL DOCTORS:",
-      safeDoctors.length
-    );
-
-    console.log(
-      "MAIN DOCTOR:",
-      mainDoctor?.name
-    );
-
-    console.log(
-      "OTHER DOCTORS:",
-      otherDoctors.length
-    );
-
-    console.log(
-      "TOTAL GROUPS:",
-      doctorGroups.length
-    );
-
-    console.log(
-      "ACTIVE GROUP:",
-      activeGroup
-    );
-
-    console.log(
-      "VISIBLE DOCTORS:",
-      visibleDoctors.map(
-        (doctor) => doctor?.name
-      )
-    );
-
-    console.log(
-      "INNER DOCTORS:",
-      innerDoctors.map(
-        (doctor) => doctor?.name
-      )
-    );
-
-    console.log(
-      "OUTER DOCTORS:",
-      outerDoctors.map(
-        (doctor) => doctor?.name
-      )
-    );
-
-    console.log(
-      "=================================="
-    );
-  }, [
-    safeDoctors,
-    mainDoctor,
-    otherDoctors,
-    doctorGroups,
-    activeGroup,
-    visibleDoctors,
-    innerDoctors,
-    outerDoctors,
-  ]);
-
-  /* ==========================================================
+  /* ============================================================
      AUTO GROUP CHANGE
-  ========================================================== */
+  ============================================================ */
 
   useEffect(() => {
     if (doctorGroups.length <= 1) {
@@ -310,11 +246,12 @@ export default function DoctorOrbitShowcase({
     }
 
     const timer = window.setInterval(() => {
-      setActiveGroup(
-        (previousGroup) =>
+      setActiveGroup((previousGroup) => {
+        return (
           (previousGroup + 1) %
           doctorGroups.length
-      );
+        );
+      });
     }, GROUP_CHANGE_DURATION);
 
     return () => {
@@ -322,29 +259,26 @@ export default function DoctorOrbitShowcase({
     };
   }, [doctorGroups.length]);
 
-  /* ==========================================================
-     RESET GROUP
-  ========================================================== */
+  /* ============================================================
+     RESET GROUP WHEN DATA CHANGES
+  ============================================================ */
 
   useEffect(() => {
-    setActiveGroup(
-      (currentGroup) => {
-        if (
-          doctorGroups.length === 0 ||
-          currentGroup >=
-            doctorGroups.length
-        ) {
-          return 0;
-        }
-
-        return currentGroup;
+    setActiveGroup((currentGroup) => {
+      if (
+        doctorGroups.length === 0 ||
+        currentGroup >= doctorGroups.length
+      ) {
+        return 0;
       }
-    );
+
+      return currentGroup;
+    });
   }, [doctorGroups.length]);
 
-  /* ==========================================================
+  /* ============================================================
      NO DOCTORS
-  ========================================================== */
+  ============================================================ */
 
   if (!mainDoctor) {
     return (
@@ -397,9 +331,9 @@ export default function DoctorOrbitShowcase({
     );
   }
 
-  /* ==========================================================
+  /* ============================================================
      MAIN SHOWCASE
-  ========================================================== */
+  ============================================================ */
 
   return (
     <div
@@ -466,7 +400,6 @@ export default function DoctorOrbitShowcase({
           md:h-[400px] md:w-[400px]
         "
       >
-
         <span className="absolute left-1/2 top-[-4px] h-2 w-2 -translate-x-1/2 rounded-full bg-emerald-300 shadow-[0_0_12px_rgba(110,231,183,.9)]" />
 
         <span className="absolute bottom-[-4px] left-1/2 h-2 w-2 -translate-x-1/2 rounded-full bg-emerald-300 shadow-[0_0_12px_rgba(110,231,183,.9)]" />
@@ -474,7 +407,6 @@ export default function DoctorOrbitShowcase({
         <span className="absolute left-[-4px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-emerald-300 shadow-[0_0_12px_rgba(110,231,183,.9)]" />
 
         <span className="absolute right-[-4px] top-1/2 h-2 w-2 -translate-y-1/2 rounded-full bg-emerald-300 shadow-[0_0_12px_rgba(110,231,183,.9)]" />
-
       </div>
 
       {/* ==================================================
@@ -633,6 +565,7 @@ export default function DoctorOrbitShowcase({
           </div>
 
         </div>
+
       </div>
 
       {/* ==================================================
@@ -675,10 +608,18 @@ export default function DoctorOrbitShowcase({
 
       <style jsx>{`
 
+        /* --------------------------------------------------
+           RADIUS
+        -------------------------------------------------- */
+
         :global(.doctor-showcase) {
           --inner-radius: 125px;
           --outer-radius: 180px;
         }
+
+        /* --------------------------------------------------
+           MOBILE
+        -------------------------------------------------- */
 
         @media (max-width: 640px) {
           :global(.doctor-showcase) {
@@ -687,12 +628,20 @@ export default function DoctorOrbitShowcase({
           }
         }
 
+        /* --------------------------------------------------
+           TABLET / DESKTOP
+        -------------------------------------------------- */
+
         @media (min-width: 768px) {
           :global(.doctor-showcase) {
             --inner-radius: 135px;
             --outer-radius: 190px;
           }
         }
+
+        /* --------------------------------------------------
+           LARGE SCREEN
+        -------------------------------------------------- */
 
         @media (min-width: 1024px) {
           :global(.doctor-showcase) {
@@ -702,7 +651,7 @@ export default function DoctorOrbitShowcase({
         }
 
         /* ==================================================
-           ORBIT ROTATION
+           OUTER ORBIT ROTATION
         ================================================== */
 
         @keyframes rotateOuterOrbit {
@@ -715,6 +664,10 @@ export default function DoctorOrbitShowcase({
           }
         }
 
+        /* ==================================================
+           INNER ORBIT ROTATION
+        ================================================== */
+
         @keyframes rotateInnerOrbit {
           from {
             transform: rotate(360deg);
@@ -724,6 +677,10 @@ export default function DoctorOrbitShowcase({
             transform: rotate(0deg);
           }
         }
+
+        /* ==================================================
+           OUTER COUNTER ROTATION
+        ================================================== */
 
         @keyframes counterOuterOrbit {
           from {
@@ -735,6 +692,10 @@ export default function DoctorOrbitShowcase({
           }
         }
 
+        /* ==================================================
+           INNER COUNTER ROTATION
+        ================================================== */
+
         @keyframes counterInnerOrbit {
           from {
             transform: rotate(-360deg);
@@ -745,6 +706,10 @@ export default function DoctorOrbitShowcase({
           }
         }
 
+        /* ==================================================
+           OUTER ORBIT
+        ================================================== */
+
         .outer-orbit {
           animation:
             rotateOuterOrbit
@@ -752,6 +717,10 @@ export default function DoctorOrbitShowcase({
             linear
             infinite;
         }
+
+        /* ==================================================
+           INNER ORBIT
+        ================================================== */
 
         .inner-orbit {
           animation:
@@ -761,6 +730,10 @@ export default function DoctorOrbitShowcase({
             infinite;
         }
 
+        /* ==================================================
+           COUNTER OUTER
+        ================================================== */
+
         .outer-counter {
           animation:
             counterOuterOrbit
@@ -768,6 +741,10 @@ export default function DoctorOrbitShowcase({
             linear
             infinite;
         }
+
+        /* ==================================================
+           COUNTER INNER
+        ================================================== */
 
         .inner-counter {
           animation:
@@ -777,16 +754,20 @@ export default function DoctorOrbitShowcase({
             infinite;
         }
 
-        .doctor-showcase:hover
-          .outer-orbit,
-        .doctor-showcase:hover
-          .inner-orbit,
-        .doctor-showcase:hover
-          .outer-counter,
-        .doctor-showcase:hover
-          .inner-counter {
+        /* ==================================================
+           HOVER = PAUSE
+        ================================================== */
+
+        .doctor-showcase:hover .outer-orbit,
+        .doctor-showcase:hover .inner-orbit,
+        .doctor-showcase:hover .outer-counter,
+        .doctor-showcase:hover .inner-counter {
           animation-play-state: paused;
         }
+
+        /* ==================================================
+           ACCESSIBILITY
+        ================================================== */
 
         @media (prefers-reduced-motion: reduce) {
           .outer-orbit,
@@ -798,17 +779,12 @@ export default function DoctorOrbitShowcase({
         }
 
       `}</style>
-
     </div>
   );
 }
 
 /* ============================================================
    ORBIT DOCTOR
-
-   IMPORTANT:
-   Yahan styling pehle wali hi rakhi gayi hai.
-   Sirf positioning ko stable kiya gaya hai.
 ============================================================ */
 
 function OrbitDoctor({
@@ -819,10 +795,9 @@ function OrbitDoctor({
   const isOuter =
     ring === "outer";
 
-  const radiusVariable =
-    isOuter
-      ? "--outer-radius"
-      : "--inner-radius";
+  const radiusVariable = isOuter
+    ? "--outer-radius"
+    : "--inner-radius";
 
   return (
     <div
@@ -919,7 +894,6 @@ function OrbitDoctor({
         </div>
 
       </div>
-
     </div>
   );
 }
