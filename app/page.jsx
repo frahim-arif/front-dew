@@ -10,6 +10,7 @@ import HospitalPartnersSlider from "./Components/HospitalPartnersSlider";
 import DoctorOrbitShowcase from "./Components/DoctorOrbitShowcase";
 import HeroSection from "./Components/HeroSection";
 import ServicesSect from "./Components/ServicesSect";
+import HomeLoader from "./Components/HomeLoader";
 import AboutVideoSection from "./Components/AboutVideoSection";
 
 
@@ -88,6 +89,16 @@ export default function HomePage() {
   const [facilities, setFacilities] = useState([]);
   const [services, setServices] = useState([]);
 
+  const [showLoader, setShowLoader] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowLoader(false);
+    }, 2800);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   useEffect(() => {
     async function loadData() {
       setDoctors(await getDoctors());
@@ -99,6 +110,9 @@ export default function HomePage() {
   }, []);
 
   return (
+    <>
+    {showLoader && <HomeLoader />}
+
     <main className="overflow-hidden bg-emerald-50/30">
       {/* Announcement Bar */}
 <div className="relative overflow-hidden border-y border-white/10 py-2 shadow-lg">
@@ -1519,6 +1533,7 @@ md:py-24
 
 </section>
     </main>
+    </>
   );
 }
 
