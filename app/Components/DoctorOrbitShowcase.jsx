@@ -46,33 +46,35 @@ export default function DoctorOrbitShowcase({ doctors = [] }) {
   }, [doctors]);
 
   // Dr. Foridul ko center mein rakhega.
-  const mainDoctor = useMemo(() => {
-    return (
-      safeDoctors.find((doctor) => {
-        const name = String(doctor?.name || "")
-          .trim()
-          .toLowerCase()
-          .replace(/\s+/g, " ");
+ const mainDoctor = useMemo(() => {
+  return safeDoctors.find((doctor) => {
+    const name = String(doctor?.name || "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, " ");
 
-        return name.includes("foridul hussain");
-      }) || safeDoctors[0]
+    return (
+      name.includes("foridul hussain") ||
+      name.includes("dr foridul hussain") ||
+      name.includes("dr. foridul hussain")
     );
-  }, [safeDoctors]);
+  });
+}, [safeDoctors]);
 
   // Center doctor ko baaki doctors ki list se remove karega.
   const otherDoctors = useMemo(() => {
-    if (!mainDoctor) {
-      return [];
+  if (!mainDoctor) {
+    return safeDoctors;
+  }
+
+  return safeDoctors.filter((doctor) => {
+    if (doctor?._id && mainDoctor?._id) {
+      return String(doctor._id) !== String(mainDoctor._id);
     }
 
-    return safeDoctors.filter((doctor) => {
-      if (doctor?._id && mainDoctor?._id) {
-        return doctor._id !== mainDoctor._id;
-      }
-
-      return doctor !== mainDoctor;
-    });
-  }, [safeDoctors, mainDoctor]);
+    return doctor !== mainDoctor;
+  });
+}, [safeDoctors, mainDoctor]);
 
   // Har group mein maximum 10 doctors.
   const doctorGroups = useMemo(() => {
