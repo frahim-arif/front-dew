@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import PrescriptionModal from "../../Components/PrescriptionModal";
 
 const API =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api";
+  process.env.NEXT_PUBLIC_API_URL || "https://backend-dew-c2to.onrender.com/api";
 
 const STATUS_OPTIONS = [
   "All",

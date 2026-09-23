@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { siteInfo } from "../data/siteData";
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://backend-dew.onrender.com/api";
+  process.env.NEXT_PUBLIC_API_URL || "https://backend-dew-c2to.onrender.com/api";
 
 const APPOINTMENT_FEE = 500;
 

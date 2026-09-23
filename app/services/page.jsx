@@ -4,7 +4,7 @@ import ServiceCard from "../Components/ServiceCard";
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
-  "https://backend-dew.onrender.com/api";
+  "https://backend-dew-c2to.onrender.com/api";
 
 export const metadata = {
   title: "Services | Dew Care Hospital",

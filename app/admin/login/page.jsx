@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const API =
-  process.env.NEXT_PUBLIC_API_URL || "https://backend-dew.onrender.com/api/login";
+  process.env.NEXT_PUBLIC_API_URL || "https://backend-dew-c2to.onrender.com/api/login";
 
 export default function AdminLogin() {
   const router = useRouter();

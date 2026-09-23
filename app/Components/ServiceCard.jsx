@@ -2,7 +2,7 @@
 
 const API =
   process.env.NEXT_PUBLIC_API_URL ||
-  "https://backend-dew.onrender.com/api";
+  "https://backend-dew-c2to.onrender.com/api";
 
 const SERVER_URL = API.replace("/api", "");
 
