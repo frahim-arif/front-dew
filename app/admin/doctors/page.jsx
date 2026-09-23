@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-const API = process.env.NEXT_PUBLIC_API_URL || "https://backend-dew-c2to.onrender.com/api";
+const API =
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://backend-dew-c2to.onrender.com/api";
 
 const weekDays = [
   "Monday",
