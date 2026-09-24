@@ -67,29 +67,28 @@ export default function AboutVideoSection() {
 
 <div className="flex h-[430px] flex-col justify-start border-l-4 border-emerald-500 bg-white/70 p-6 backdrop-blur-sm">
 
-  {/* ================= HEADING ================= */}
+  {/* Heading */}
 
   <h2
     className="
-      mb-5
+      mb-4
       -mt-[35px]
-      text-3xl
+      text-2xl
       font-extrabold
       leading-tight
+      tracking-tight
       text-slate-900
-      lg:text-4xl
+      lg:text-3xl
     "
   >
     Dew Care Hospital &
-
     <span className="text-emerald-600">
-      {" "}
-      Research Centre
+      {" "}Research Centre
     </span>
   </h2>
 
 
-  {/* ================= FEATURES ================= */}
+  {/* Features */}
 
   <div className="grid flex-1 grid-cols-1 gap-1">
 
@@ -110,9 +109,9 @@ export default function AboutVideoSection() {
           shadow-sm
           transition-all
           duration-300
-          hover:-translate-y-1
+          hover:-translate-y-0.5
           hover:border-emerald-300
-          hover:bg-emerald-50/30
+          hover:bg-emerald-50/40
           hover:shadow-md
         "
       >
@@ -122,8 +121,8 @@ export default function AboutVideoSection() {
         <div
           className="
             flex
-            h-12
-            w-12
+            h-10
+            w-10
             shrink-0
             items-center
             justify-center
@@ -131,30 +130,29 @@ export default function AboutVideoSection() {
             from-emerald-100
             to-cyan-100
             text-emerald-600
-            transition-all
+            transition-transform
             duration-300
             group-hover:scale-105
-            group-hover:from-emerald-200
-            group-hover:to-cyan-200
           "
         >
           {item.icon}
         </div>
 
 
-        {/* Content */}
+        {/* Text */}
 
         <div className="min-w-0">
 
           <h4
             className="
-              text-lg
+              text-sm
               font-bold
               leading-tight
               text-slate-900
               transition-colors
               duration-300
               group-hover:text-emerald-700
+              lg:text-base
             "
           >
             {item.title}
@@ -162,10 +160,12 @@ export default function AboutVideoSection() {
 
           <p
             className="
-              mt-1
-              text-sm
-              leading-6
-              text-slate-600
+              mt-0.5
+              text-[11px]
+              leading-4
+              text-slate-500
+              lg:text-xs
+              lg:leading-5
             "
           >
             {item.desc}
