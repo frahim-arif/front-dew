@@ -63,48 +63,211 @@ export default function AboutVideoSection() {
     </div>
   </div>
 </div>
-          {/* ================= CONTENT ================= */}
+    {/* ================= CONTENT ================= */}
 
-<div className="flex h-[430px] flex-col justify-start border-l-4 border-emerald-500 bg-white/70 p-6 backdrop-blur-sm">            {/* <span className="inline-flex bg-emerald-100 px-5 py-2 text-xs font-bold uppercase tracking-[0.25em] text-emerald-700">
-              About Hospital
-            </span> */}
+<div className="w-full">
 
-            <h2 className="mb-5 -mt-[35px] text-3xl font-extrabold leading-tight text-slate-900 lg:text-4xl">
-              Dew Care Hospital &
-              <span className="text-emerald-600">
-                {" "}
-                Research Centre
-              </span>
-            </h2>
+  <div
+    className="
+      relative
+      overflow-hidden
+      border-l-0
+      border-t-4
+      border-emerald-500
+      bg-white/80
+      p-4
+      shadow-sm
+      backdrop-blur-sm
+      sm:p-6
+      md:border-l-4
+      md:border-t-0
+      md:p-7
+      lg:p-8
+    "
+  >
 
-            {/* <p className="mt-5 text-base leading-8 text-slate-600 lg:text-lg">
-              Dew Care Hospital & Research Centre is committed to delivering
-              affordable, advanced and compassionate healthcare through
-              world-class infrastructure, experienced specialists and modern
-              medical technology.
-            </p> */}
+    {/* Decorative Glow */}
+    <div
+      className="
+        pointer-events-none
+        absolute
+        -right-16
+        -top-16
+        h-40
+        w-40
+        rounded-full
+        bg-emerald-300/20
+        blur-3xl
+      "
+    />
 
-            <div className="grid flex-1 grid-cols-1 gap-1">
-              {features.map((item, index) => (
-                <div
-                  key={index}
-                className="group flex items-center gap-3 border border-slate-100 bg-white px-3 py-1.5 transition-all duration-300 hover:-translate-y-1 hover:border-emerald-300 hover:shadow-lg"                >
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center bg-gradient-to-br from-emerald-100 to-cyan-100 text-emerald-600">                    {item.icon}
-                  </div>
+    {/* ================= HEADING ================= */}
 
-                  <div>
-                    <h4 className="text-lg font-bold text-slate-900">
-                      {item.title}
-                    </h4>
+    <div className="relative mb-6 md:mb-8">
 
-                    <p className="mt-2 text-sm leading-6 text-slate-600">
-                      {item.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
+      <h2
+        className="
+          text-2xl
+          font-extrabold
+          leading-tight
+          text-slate-900
+          sm:text-3xl
+          md:text-4xl
+          lg:text-5xl
+        "
+      >
+        Dew Care Hospital &
+
+        <span className="block text-emerald-600">
+          Research Centre
+        </span>
+      </h2>
+
+      <div
+        className="
+          mt-4
+          h-1
+          w-16
+          rounded-full
+          bg-gradient-to-r
+          from-emerald-500
+          to-cyan-500
+          md:w-24
+        "
+      />
+
+    </div>
+
+
+    {/* ================= FEATURES ================= */}
+
+    <div
+      className="
+        relative
+        grid
+        grid-cols-1
+        gap-3
+        sm:grid-cols-2
+        sm:gap-4
+        lg:grid-cols-1
+        lg:gap-3
+      "
+    >
+
+      {features.map((item, index) => (
+
+        <div
+          key={index}
+          className="
+            group
+            flex
+            items-start
+            gap-3
+            border
+            border-slate-100
+            bg-white
+            p-3
+            shadow-sm
+            transition-all
+            duration-300
+            hover:-translate-y-1
+            hover:border-emerald-300
+            hover:shadow-lg
+            sm:p-4
+          "
+        >
+
+          {/* Icon */}
+
+          <div
+            className="
+              flex
+              h-11
+              w-11
+              shrink-0
+              items-center
+              justify-center
+              bg-gradient-to-br
+              from-emerald-100
+              to-cyan-100
+              text-emerald-600
+              transition-all
+              duration-300
+              group-hover:scale-105
+              group-hover:from-emerald-200
+              group-hover:to-cyan-200
+              sm:h-12
+              sm:w-12
+            "
+          >
+            {item.icon}
           </div>
+
+
+          {/* Text */}
+
+          <div className="min-w-0 flex-1">
+
+            <h4
+              className="
+                text-sm
+                font-bold
+                leading-5
+                text-slate-900
+                transition-colors
+                duration-300
+                group-hover:text-emerald-700
+                sm:text-base
+                md:text-lg
+              "
+            >
+              {item.title}
+            </h4>
+
+            <p
+              className="
+                mt-1
+                text-[11px]
+                leading-5
+                text-slate-600
+                sm:text-xs
+                sm:leading-6
+                md:text-sm
+              "
+            >
+              {item.desc}
+            </p>
+
+          </div>
+
+
+          {/* Arrow */}
+
+          <div
+            className="
+              hidden
+              shrink-0
+              text-emerald-500
+              opacity-0
+              transition-all
+              duration-300
+              group-hover:translate-x-1
+              group-hover:opacity-100
+              sm:block
+            "
+          >
+            →
+          </div>
+
+        </div>
+
+      ))}
+
+    </div>
+
+  </div>
+
+</div>
         </div>
       </div>
     </section>
