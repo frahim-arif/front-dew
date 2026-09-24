@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const API =
-  process.env.NEXT_PUBLIC_API_URL || "https://backend-dew-c2to.onrender.com/api/login";
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://backend-dew-c2to.onrender.com/api";
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -30,12 +31,12 @@ export default function AdminLogin() {
 
     try {
       const res = await fetch(`${API}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(form),
-      });
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify(form),
+});
 
       const data = await res.json();
 
