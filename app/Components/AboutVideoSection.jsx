@@ -65,7 +65,7 @@ export default function AboutVideoSection() {
 </div>
           {/* ================= CONTENT ================= */}
 
-<div className="flex h-[430px] mb-4 flex-col justify-start border-l-4 border-emerald-500 bg-white/70 p-6 backdrop-blur-sm">
+<div className="flex h-[430px] -mb-4 flex-col justify-start border-l-4 border-emerald-500 bg-white/70 p-6 backdrop-blur-sm">
 
   {/* Heading */}
 
