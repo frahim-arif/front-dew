@@ -564,472 +564,590 @@ lg:min-h-[650px]
 </div>
       
 
-      {/* Facilities Section */}
-  <section className="
-relative
-overflow-hidden
-bg-[#020617]
-py-20
-text-white
-md:py-28
-">
+   
+{/* ==================================================
+    FACILITIES SECTION
+================================================== */}
 
+<section
+  className="
+    relative
+    overflow-hidden
+    bg-[#020617]
+    py-20
+    text-white
+    md:py-28
+  "
+>
 
-  {/* Luxury Background */}
+  {/* ==================================================
+      LUXURY BACKGROUND
+  ================================================== */}
 
   <div className="absolute inset-0 overflow-hidden">
 
-
     {/* Base Gradient */}
-
-    <div className="
-      absolute
-      inset-0
-      bg-gradient-to-br
-      from-[#020617]
-      via-[#064e3b]
-      to-[#042f2e]
-    "/>
-
-
+    <div
+      className="
+        absolute
+        inset-0
+        bg-gradient-to-br
+        from-[#020617]
+        via-[#064e3b]
+        to-[#042f2e]
+      "
+    />
 
     {/* Aurora Glow */}
-
-    <div className="
-      absolute
-      -left-52
-      -top-40
-      h-[650px]
-      w-[650px]
-      rounded-full
-      bg-emerald-400/30
-      blur-[170px]
-      animate-pulse
-    "/>
-
-
-
-    <div className="
-      absolute
-      -right-52
-      top-20
-      h-[600px]
-      w-[600px]
-      rounded-full
-      bg-cyan-400/20
-      blur-[160px]
-    "/>
-
-
-
-    <div className="
-      absolute
-      bottom-[-300px]
-      left-1/2
-      h-[700px]
-      w-[1000px]
-      -translate-x-1/2
-      rounded-full
-      bg-green-500/20
-      blur-[200px]
-    "/>
-
-
-
-
-    {/* Floating Glass Orbs */}
-
-    <div className="
-      absolute
-      left-[8%]
-      top-[18%]
-      h-28
-      w-28
-      rounded-full
-      border
-      border-white/10
-      bg-white/5
-      backdrop-blur-xl
-    "/>
-
-
-
-    <div className="
-      absolute
-      right-[12%]
-      bottom-[20%]
-      h-44
-      w-44
-      rounded-full
-      border
-      border-emerald-300/20
-      bg-emerald-300/5
-      backdrop-blur-xl
-    "/>
-
-
-
-
-    {/* Tech Grid */}
+    <div
+      className="
+        absolute
+        -left-52
+        -top-40
+        h-[650px]
+        w-[650px]
+        rounded-full
+        bg-emerald-400/30
+        blur-[170px]
+        animate-pulse
+      "
+    />
 
     <div
       className="
-      absolute
-      inset-0
-      opacity-[0.06]
+        absolute
+        -right-52
+        top-20
+        h-[600px]
+        w-[600px]
+        rounded-full
+        bg-cyan-400/20
+        blur-[160px]
+      "
+    />
+
+    <div
+      className="
+        absolute
+        bottom-[-300px]
+        left-1/2
+        h-[700px]
+        w-[1000px]
+        -translate-x-1/2
+        rounded-full
+        bg-green-500/20
+        blur-[200px]
+      "
+    />
+
+    {/* Floating Glass Orbs */}
+    <div
+      className="
+        absolute
+        left-[8%]
+        top-[18%]
+        h-28
+        w-28
+        rounded-full
+        border
+        border-white/10
+        bg-white/5
+        backdrop-blur-xl
+      "
+    />
+
+    <div
+      className="
+        absolute
+        right-[12%]
+        bottom-[20%]
+        h-44
+        w-44
+        rounded-full
+        border
+        border-emerald-300/20
+        bg-emerald-300/5
+        backdrop-blur-xl
+      "
+    />
+
+    {/* Tech Grid */}
+    <div
+      className="
+        absolute
+        inset-0
+        opacity-[0.06]
       "
       style={{
-        backgroundImage:`
-        linear-gradient(135deg,rgba(255,255,255,.5) 1px,transparent 1px),
-        linear-gradient(45deg,rgba(255,255,255,.3) 1px,transparent 1px)
+        backgroundImage: `
+          linear-gradient(
+            135deg,
+            rgba(255,255,255,.5) 1px,
+            transparent 1px
+          ),
+          linear-gradient(
+            45deg,
+            rgba(255,255,255,.3) 1px,
+            transparent 1px
+          )
         `,
-        backgroundSize:"80px 80px"
+        backgroundSize: "80px 80px",
       }}
     />
 
-
-
-
     {/* Dots */}
-
     <div
       className="
-      absolute
-      inset-0
-      opacity-20
+        absolute
+        inset-0
+        opacity-20
       "
       style={{
         backgroundImage:
-        "radial-gradient(#ffffff 1px,transparent 1px)",
-        backgroundSize:"45px 45px"
+          "radial-gradient(#ffffff 1px,transparent 1px)",
+        backgroundSize: "45px 45px",
       }}
     />
 
-
-
     {/* Bottom Fade */}
-
-    <div className="
-      absolute
-      bottom-0
-      left-0
-      right-0
-      h-48
-      bg-gradient-to-t
-      from-[#020617]
-      to-transparent
-    "/>
-
+    <div
+      className="
+        absolute
+        bottom-0
+        left-0
+        right-0
+        h-48
+        bg-gradient-to-t
+        from-[#020617]
+        to-transparent
+      "
+    />
 
   </div>
 
 
+  {/* ==================================================
+      CONTENT
+  ================================================== */}
 
+  <div
+    className="
+      relative
+      mx-auto
+      max-w-7xl
+      px-4
+      sm:px-6
+      lg:px-8
+    "
+  >
 
+    {/* ==================================================
+        HEADING
+    ================================================== */}
 
-  {/* Content */}
+    <div className="mb-14 text-center">
 
-  <div className="
-    relative
-    mx-auto
-    max-w-7xl
-    px-4
-  ">
-
-
-    {/* Heading */}
-
-    <div className="
-      mb-14
-      text-center
-    ">
-
-
-      <span className="
-        inline-flex
-        rounded-full
-        border
-        border-cyan-300/30
-        bg-white/10
-        px-5
-        py-2
-        text-xs
-        font-black
-        tracking-[0.25em]
-        text-cyan-100
-        shadow-lg
-        shadow-cyan-500/20
-        backdrop-blur-xl
-      ">
+      <span
+        className="
+          inline-flex
+          rounded-full
+          border
+          border-cyan-300/30
+          bg-white/10
+          px-5
+          py-2
+          text-xs
+          font-black
+          tracking-[0.25em]
+          text-cyan-100
+          shadow-lg
+          shadow-cyan-500/20
+          backdrop-blur-xl
+        "
+      >
         OUR FACILITIES
       </span>
 
 
-
-      <h2 className="
-        mt-5
-        text-3xl
-        font-black
-        text-black
-        md:text-5xl
-      ">
+      <h2
+        className="
+          mt-5
+          text-3xl
+          font-black
+          text-white
+          md:text-5xl
+        "
+      >
         Modern Hospital Facilities
       </h2>
 
 
-
-      <p className="
-        mx-auto
-        mt-5
-        max-w-3xl
-        text-base
-        leading-8
-        text-emerald-50/75
-        md:text-lg
-      ">
+      <p
+        className="
+          mx-auto
+          mt-5
+          max-w-3xl
+          text-base
+          leading-8
+          text-emerald-50/75
+          md:text-lg
+        "
+      >
         Designed to provide better care, faster service and a
         comfortable patient experience using modern medical
         infrastructure.
       </p>
 
-
     </div>
 
 
-
-
-
-
-    {/* Empty State */}
+    {/* ==================================================
+        FACILITIES
+    ================================================== */}
 
     {facilities.length === 0 ? (
 
-      <div className="
-        rounded-3xl
-        border
-        border-white/10
-        bg-white/10
-        p-10
-        text-center
-        backdrop-blur-xl
-      ">
+      {/* Empty State */}
 
+      <div
+        className="
+          rounded-3xl
+          border
+          border-white/10
+          bg-white/10
+          p-10
+          text-center
+          backdrop-blur-xl
+        "
+      >
         <p className="text-emerald-50/70">
           No facilities available.
         </p>
-
       </div>
-
 
     ) : (
 
+      <>
 
+        {/* ==================================================
+            FACILITY GRID
+        ================================================== */}
 
-      <div className="
-        grid
-        grid-cols-2
-        gap-4
-        md:gap-7
-        lg:grid-cols-4
-      ">
+        <div
+          className="
+            grid
+            grid-cols-2
+            gap-4
+            md:gap-7
+            lg:grid-cols-4
+          "
+        >
 
+          {facilities.map((item) => (
 
-        {facilities.map((item)=>(
-
-
-          <div
-            key={item._id}
-            className="
-            group
-            relative
-            overflow-hidden
-            rounded-[2rem]
-            border
-            border-white/10
-            bg-white/10
-            p-[1px]
-            shadow-2xl
-            shadow-black/30
-            backdrop-blur-xl
-            transition-all
-            duration-500
-            hover:-translate-y-3
-            hover:border-cyan-300/40
-            "
-          >
-
-
-            {/* Hover Glow */}
-
-            <div className="
-              absolute
-              inset-0
-              rounded-[2rem]
-              bg-gradient-to-br
-              from-cyan-400/40
-              via-emerald-400/30
-              to-green-400/40
-              opacity-30
-              transition
-              duration-500
-              group-hover:opacity-100
-            "/>
-
-
-
-
-            {/* Card */}
-
-            <div className="
-              relative
-              overflow-hidden
-              rounded-[2rem]
-              bg-[#022c22]/80
-            ">
-
-
-              {/* Image */}
-
-              <div className="
+            <div
+              key={item._id}
+              className="
+                group
                 relative
-                h-36
                 overflow-hidden
-                rounded-t-[2rem]
-                bg-emerald-950
-                md:h-52
-              ">
+                rounded-[2rem]
+                border
+                border-white/10
+                bg-white/10
+                p-[1px]
+                shadow-2xl
+                shadow-black/30
+                backdrop-blur-xl
+                transition-all
+                duration-500
+                hover:-translate-y-3
+                hover:border-cyan-300/40
+              "
+            >
+
+              {/* ==================================================
+                  HOVER GLOW
+              ================================================== */}
+
+              <div
+                className="
+                  absolute
+                  inset-0
+                  rounded-[2rem]
+                  bg-gradient-to-br
+                  from-cyan-400/40
+                  via-emerald-400/30
+                  to-green-400/40
+                  opacity-30
+                  transition
+                  duration-500
+                  group-hover:opacity-100
+                "
+              />
 
 
-                {item.image ? (
+              {/* ==================================================
+                  CARD
+              ================================================== */}
 
-                  <img
-                    src={fileUrl(item.image)}
-                    alt={item.title}
+              <div
+                className="
+                  relative
+                  overflow-hidden
+                  rounded-[2rem]
+                  bg-[#022c22]/80
+                "
+              >
+
+                {/* ==================================================
+                    IMAGE
+                ================================================== */}
+
+                <div
+                  className="
+                    relative
+                    h-36
+                    overflow-hidden
+                    rounded-t-[2rem]
+                    bg-emerald-950
+                    md:h-52
+                  "
+                >
+
+                  {item.image ? (
+
+                    <img
+                      src={fileUrl(item.image)}
+                      alt={item.title}
+                      className="
+                        h-full
+                        w-full
+                        object-cover
+                        transition
+                        duration-700
+                        group-hover:scale-110
+                      "
+                    />
+
+                  ) : (
+
+                    <div
+                      className="
+                        flex
+                        h-full
+                        items-center
+                        justify-center
+                        text-5xl
+                        md:text-7xl
+                      "
+                    >
+                      {item.icon || "🏥"}
+                    </div>
+
+                  )}
+
+
+                  {/* Image Overlay */}
+
+                  <div
                     className="
-                    h-full
-                    w-full
-                    object-cover
-                    transition
-                    duration-700
-                    group-hover:scale-110
+                      absolute
+                      inset-0
+                      bg-gradient-to-t
+                      from-[#022c22]
+                      via-transparent
+                      to-transparent
                     "
                   />
 
-
-                ):(
-
-                  <div className="
-                    flex
-                    h-full
-                    items-center
-                    justify-center
-                    text-5xl
-                    md:text-7xl
-                  ">
-                    {item.icon || "🏥"}
-                  </div>
-
-                )}
+                </div>
 
 
+                {/* ==================================================
+                    TEXT
+                ================================================== */}
 
-                <div className="
-                  absolute
-                  inset-0
-                  bg-gradient-to-t
-                  from-[#022c22]
-                  via-transparent
-                  to-transparent
-                "/>
+                <div className="p-4 md:p-6">
 
-
-              </div>
-
-
-
-
-
-
-              {/* Text */}
-
-              <div className="
-                p-4
-                md:p-6
-              ">
+                  <h3
+                    className="
+                      text-base
+                      font-black
+                      text-white
+                      transition
+                      group-hover:text-cyan-200
+                      md:text-xl
+                    "
+                  >
+                    {item.title}
+                  </h3>
 
 
-                <h3 className="
-                  text-base
-                  font-black
-                  text-white
-                  transition
-                  group-hover:text-cyan-200
-                  md:text-xl
-                ">
-                  {item.title}
-                </h3>
+                  <p
+                    className="
+                      mt-2
+                      line-clamp-3
+                      text-xs
+                      leading-6
+                      text-emerald-50/70
+                      md:text-sm
+                    "
+                  >
+                    {item.desc}
+                  </p>
 
 
+                  {/* Category */}
 
-                <p className="
-                  mt-2
-                  line-clamp-3
-                  text-xs
-                  leading-6
-                  text-emerald-50/70
-                  md:text-sm
-                ">
-                  {item.desc}
-                </p>
+                  {item.category && (
 
+                    <span
+                      className="
+                        mt-4
+                        inline-flex
+                        rounded-full
+                        border
+                        border-cyan-300/30
+                        bg-cyan-400/10
+                        px-4
+                        py-1.5
+                        text-[10px]
+                        font-black
+                        text-cyan-100
+                        md:text-xs
+                      "
+                    >
+                      {item.category}
+                    </span>
 
+                  )}
 
-
-                {item.category && (
-
-                  <span className="
-                    mt-4
-                    inline-flex
-                    rounded-full
-                    border
-                    border-cyan-300/30
-                    bg-cyan-400/10
-                    px-4
-                    py-1.5
-                    text-[10px]
-                    font-black
-                    text-cyan-100
-                    md:text-xs
-                  ">
-                    {item.category}
-                  </span>
-
-                )}
-
+                </div>
 
               </div>
-
 
             </div>
 
+          ))}
 
-          </div>
-
-
-        ))}
+        </div>
 
 
-      </div>
+        {/* ==================================================
+            MORE FACILITIES BUTTON
+        ================================================== */}
 
+        <div className="mt-12 flex justify-center">
+
+          <Link
+            href="/facilities"
+            className="
+              group
+              relative
+              inline-flex
+              items-center
+              justify-center
+              overflow-hidden
+              rounded-2xl
+              border
+              border-emerald-300/30
+              bg-gradient-to-r
+              from-emerald-800
+              via-green-600
+              to-teal-500
+              px-8
+              py-4
+              text-sm
+              font-black
+              text-white
+              shadow-[0_8px_0_#064e3b,0_16px_32px_rgba(16,185,129,.30)]
+              transition-all
+              duration-300
+              hover:-translate-y-1
+              hover:shadow-[0_11px_0_#064e3b,0_22px_42px_rgba(16,185,129,.45)]
+              active:translate-y-[3px]
+              active:shadow-[0_4px_0_#064e3b]
+            "
+          >
+
+            {/* Button Shine */}
+
+            <span
+              className="
+                absolute
+                inset-0
+                bg-gradient-to-b
+                from-white/20
+                via-transparent
+                to-black/10
+              "
+            />
+
+
+            {/* Moving Shine */}
+
+            <span
+              className="
+                absolute
+                -left-20
+                top-0
+                h-full
+                w-10
+                -skew-x-12
+                bg-white/35
+                blur-sm
+                transition-all
+                duration-700
+                group-hover:left-[120%]
+              "
+            />
+
+
+            {/* Button Content */}
+
+            <span
+              className="
+                relative
+                z-10
+                flex
+                items-center
+                gap-2
+              "
+            >
+              <span className="text-lg">
+                🏥
+              </span>
+
+              <span>
+                More Facilities
+              </span>
+
+              <span
+                className="
+                  text-lg
+                  transition-transform
+                  duration-300
+                  group-hover:translate-x-1
+                "
+              >
+                →
+              </span>
+            </span>
+
+          </Link>
+
+        </div>
+
+      </>
 
     )}
 
-
-
   </div>
 
-
 </section>
+
+
 
       {/* Doctors Section */}
 {/* Doctors Section */}
