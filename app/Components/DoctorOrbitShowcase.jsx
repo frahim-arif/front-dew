@@ -7,8 +7,8 @@ const API =
 
 const SERVER_URL = API.replace(/\/api\/?$/, "");
 
-const DOCTORS_PER_GROUP = 10;
-const INNER_RING_COUNT = 5;
+const DOCTORS_PER_GROUP = 16;
+const INNER_RING_COUNT = 8;
 const ROTATION_DURATION = 26000;
 const GROUP_CHANGE_DURATION = 26000;
 
