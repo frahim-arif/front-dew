@@ -68,22 +68,30 @@ export default function AboutVideoSection() {
 <div className="w-full">
 
   <div
-    className="
-      relative
-      overflow-hidden
-      border-l-0
-      border-t-4
-      border-emerald-500
-      bg-white/80
-      p-4
-      shadow-sm
-      backdrop-blur-sm
-      sm:p-6
-      md:border-l-4
-      md:border-t-0
-      md:p-7
-      lg:p-8
-    "
+   className="
+  relative
+  overflow-hidden
+  border-l-0
+  border-t-4
+  border-emerald-500
+  bg-white/80
+  px-4
+  pt-4
+  pb-2
+  shadow-sm
+  backdrop-blur-sm
+  sm:px-6
+  sm:pt-6
+  sm:pb-3
+  md:border-l-4
+  md:border-t-0
+  md:px-7
+  md:pt-7
+  md:pb-4
+  lg:px-8
+  lg:pt-8
+  lg:pb-4
+"
   >
 
     {/* Decorative Glow */}
