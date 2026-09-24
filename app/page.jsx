@@ -564,7 +564,7 @@ lg:min-h-[650px]
 </div>
       
 
-   
+     
 {/* ==================================================
     FACILITIES SECTION
 ================================================== */}
@@ -579,9 +579,8 @@ lg:min-h-[650px]
     md:py-28
   "
 >
-
   {/* ==================================================
-      LUXURY BACKGROUND
+      BACKGROUND
   ================================================== */}
 
   <div className="absolute inset-0 overflow-hidden">
@@ -640,7 +639,7 @@ lg:min-h-[650px]
       "
     />
 
-    {/* Floating Glass Orbs */}
+    {/* Floating Glass Orb */}
     <div
       className="
         absolute
@@ -659,8 +658,8 @@ lg:min-h-[650px]
     <div
       className="
         absolute
-        right-[12%]
         bottom-[20%]
+        right-[12%]
         h-44
         w-44
         rounded-full
@@ -673,11 +672,7 @@ lg:min-h-[650px]
 
     {/* Tech Grid */}
     <div
-      className="
-        absolute
-        inset-0
-        opacity-[0.06]
-      "
+      className="absolute inset-0 opacity-[0.06]"
       style={{
         backgroundImage: `
           linear-gradient(
@@ -697,11 +692,7 @@ lg:min-h-[650px]
 
     {/* Dots */}
     <div
-      className="
-        absolute
-        inset-0
-        opacity-20
-      "
+      className="absolute inset-0 opacity-20"
       style={{
         backgroundImage:
           "radial-gradient(#ffffff 1px,transparent 1px)",
@@ -768,7 +759,6 @@ lg:min-h-[650px]
         OUR FACILITIES
       </span>
 
-
       <h2
         className="
           mt-5
@@ -780,7 +770,6 @@ lg:min-h-[650px]
       >
         Modern Hospital Facilities
       </h2>
-
 
       <p
         className="
@@ -802,12 +791,10 @@ lg:min-h-[650px]
 
 
     {/* ==================================================
-        FACILITIES
+        EMPTY / FACILITIES
     ================================================== */}
 
     {facilities.length === 0 ? (
-
-      {/* Empty State */}
 
       <div
         className="
@@ -827,7 +814,7 @@ lg:min-h-[650px]
 
     ) : (
 
-      <>
+      <div>
 
         {/* ==================================================
             FACILITY GRID
@@ -866,10 +853,7 @@ lg:min-h-[650px]
               "
             >
 
-              {/* ==================================================
-                  HOVER GLOW
-              ================================================== */}
-
+              {/* Hover Glow */}
               <div
                 className="
                   absolute
@@ -886,11 +870,7 @@ lg:min-h-[650px]
                 "
               />
 
-
-              {/* ==================================================
-                  CARD
-              ================================================== */}
-
+              {/* Card */}
               <div
                 className="
                   relative
@@ -900,10 +880,7 @@ lg:min-h-[650px]
                 "
               >
 
-                {/* ==================================================
-                    IMAGE
-                ================================================== */}
-
+                {/* Image */}
                 <div
                   className="
                     relative
@@ -919,7 +896,7 @@ lg:min-h-[650px]
 
                     <img
                       src={fileUrl(item.image)}
-                      alt={item.title}
+                      alt={item.title || "Hospital Facility"}
                       className="
                         h-full
                         w-full
@@ -947,9 +924,7 @@ lg:min-h-[650px]
 
                   )}
 
-
                   {/* Image Overlay */}
-
                   <div
                     className="
                       absolute
@@ -964,10 +939,7 @@ lg:min-h-[650px]
                 </div>
 
 
-                {/* ==================================================
-                    TEXT
-                ================================================== */}
-
+                {/* Text */}
                 <div className="p-4 md:p-6">
 
                   <h3
@@ -982,7 +954,6 @@ lg:min-h-[650px]
                   >
                     {item.title}
                   </h3>
-
 
                   <p
                     className="
@@ -999,7 +970,6 @@ lg:min-h-[650px]
 
 
                   {/* Category */}
-
                   {item.category && (
 
                     <span
@@ -1071,8 +1041,7 @@ lg:min-h-[650px]
             "
           >
 
-            {/* Button Shine */}
-
+            {/* Button Overlay */}
             <span
               className="
                 absolute
@@ -1084,9 +1053,7 @@ lg:min-h-[650px]
               "
             />
 
-
-            {/* Moving Shine */}
-
+            {/* Shine */}
             <span
               className="
                 absolute
@@ -1103,9 +1070,7 @@ lg:min-h-[650px]
               "
             />
 
-
             {/* Button Content */}
-
             <span
               className="
                 relative
@@ -1139,7 +1104,7 @@ lg:min-h-[650px]
 
         </div>
 
-      </>
+      </div>
 
     )}
 
