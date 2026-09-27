@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -111,23 +110,22 @@ export default function HeroSection() {
               MOBILE CONTENT ON IMAGE
           ================================================= */}
 
-         <div
-  className="
-    absolute
-    inset-0
-    flex
-    items-center
-    pt-8
-    sm:pt-10
-  "
-     >
+          <div
+            className="
+              absolute
+              inset-0
+              flex
+              items-center
+              pt-8
+              sm:pt-10
+            "
+          >
 
             <div
               className="
                 w-[62%]
                 pl-5
                 pr-2
-              
 
                 sm:w-[58%]
                 sm:pl-6
@@ -181,98 +179,181 @@ export default function HeroSection() {
               </p>
 
 
-              
-{/* Buttons */}
+              {/* =================================================
+                  MOBILE MAIN BUTTONS
+              ================================================= */}
 
-<div
-  className="
-    mt-4
-    flex
-    w-full
-    items-center
-    justify-between
-    gap-2
-  "
->
+              <div
+                className="
+                  mt-4
+                  flex
+                  w-full
+                  items-center
+                  justify-between
+                  gap-2
+                "
+              >
 
-  {/* Appointment */}
+                {/* Appointment */}
 
-  <Link
-    href="/appointment"
-    className="
-      group
-      inline-flex
-      flex-1
-      items-center
-      justify-center
-      gap-1.5
-      rounded-lg
-      bg-gradient-to-r
-      from-[#C89B3C]
-      via-[#E6C76A]
-      to-[#B8860B]
-      px-2
-      py-2
-      text-[10px]
-      font-bold
-      text-[#3A2A00]
-      shadow-[0_3px_0_#8B6A18]
-      transition-all
-      duration-300
-      hover:-translate-y-1
+                <Link
+                  href="/appointment"
+                  className="
+                    group
+                    inline-flex
+                    flex-1
+                    items-center
+                    justify-center
+                    gap-1.5
+                    rounded-lg
+                    bg-gradient-to-r
+                    from-[#C89B3C]
+                    via-[#E6C76A]
+                    to-[#B8860B]
+                    px-2
+                    py-2
+                    text-[10px]
+                    font-bold
+                    text-[#3A2A00]
+                    shadow-[0_3px_0_#8B6A18]
+                    transition-all
+                    duration-300
+                    hover:-translate-y-1
 
-      sm:px-4
-      sm:py-2.5
-      sm:text-xs
-    "
-  >
-    <CalendarDays size={14} />
+                    sm:px-4
+                    sm:py-2.5
+                    sm:text-xs
+                  "
+                >
+                  <CalendarDays size={14} />
 
-    <span className="whitespace-nowrap">
-      Book Appointment
-    </span>
-  </Link>
-
-
-  {/* Prescription */}
-
-  <Link
-    href="/prescription-download"
-    className="
-      group
-      inline-flex
-      flex-1
-      items-center
-      justify-center
-      gap-1.5
-      rounded-lg
-      bg-[#43463b]
-      px-2
-      py-2
-      text-[10px]
-      font-bold
-      text-white
-      shadow-[0_3px_0_#45493B]
-      transition-all
-      duration-300
-      hover:-translate-y-1
-      hover:bg-[#6B705B]
-
-      sm:px-4
-      sm:py-2.5
-      sm:text-xs
-    "
-  >
-    <FileDown size={14} />
-
-    <span className="whitespace-nowrap">
-      Prescription PDF
-    </span>
-  </Link>
-
-</div>
+                  <span className="whitespace-nowrap">
+                    Book Appointment
+                  </span>
+                </Link>
 
 
+                {/* Prescription */}
+
+                <Link
+                  href="/prescription-download"
+                  className="
+                    group
+                    inline-flex
+                    flex-1
+                    items-center
+                    justify-center
+                    gap-1.5
+                    rounded-lg
+                    bg-[#43463b]
+                    px-2
+                    py-2
+                    text-[10px]
+                    font-bold
+                    text-white
+                    shadow-[0_3px_0_#45493B]
+                    transition-all
+                    duration-300
+                    hover:-translate-y-1
+                    hover:bg-[#6B705B]
+
+                    sm:px-4
+                    sm:py-2.5
+                    sm:text-xs
+                  "
+                >
+                  <FileDown size={14} />
+
+                  <span className="whitespace-nowrap">
+                    Prescription PDF
+                  </span>
+                </Link>
+
+              </div>
+
+
+              {/* =================================================
+                  CALL BUTTONS - MOBILE
+                  Just below main buttons
+              ================================================= */}
+
+              <div
+                className="
+                  mt-3
+                  flex
+                  w-full
+                  gap-2
+                  translate-y-5
+                "
+              >
+
+                {/* Any Query */}
+
+                <a
+                  href="tel:7086803380"
+                  className="
+                    flex-1
+                    rounded-md
+                    border
+                    border-emerald-200
+                    bg-white
+                    px-1.5
+                    py-2
+                    text-center
+                    text-[11px]
+                    font-bold
+                    leading-tight
+                    text-emerald-800
+                    shadow-sm
+                    transition
+                    hover:bg-emerald-50
+                  "
+                >
+                  <span className="block">
+                    For Any Query
+                  </span>
+
+                  <span className="block text-emerald-600">
+                    7086803380
+                  </span>
+                </a>
+
+
+                {/* Appointment */}
+
+                <a
+                  href="tel:901988910"
+                  className="
+                    flex-1
+                    rounded-md
+                    border
+                    border-[#E7D6A0]
+                    bg-gradient-to-r
+                    from-[#FFF9EC]
+                    via-[#F8E7B8]
+                    to-[#EBCF81]
+                    px-1.5
+                    py-2
+                    text-center
+                    text-[11px]
+                    font-bold
+                    leading-tight
+                    text-[#4B3910]
+                    shadow-sm
+                    transition
+                    hover:shadow-md
+                  "
+                >
+                  <span className="block">
+                    For Appointment
+                  </span>
+
+                  <span className="block text-[#8B6A18]">
+                    901988910
+                  </span>
+                </a>
+
+              </div>
 
             </div>
 
@@ -280,120 +361,108 @@ export default function HeroSection() {
 
         </div>
 
-{/* CALL BUTTONS - DESKTOP */}
-<div className="mt-5 flex flex-wrap gap-3">
-  <a
-    href="tel:7086803380"
-    className="inline-flex items-center justify-center rounded-lg border border-emerald-200 bg-white px-4 py-2.5 text-sm font-bold text-emerald-800 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-50 hover:shadow-md"
-  >
-    For Any Query&nbsp; — &nbsp;
-    <span className="text-emerald-600">7086803380</span>
-  </a>
 
-  <a
-    href="tel:901988910"
-    className="inline-flex items-center justify-center rounded-lg border border-[#E7D6A0] bg-gradient-to-r from-[#FFF9EC] via-[#F8E7B8] to-[#EBCF81] px-4 py-2.5 text-sm font-bold text-[#4B3910] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
-  >
-    For Appointment&nbsp; — &nbsp;
-    <span className="text-[#8B6A18]">901988910</span>
-  </a>
-</div>
-{/* =================================================
-    MOBILE FEATURE BADGES
-================================================= */}
+        {/* =================================================
+            MOBILE FEATURE BADGES
+        ================================================= */}
 
-<div
-  className="
-    relative
-    z-20
-    mt-8
-    flex
-    w-full
-    flex-nowrap
-    items-center
-    gap-2
-    overflow-x-auto
-    px-4
-    pb-4
-    scrollbar-hide
-  "
->
-  {features.map((item, index) => (
-    <div
-      key={index}
-      className="
-        group
-        inline-flex
-        shrink-0
-        items-center
-        gap-1.5
-        rounded-full
-        border
-        border-[#E7D6A0]
-        bg-gradient-to-r
-        from-[#FFF9EC]
-        via-[#F8E7B8]
-        to-[#EBCF81]
-        px-2.5
-        py-1.5
-        shadow-[0_6px_18px_rgba(200,155,60,.22)]
-        backdrop-blur-md
-        transition-all
-        duration-300
-        hover:-translate-y-1
-        hover:scale-105
-      "
-    >
+        <div
+          className="
+            relative
+            z-20
+            mt-8
+            flex
+            w-full
+            flex-nowrap
+            items-center
+            gap-2
+            overflow-x-auto
+            px-4
+            pb-4
+            scrollbar-hide
+          "
+        >
 
-      {/* Icon */}
+          {features.map((item, index) => (
 
-      <div
-        className="
-          flex
-          h-5
-          w-5
-          shrink-0
-          items-center
-          justify-center
-          rounded-full
-          bg-gradient-to-br
-          from-[#C89B3C]
-          via-[#D8AE49]
-          to-[#B8860B]
-          text-white
-          shadow-md
-          transition-all
-          duration-300
-          group-hover:rotate-12
-          group-hover:scale-110
-        "
-      >
-        {item.icon}
+            <div
+              key={index}
+              className="
+                group
+                inline-flex
+                shrink-0
+                items-center
+                gap-1.5
+                rounded-full
+                border
+                border-[#E7D6A0]
+                bg-gradient-to-r
+                from-[#FFF9EC]
+                via-[#F8E7B8]
+                to-[#EBCF81]
+                px-2.5
+                py-1.5
+                shadow-[0_6px_18px_rgba(200,155,60,.22)]
+                backdrop-blur-md
+                transition-all
+                duration-300
+                hover:-translate-y-1
+                hover:scale-105
+              "
+            >
+
+              {/* Icon */}
+
+              <div
+                className="
+                  flex
+                  h-5
+                  w-5
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-gradient-to-br
+                  from-[#C89B3C]
+                  via-[#D8AE49]
+                  to-[#B8860B]
+                  text-white
+                  shadow-md
+                  transition-all
+                  duration-300
+                  group-hover:rotate-12
+                  group-hover:scale-110
+                "
+              >
+                {item.icon}
+              </div>
+
+
+              {/* Text */}
+
+              <span
+                className="
+                  whitespace-nowrap
+                  text-[9px]
+                  font-bold
+                  tracking-wide
+                  text-[#4B3910]
+                "
+              >
+                {item.title}
+              </span>
+
+            </div>
+
+          ))}
+
+        </div>
+
       </div>
-
-      {/* Text */}
-
-      <span
-        className="
-          whitespace-nowrap
-          text-[9px]
-          font-bold
-          tracking-wide
-          text-[#4B3910]
-        "
-      >
-        {item.title}
-      </span>
-
-    </div>
-  ))}
-</div>
-</div>
 
 
       {/* =====================================================
           DESKTOP MAIN CONTENT
-          Desktop layout unchanged
       ===================================================== */}
 
       <div
@@ -472,7 +541,9 @@ export default function HeroSection() {
           </p>
 
 
-          {/* Buttons */}
+          {/* =================================================
+              DESKTOP MAIN BUTTONS
+          ================================================= */}
 
           <div
             className="
@@ -484,6 +555,8 @@ export default function HeroSection() {
               lg:mt-8
             "
           >
+
+            {/* Appointment */}
 
             <Link
               href="/appointment"
@@ -517,6 +590,8 @@ export default function HeroSection() {
             </Link>
 
 
+            {/* Prescription */}
+
             <Link
               href="/prescription-download"
               className="
@@ -548,28 +623,87 @@ export default function HeroSection() {
 
           </div>
 
-{/* CALL BUTTONS - MOBILE */}
-<div className="mt-3 flex w-full gap-2 translate-y-6">
-  <a
-    href="tel:7086803380"
-    className="flex-1 rounded-md border border-emerald-200 bg-white px-1.5 py-2 text-center text-[11px] font-bold leading-tight text-emerald-800 shadow-sm transition hover:bg-emerald-50"
-  >
-    <span className="block">For Any Query</span>
-    <span className="block text-emerald-600">7086803380</span>
-  </a>
 
-  <a
-    href="tel:901988910"
-    className="flex-1 rounded-md border border-[#E7D6A0] bg-gradient-to-r from-[#FFF9EC] via-[#F8E7B8] to-[#EBCF81] px-1.5 py-2 text-center text-[11px] font-bold leading-tight text-[#4B3910] shadow-sm transition hover:shadow-md"
-  >
-    <span className="block">For Appointment</span>
-    <span className="block text-[#8B6A18]">901988910</span>
-  </a>
-</div>
+          {/* =================================================
+              CALL BUTTONS - DESKTOP
+              Just below main buttons
+          ================================================= */}
+
+          <div className="mt-5 flex flex-wrap gap-3">
+
+            {/* Any Query */}
+
+            <a
+              href="tel:7086803380"
+              className="
+                inline-flex
+                items-center
+                justify-center
+                rounded-lg
+                border
+                border-emerald-200
+                bg-white
+                px-4
+                py-2.5
+                text-sm
+                font-bold
+                text-emerald-800
+                shadow-sm
+                transition-all
+                duration-300
+                hover:-translate-y-1
+                hover:bg-emerald-50
+                hover:shadow-md
+              "
+            >
+              For Any Query&nbsp; — &nbsp;
+
+              <span className="text-emerald-600">
+                7086803380
+              </span>
+            </a>
 
 
+            {/* Appointment */}
 
-          {/* Desktop Feature Badges */}
+            <a
+              href="tel:901988910"
+              className="
+                inline-flex
+                items-center
+                justify-center
+                rounded-lg
+                border
+                border-[#E7D6A0]
+                bg-gradient-to-r
+                from-[#FFF9EC]
+                via-[#F8E7B8]
+                to-[#EBCF81]
+                px-4
+                py-2.5
+                text-sm
+                font-bold
+                text-[#4B3910]
+                shadow-sm
+                transition-all
+                duration-300
+                hover:-translate-y-1
+                hover:shadow-md
+              "
+            >
+              For Appointment&nbsp; — &nbsp;
+
+              <span className="text-[#8B6A18]">
+                901988910
+              </span>
+            </a>
+
+          </div>
+
+
+          {/* =================================================
+              DESKTOP FEATURE BADGES
+          ================================================= */}
 
           <div
             className="
@@ -584,6 +718,7 @@ export default function HeroSection() {
           >
 
             {features.map((item, index) => (
+
               <div
                 key={index}
                 className="
@@ -647,6 +782,7 @@ export default function HeroSection() {
                 </span>
 
               </div>
+
             ))}
 
           </div>
@@ -658,4 +794,3 @@ export default function HeroSection() {
     </section>
   );
 }
-
