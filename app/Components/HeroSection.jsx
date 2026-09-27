@@ -277,7 +277,6 @@ export default function HeroSection() {
               {/* CALL BUTTONS - MOBILE */}
 
 {/* CALL BUTTONS - MOBILE */}
-
 <div
   className="
     -mt-3
@@ -292,17 +291,19 @@ export default function HeroSection() {
 
   <a
     href="tel:7086803380"
+    aria-label="Call for Any Query"
     className="
       flex
       min-w-0
       flex-1
       items-center
       justify-center
+      gap-1
       rounded-md
       border
       border-emerald-200
       bg-white
-      px-1
+      px-1.5
       py-1.5
       text-center
       text-[10px]
@@ -312,24 +313,31 @@ export default function HeroSection() {
       shadow-sm
       transition
       hover:bg-emerald-50
+      hover:shadow-md
     "
   >
+    <PhoneCall
+      size={14}
+      className="shrink-0 text-emerald-600"
+    />
+
     <span className="whitespace-nowrap">
-      For Any Query&nbsp;
+      For Any Query
     </span>
   </a>
-
 
   {/* Appointment */}
 
   <a
     href="tel:901988910"
+    aria-label="Call for Appointment"
     className="
       flex
       min-w-0
       flex-1
       items-center
       justify-center
+      gap-1
       rounded-md
       border
       border-[#E7D6A0]
@@ -337,7 +345,7 @@ export default function HeroSection() {
       from-[#FFF9EC]
       via-[#F8E7B8]
       to-[#EBCF81]
-      px-1
+      px-1.5
       py-1.5
       text-center
       text-[10px]
@@ -349,11 +357,15 @@ export default function HeroSection() {
       hover:shadow-md
     "
   >
+    <PhoneCall
+      size={14}
+      className="shrink-0 text-[#8B6A18]"
+    />
+
     <span className="whitespace-nowrap">
-      For Appointment&nbsp;
+      For Appointment
     </span>
   </a>
-
 </div>
             </div>
 
