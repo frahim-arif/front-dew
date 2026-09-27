@@ -327,7 +327,7 @@ export default function HeroSection() {
     />
 
     <span className="whitespace-nowrap">
-      For Any Query
+      Any Query
     </span>
   </a>
 
@@ -372,7 +372,7 @@ export default function HeroSection() {
     />
 
     <span className="whitespace-nowrap">
-      For Appointment
+       Appointment
     </span>
   </a>
 </div>
