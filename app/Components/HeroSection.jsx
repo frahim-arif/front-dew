@@ -383,7 +383,7 @@ export default function HeroSection() {
           className="
             relative
             z-20
-            mt-8
+            mt-12
             flex
             w-full
             flex-nowrap
