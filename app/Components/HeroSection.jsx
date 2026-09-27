@@ -139,7 +139,7 @@ export default function HeroSection() {
               <h1
                 className="
                   text-2xl
-                  mt-3
+                  mt-5
                   font-semibold
                   leading-[1.08]
                   tracking-tight
