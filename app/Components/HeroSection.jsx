@@ -280,7 +280,85 @@ export default function HeroSection() {
 
         </div>
 
+{/* Call Buttons */}
 
+<div
+  className="
+    mt-3
+    grid
+    grid-cols-2
+    gap-2
+    w-full
+  "
+>
+  <a
+    href="tel:7086803380"
+    className="
+      inline-flex
+      items-center
+      justify-center
+      rounded-lg
+      border
+      border-emerald-200
+      bg-white
+      px-2
+      py-2
+      text-[9px]
+      font-bold
+      text-emerald-800
+      shadow-sm
+      transition-all
+      duration-300
+      hover:-translate-y-1
+      hover:bg-emerald-50
+      hover:shadow-md
+      sm:px-3
+      sm:py-2.5
+      sm:text-xs
+    "
+  >
+    <span className="text-center leading-tight">
+      For Any Query
+      <br />
+      <span className="text-emerald-600">7086803380</span>
+    </span>
+  </a>
+
+  <a
+    href="tel:901988910"
+    className="
+      inline-flex
+      items-center
+      justify-center
+      rounded-lg
+      border
+      border-[#E7D6A0]
+      bg-gradient-to-r
+      from-[#FFF9EC]
+      via-[#F8E7B8]
+      to-[#EBCF81]
+      px-2
+      py-2
+      text-[9px]
+      font-bold
+      text-[#4B3910]
+      shadow-sm
+      transition-all
+      duration-300
+      hover:-translate-y-1
+      hover:shadow-md
+      sm:px-3
+      sm:py-2.5
+      sm:text-xs
+    "
+  >
+    <span className="text-center leading-tight">
+      For Appointment
+      <br />
+      <span className="text-[#8B6A18]">901988910</span>
+    </span>
+  </a>
+</div>
 {/* =================================================
     MOBILE FEATURE BADGES
 ================================================= */}
@@ -530,7 +608,78 @@ export default function HeroSection() {
             </Link>
 
           </div>
+{/* Call Buttons */}
 
+<div
+  className="
+    mt-3
+    flex
+    flex-wrap
+    gap-3
+  "
+>
+  <a
+    href="tel:7086803380"
+    className="
+      inline-flex
+      items-center
+      justify-center
+      rounded-xl
+      border
+      border-emerald-200
+      bg-white
+      px-4
+      py-2.5
+      text-xs
+      font-bold
+      text-emerald-800
+      shadow-sm
+      transition-all
+      duration-300
+      hover:-translate-y-1
+      hover:bg-emerald-50
+      hover:shadow-md
+      sm:px-5
+      sm:py-3
+      sm:text-sm
+    "
+  >
+    For Any Query&nbsp; — &nbsp;
+    <span className="text-emerald-600">7086803380</span>
+  </a>
+
+  <a
+    href="tel:901988910"
+    className="
+      inline-flex
+      items-center
+      justify-center
+      rounded-xl
+      border
+      border-[#E7D6A0]
+      bg-gradient-to-r
+      from-[#FFF9EC]
+      via-[#F8E7B8]
+      to-[#EBCF81]
+      px-4
+      py-2.5
+      text-xs
+      font-bold
+      text-[#4B3910]
+      shadow-sm
+      transition-all
+      duration-300
+      hover:-translate-y-1
+      hover:shadow-md
+      sm:px-5
+      sm:py-3
+      sm:text-sm
+    "
+  >
+    For Appointment&nbsp; — &nbsp;
+    <span className="text-[#8B6A18]">901988910</span>
+  </a>
+</div>
 
           {/* Desktop Feature Badges */}
 
