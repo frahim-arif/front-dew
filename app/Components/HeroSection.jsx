@@ -11,14 +11,7 @@ import {
   Award,
   PhoneCall,
 } from "lucide-react";
-import {
-  FileDown,
-  CalendarDays,
-  HeartPulse,
-  Globe,
-  Handshake,
-  Award,
-} from "lucide-react";
+
 
 export default function HeroSection() {
   const features = [
