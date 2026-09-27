@@ -9,8 +9,8 @@ import {
   Globe,
   Handshake,
   Award,
+  PhoneCall,
 } from "lucide-react";
-
 import {
   FileDown,
   CalendarDays,
@@ -18,8 +18,8 @@ import {
   Globe,
   Handshake,
   Award,
-  PhoneCall,
 } from "lucide-react";
+
 export default function HeroSection() {
   const features = [
     {
@@ -636,7 +636,7 @@ export default function HeroSection() {
               Just below main buttons
           ================================================= */}
 
-     <div className="mt-5 flex flex-wrap gap-3">
+        <div className="mt-5 flex flex-wrap gap-3">
 
   {/* Any Query */}
 
