@@ -274,6 +274,8 @@ export default function HeroSection() {
 
               {/* CALL BUTTONS - MOBILE */}
 
+{/* CALL BUTTONS - MOBILE */}
+
 <div
   className="
     -mt-3
@@ -289,13 +291,16 @@ export default function HeroSection() {
   <a
     href="tel:7086803380"
     className="
-      flex-1
+      flex
       min-w-0
+      flex-1
+      items-center
+      justify-center
       rounded-md
       border
       border-emerald-200
       bg-white
-      px-2
+      px-1
       py-1.5
       text-center
       text-[10px]
@@ -308,11 +313,7 @@ export default function HeroSection() {
     "
   >
     <span className="whitespace-nowrap">
-      For Any Query
-    </span>
-
-    <span className="ml-1 whitespace-nowrap text-emerald-600">
-      7086803380
+      For Any Query&nbsp; 7086803380
     </span>
   </a>
 
@@ -322,8 +323,11 @@ export default function HeroSection() {
   <a
     href="tel:901988910"
     className="
-      flex-1
+      flex
       min-w-0
+      flex-1
+      items-center
+      justify-center
       rounded-md
       border
       border-[#E7D6A0]
@@ -331,7 +335,7 @@ export default function HeroSection() {
       from-[#FFF9EC]
       via-[#F8E7B8]
       to-[#EBCF81]
-      px-2
+      px-1
       py-1.5
       text-center
       text-[10px]
@@ -344,16 +348,11 @@ export default function HeroSection() {
     "
   >
     <span className="whitespace-nowrap">
-      For Appointment
-    </span>
-
-    <span className="ml-1 whitespace-nowrap text-[#8B6A18]">
-      901988910
+      For Appointment&nbsp; 901988910
     </span>
   </a>
 
 </div>
-
             </div>
 
           </div>
