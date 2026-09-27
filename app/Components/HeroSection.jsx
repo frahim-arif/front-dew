@@ -280,83 +280,22 @@ export default function HeroSection() {
 
         </div>
 
-{/* Call Buttons */}
-
-<div
-  className="
-    mt-3
-    grid
-    grid-cols-2
-    gap-2
-    w-full
-  "
->
+{/* CALL BUTTONS - DESKTOP */}
+<div className="mt-5 flex flex-wrap gap-3">
   <a
     href="tel:7086803380"
-    className="
-      inline-flex
-      items-center
-      justify-center
-      rounded-lg
-      border
-      border-emerald-200
-      bg-white
-      px-2
-      py-2
-      text-[9px]
-      font-bold
-      text-emerald-800
-      shadow-sm
-      transition-all
-      duration-300
-      hover:-translate-y-1
-      hover:bg-emerald-50
-      hover:shadow-md
-      sm:px-3
-      sm:py-2.5
-      sm:text-xs
-    "
+    className="inline-flex items-center justify-center rounded-lg border border-emerald-200 bg-white px-4 py-2.5 text-sm font-bold text-emerald-800 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:bg-emerald-50 hover:shadow-md"
   >
-    <span className="text-center leading-tight">
-      For Any Query
-      <br />
-      <span className="text-emerald-600">7086803380</span>
-    </span>
+    For Any Query&nbsp; — &nbsp;
+    <span className="text-emerald-600">7086803380</span>
   </a>
 
   <a
     href="tel:901988910"
-    className="
-      inline-flex
-      items-center
-      justify-center
-      rounded-lg
-      border
-      border-[#E7D6A0]
-      bg-gradient-to-r
-      from-[#FFF9EC]
-      via-[#F8E7B8]
-      to-[#EBCF81]
-      px-2
-      py-2
-      text-[9px]
-      font-bold
-      text-[#4B3910]
-      shadow-sm
-      transition-all
-      duration-300
-      hover:-translate-y-1
-      hover:shadow-md
-      sm:px-3
-      sm:py-2.5
-      sm:text-xs
-    "
+    className="inline-flex items-center justify-center rounded-lg border border-[#E7D6A0] bg-gradient-to-r from-[#FFF9EC] via-[#F8E7B8] to-[#EBCF81] px-4 py-2.5 text-sm font-bold text-[#4B3910] shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
   >
-    <span className="text-center leading-tight">
-      For Appointment
-      <br />
-      <span className="text-[#8B6A18]">901988910</span>
-    </span>
+    For Appointment&nbsp; — &nbsp;
+    <span className="text-[#8B6A18]">901988910</span>
   </a>
 </div>
 {/* =================================================
@@ -609,103 +548,22 @@ export default function HeroSection() {
 
           </div>
 
-{/* Call Buttons */}
-
-<div
-  className="
-    mt-3
-    flex
-    w-full
-    gap-2
-    translate-y-8
-
-    sm:mt-6
-    sm:translate-y-0
-    sm:gap-3
-  "
->
-  {/* Any Query */}
+{/* CALL BUTTONS - MOBILE */}
+<div className="mt-3 flex w-full gap-2 translate-y-6">
   <a
     href="tel:7086803380"
-    className="
-      inline-flex
-      min-w-0
-      flex-1
-      items-center
-      justify-center
-      rounded-lg
-      border
-      border-emerald-200
-      bg-white
-      px-2
-      py-2
-      text-[11px]
-      font-bold
-      leading-tight
-      text-emerald-800
-      shadow-sm
-      transition-all
-      duration-300
-      hover:-translate-y-1
-      hover:bg-emerald-50
-      hover:shadow-md
-
-      sm:flex-none
-      sm:rounded-xl
-      sm:px-4
-      sm:py-2.5
-      sm:text-sm
-    "
+    className="flex-1 rounded-md border border-emerald-200 bg-white px-1.5 py-2 text-center text-[11px] font-bold leading-tight text-emerald-800 shadow-sm transition hover:bg-emerald-50"
   >
-    <span className="whitespace-nowrap">
-      For Any Query&nbsp; — &nbsp;
-      <span className="text-emerald-600">
-        7086803380
-      </span>
-    </span>
+    <span className="block">For Any Query</span>
+    <span className="block text-emerald-600">7086803380</span>
   </a>
 
-  {/* Appointment */}
   <a
     href="tel:901988910"
-    className="
-      inline-flex
-      min-w-0
-      flex-1
-      items-center
-      justify-center
-      rounded-lg
-      border
-      border-[#E7D6A0]
-      bg-gradient-to-r
-      from-[#FFF9EC]
-      via-[#F8E7B8]
-      to-[#EBCF81]
-      px-2
-      py-2
-      text-[11px]
-      font-bold
-      leading-tight
-      text-[#4B3910]
-      shadow-sm
-      transition-all
-      duration-300
-      hover:-translate-y-1
-      hover:shadow-md
-
-      sm:flex-none
-      sm:rounded-xl
-      sm:px-4
-      sm:py-2.5
-      sm:text-sm
-    "
+    className="flex-1 rounded-md border border-[#E7D6A0] bg-gradient-to-r from-[#FFF9EC] via-[#F8E7B8] to-[#EBCF81] px-1.5 py-2 text-center text-[11px] font-bold leading-tight text-[#4B3910] shadow-sm transition hover:shadow-md"
   >
-    <span className="whitespace-nowrap">
-      For Appointment&nbsp; — &nbsp;
-      <span className="text-[#8B6A18]">
-        901988910
-      </span>
-    </span>
+    <span className="block">For Appointment</span>
+    <span className="block text-[#8B6A18]">901988910</span>
   </a>
 </div>
 
