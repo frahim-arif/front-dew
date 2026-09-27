@@ -20,7 +20,7 @@ const partners = [
   },
   {
     id: 4,
-    name: "Eusuf Memorial Society",
+    name: "Eusuf Memorial Society by Dewcare Foundation",
     image: "/images/partners/3.jpg",
   },
 ];
