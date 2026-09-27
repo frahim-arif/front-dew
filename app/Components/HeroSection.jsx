@@ -612,10 +612,13 @@ export default function HeroSection() {
 
 <div
   className="
-    -mt-6
+    mt-1
     flex
     flex-wrap
-    gap-3
+    gap-2
+
+    sm:mt-2
+    sm:gap-3
   "
 >
   <a
@@ -624,13 +627,13 @@ export default function HeroSection() {
       inline-flex
       items-center
       justify-center
-      rounded-xl
+      rounded-lg
       border
       border-emerald-200
       bg-white
-      px-4
-      py-2.5
-      text-xs
+      px-3
+      py-2
+      text-[11px]
       font-bold
       text-emerald-800
       shadow-sm
@@ -639,13 +642,19 @@ export default function HeroSection() {
       hover:-translate-y-1
       hover:bg-emerald-50
       hover:shadow-md
-      sm:px-5
-      sm:py-3
+
+      sm:rounded-xl
+      sm:px-4
+      sm:py-2.5
       sm:text-sm
     "
   >
-    For Any Query&nbsp; — &nbsp;
-    <span className="text-emerald-600">7086803380</span>
+    <span>
+      For Any Query&nbsp; — &nbsp;
+      <span className="text-emerald-600">
+        7086803380
+      </span>
+    </span>
   </a>
 
   <a
@@ -654,16 +663,16 @@ export default function HeroSection() {
       inline-flex
       items-center
       justify-center
-      rounded-xl
+      rounded-lg
       border
       border-[#E7D6A0]
       bg-gradient-to-r
       from-[#FFF9EC]
       via-[#F8E7B8]
       to-[#EBCF81]
-      px-4
-      py-2.5
-      text-xs
+      px-3
+      py-2
+      text-[11px]
       font-bold
       text-[#4B3910]
       shadow-sm
@@ -671,13 +680,19 @@ export default function HeroSection() {
       duration-300
       hover:-translate-y-1
       hover:shadow-md
-      sm:px-5
-      sm:py-3
+
+      sm:rounded-xl
+      sm:px-4
+      sm:py-2.5
       sm:text-sm
     "
   >
-    For Appointment&nbsp; — &nbsp;
-    <span className="text-[#8B6A18]">901988910</span>
+    <span>
+      For Appointment&nbsp; — &nbsp;
+      <span className="text-[#8B6A18]">
+        901988910
+      </span>
+    </span>
   </a>
 </div>
 
