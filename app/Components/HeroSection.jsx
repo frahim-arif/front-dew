@@ -275,7 +275,7 @@ export default function HeroSection() {
               </div>
 
 
-              {/* CALL BUTTONS - MOBILE */}
+            
 
 {/* CALL BUTTONS - MOBILE */}
 <div
@@ -284,12 +284,11 @@ export default function HeroSection() {
     mb-8
     flex
     w-full
-    gap-2
+    gap-2.5
     translate-y-5
   "
 >
   {/* Any Query */}
-
   <a
     href="tel:7086803380"
     aria-label="Call for Any Query"
@@ -299,26 +298,30 @@ export default function HeroSection() {
       flex-1
       items-center
       justify-center
-      gap-1
-      rounded-md
+      gap-1.5
+      rounded-lg
       border
       border-emerald-200
       bg-white
-      px-1.5
-      py-1.5
+      px-2.5
+      py-2.5
       text-center
-      text-[10px]
-      font-bold
+      text-[11px]
+      font-extrabold
       leading-tight
       text-emerald-800
-      shadow-sm
-      transition
+      shadow-md
+      transition-all
+      duration-200
+      hover:-translate-y-0.5
       hover:bg-emerald-50
-      hover:shadow-md
+      hover:shadow-lg
+      active:scale-[0.97]
     "
   >
     <PhoneCall
-      size={14}
+      size={16}
+      strokeWidth={2.5}
       className="shrink-0 text-emerald-600"
     />
 
@@ -328,7 +331,6 @@ export default function HeroSection() {
   </a>
 
   {/* Appointment */}
-
   <a
     href="tel:901988910"
     aria-label="Call for Appointment"
@@ -338,28 +340,32 @@ export default function HeroSection() {
       flex-1
       items-center
       justify-center
-      gap-1
-      rounded-md
+      gap-1.5
+      rounded-lg
       border
-      border-[#E7D6A0]
+      border-[#E1CB91]
       bg-gradient-to-r
       from-[#FFF9EC]
       via-[#F8E7B8]
       to-[#EBCF81]
-      px-1.5
-      py-1.5
+      px-2.5
+      py-2.5
       text-center
-      text-[10px]
-      font-bold
+      text-[11px]
+      font-extrabold
       leading-tight
       text-[#4B3910]
-      shadow-sm
-      transition
-      hover:shadow-md
+      shadow-md
+      transition-all
+      duration-200
+      hover:-translate-y-0.5
+      hover:shadow-lg
+      active:scale-[0.97]
     "
   >
     <PhoneCall
-      size={14}
+      size={16}
+      strokeWidth={2.5}
       className="shrink-0 text-[#8B6A18]"
     />
 
