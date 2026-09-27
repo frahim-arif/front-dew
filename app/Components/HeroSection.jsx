@@ -11,6 +11,15 @@ import {
   Award,
 } from "lucide-react";
 
+import {
+  FileDown,
+  CalendarDays,
+  HeartPulse,
+  Globe,
+  Handshake,
+  Award,
+  PhoneCall,
+} from "lucide-react";
 export default function HeroSection() {
   const features = [
     {
@@ -627,76 +636,86 @@ export default function HeroSection() {
               Just below main buttons
           ================================================= */}
 
-          <div className="mt-5 flex flex-wrap gap-3">
+     <div className="mt-5 flex flex-wrap gap-3">
 
-            {/* Any Query */}
+  {/* Any Query */}
 
-            <a
-              href="tel:7086803380"
-              className="
-                inline-flex
-                items-center
-                justify-center
-                rounded-lg
-                border
-                border-emerald-200
-                bg-white
-                px-4
-                py-2.5
-                text-sm
-                font-bold
-                text-emerald-800
-                shadow-sm
-                transition-all
-                duration-300
-                hover:-translate-y-1
-                hover:bg-emerald-50
-                hover:shadow-md
-              "
-            >
-              For Any Query&nbsp; — &nbsp;
+  <a
+    href="tel:7086803380"
+    aria-label="Call for Any Query"
+    className="
+      inline-flex
+      items-center
+      justify-center
+      gap-2
+      rounded-lg
+      border
+      border-emerald-200
+      bg-white
+      px-5
+      py-2.5
+      text-sm
+      font-bold
+      text-emerald-800
+      shadow-sm
+      transition-all
+      duration-300
+      hover:-translate-y-1
+      hover:bg-emerald-50
+      hover:shadow-md
+    "
+  >
+    <PhoneCall
+      size={17}
+      className="text-emerald-600"
+    />
 
-              <span className="text-emerald-600">
-                7086803380
-              </span>
-            </a>
+    <span>
+      For Any Query
+    </span>
+  </a>
 
 
-            {/* Appointment */}
+  {/* Appointment */}
 
-            <a
-              href="tel:901988910"
-              className="
-                inline-flex
-                items-center
-                justify-center
-                rounded-lg
-                border
-                border-[#E7D6A0]
-                bg-gradient-to-r
-                from-[#FFF9EC]
-                via-[#F8E7B8]
-                to-[#EBCF81]
-                px-4
-                py-2.5
-                text-sm
-                font-bold
-                text-[#4B3910]
-                shadow-sm
-                transition-all
-                duration-300
-                hover:-translate-y-1
-                hover:shadow-md
-              "
-            >
-              For Appointment&nbsp; — &nbsp;
+  <a
+    href="tel:901988910"
+    aria-label="Call for Appointment"
+    className="
+      inline-flex
+      items-center
+      justify-center
+      gap-2
+      rounded-lg
+      border
+      border-[#E7D6A0]
+      bg-gradient-to-r
+      from-[#FFF9EC]
+      via-[#F8E7B8]
+      to-[#EBCF81]
+      px-5
+      py-2.5
+      text-sm
+      font-bold
+      text-[#4B3910]
+      shadow-sm
+      transition-all
+      duration-300
+      hover:-translate-y-1
+      hover:shadow-md
+    "
+  >
+    <PhoneCall
+      size={17}
+      className="text-[#8B6A18]"
+    />
 
-              <span className="text-[#8B6A18]">
-                901988910
-              </span>
-            </a>
+    <span>
+      For Appointment
+    </span>
+  </a>
 
-          </div>
+</div>
 
 
           {/* =================================================
