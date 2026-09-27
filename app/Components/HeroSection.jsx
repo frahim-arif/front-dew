@@ -277,6 +277,7 @@ export default function HeroSection() {
 <div
   className="
     -mt-3
+    mb-1
     flex
     w-full
     gap-2
