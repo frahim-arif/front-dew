@@ -272,88 +272,86 @@ export default function HeroSection() {
               </div>
 
 
-              {/* =================================================
-                  CALL BUTTONS - MOBILE
-                  Just below main buttons
-              ================================================= */}
+              {/* CALL BUTTONS - MOBILE */}
 
-              <div
-                className="
-                  mt-3
-                  flex
-                  w-full
-                  gap-2
-                  translate-y-5
-                "
-              >
+<div
+  className="
+    mt-3
+    flex
+    w-full
+    gap-2
+    translate-y-5
+  "
+>
+  {/* Any Query */}
 
-                {/* Any Query */}
+  <a
+    href="tel:7086803380"
+    className="
+      flex-1
+      min-w-0
+      rounded-md
+      border
+      border-emerald-200
+      bg-white
+      px-2
+      py-1.5
+      text-center
+      text-[10px]
+      font-bold
+      leading-tight
+      text-emerald-800
+      shadow-sm
+      transition
+      hover:bg-emerald-50
+    "
+  >
+    <span className="whitespace-nowrap">
+      For Any Query
+    </span>
 
-                <a
-                  href="tel:7086803380"
-                  className="
-                    flex-1
-                    rounded-md
-                    border
-                    border-emerald-200
-                    bg-white
-                    px-1.5
-                    py-2
-                    text-center
-                    text-[11px]
-                    font-bold
-                    leading-tight
-                    text-emerald-800
-                    shadow-sm
-                    transition
-                    hover:bg-emerald-50
-                  "
-                >
-                  <span className="block">
-                    For Any Query
-                  </span>
-
-                  <span className="block text-emerald-600">
-                    7086803380
-                  </span>
-                </a>
+    <span className="ml-1 whitespace-nowrap text-emerald-600">
+      7086803380
+    </span>
+  </a>
 
 
-                {/* Appointment */}
+  {/* Appointment */}
 
-                <a
-                  href="tel:901988910"
-                  className="
-                    flex-1
-                    rounded-md
-                    border
-                    border-[#E7D6A0]
-                    bg-gradient-to-r
-                    from-[#FFF9EC]
-                    via-[#F8E7B8]
-                    to-[#EBCF81]
-                    px-1.5
-                    py-2
-                    text-center
-                    text-[11px]
-                    font-bold
-                    leading-tight
-                    text-[#4B3910]
-                    shadow-sm
-                    transition
-                    hover:shadow-md
-                  "
-                >
-                  <span className="block">
-                    For Appointment
-                  </span>
+  <a
+    href="tel:901988910"
+    className="
+      flex-1
+      min-w-0
+      rounded-md
+      border
+      border-[#E7D6A0]
+      bg-gradient-to-r
+      from-[#FFF9EC]
+      via-[#F8E7B8]
+      to-[#EBCF81]
+      px-2
+      py-1.5
+      text-center
+      text-[10px]
+      font-bold
+      leading-tight
+      text-[#4B3910]
+      shadow-sm
+      transition
+      hover:shadow-md
+    "
+  >
+    <span className="whitespace-nowrap">
+      For Appointment
+    </span>
 
-                  <span className="block text-[#8B6A18]">
-                    901988910
-                  </span>
-                </a>
+    <span className="ml-1 whitespace-nowrap text-[#8B6A18]">
+      901988910
+    </span>
+  </a>
 
-              </div>
+</div>
 
             </div>
 
