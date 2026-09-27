@@ -284,10 +284,98 @@ export default function HeroSection() {
     mb-8
     flex
     w-full
-    gap-2.5
+    gap-2
     translate-y-5
   "
 >
+  {/* Any Query */}
+  <a
+    href="tel:7086803380"
+    aria-label="Call for Any Query"
+    className="
+      inline-flex
+      min-w-0
+      flex-1
+      items-center
+      justify-center
+      gap-1.5
+      rounded-lg
+      border
+      border-emerald-200
+      bg-white
+      px-2
+      py-2.5
+      text-center
+      text-[10px]
+      font-extrabold
+      leading-tight
+      text-emerald-800
+      shadow-md
+      transition-all
+      duration-200
+      hover:bg-emerald-50
+      hover:shadow-lg
+      active:scale-[0.97]
+      sm:px-3
+      sm:text-[11px]
+    "
+  >
+    <PhoneCall
+      size={15}
+      strokeWidth={2.5}
+      className="shrink-0 text-emerald-600"
+    />
+
+    <span className="whitespace-nowrap">
+      For Any Query
+    </span>
+  </a>
+
+  {/* Appointment */}
+  <a
+    href="tel:901988910"
+    aria-label="Call for Appointment"
+    className="
+      inline-flex
+      min-w-0
+      flex-1
+      items-center
+      justify-center
+      gap-1.5
+      rounded-lg
+      border
+      border-[#E1CB91]
+      bg-gradient-to-r
+      from-[#FFF9EC]
+      via-[#F8E7B8]
+      to-[#EBCF81]
+      px-2
+      py-2.5
+      text-center
+      text-[10px]
+      font-extrabold
+      leading-tight
+      text-[#4B3910]
+      shadow-md
+      transition-all
+      duration-200
+      hover:shadow-lg
+      active:scale-[0.97]
+      sm:px-3
+      sm:text-[11px]
+    "
+  >
+    <PhoneCall
+      size={15}
+      strokeWidth={2.5}
+      className="shrink-0 text-[#8B6A18]"
+    />
+
+    <span className="whitespace-nowrap">
+      For Appointment
+    </span>
+  </a>
+</div>
   {/* Any Query */}
   <a
     href="tel:7086803380"
