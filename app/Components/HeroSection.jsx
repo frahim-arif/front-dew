@@ -503,6 +503,7 @@ export default function HeroSection() {
           <h1
             className="
               text-3xl
+              mt-3
               font-semibold
               leading-tight
               tracking-tight
