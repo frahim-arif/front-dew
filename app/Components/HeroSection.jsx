@@ -608,33 +608,40 @@ export default function HeroSection() {
             </Link>
 
           </div>
+
 {/* Call Buttons */}
 
 <div
   className="
-    mt-10
+    mt-3
     flex
-    flex-wrap
+    w-full
     gap-2
+    translate-y-8
 
     sm:mt-6
+    sm:translate-y-0
     sm:gap-3
   "
 >
+  {/* Any Query */}
   <a
     href="tel:7086803380"
     className="
       inline-flex
+      min-w-0
+      flex-1
       items-center
       justify-center
       rounded-lg
       border
       border-emerald-200
       bg-white
-      px-3
+      px-2
       py-2
       text-[11px]
       font-bold
+      leading-tight
       text-emerald-800
       shadow-sm
       transition-all
@@ -643,13 +650,14 @@ export default function HeroSection() {
       hover:bg-emerald-50
       hover:shadow-md
 
+      sm:flex-none
       sm:rounded-xl
       sm:px-4
       sm:py-2.5
       sm:text-sm
     "
   >
-    <span>
+    <span className="whitespace-nowrap">
       For Any Query&nbsp; — &nbsp;
       <span className="text-emerald-600">
         7086803380
@@ -657,10 +665,13 @@ export default function HeroSection() {
     </span>
   </a>
 
+  {/* Appointment */}
   <a
     href="tel:901988910"
     className="
       inline-flex
+      min-w-0
+      flex-1
       items-center
       justify-center
       rounded-lg
@@ -670,10 +681,11 @@ export default function HeroSection() {
       from-[#FFF9EC]
       via-[#F8E7B8]
       to-[#EBCF81]
-      px-3
+      px-2
       py-2
       text-[11px]
       font-bold
+      leading-tight
       text-[#4B3910]
       shadow-sm
       transition-all
@@ -681,13 +693,14 @@ export default function HeroSection() {
       hover:-translate-y-1
       hover:shadow-md
 
+      sm:flex-none
       sm:rounded-xl
       sm:px-4
       sm:py-2.5
       sm:text-sm
     "
   >
-    <span>
+    <span className="whitespace-nowrap">
       For Appointment&nbsp; — &nbsp;
       <span className="text-[#8B6A18]">
         901988910
@@ -695,6 +708,8 @@ export default function HeroSection() {
     </span>
   </a>
 </div>
+
+
 
           {/* Desktop Feature Badges */}
 
