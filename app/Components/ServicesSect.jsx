@@ -563,6 +563,305 @@ export default function ServicesSect({
         </div>
 
 
+{/* ==================================================
+    EMERGENCY AMBULANCE BANNER
+================================================== */}
+
+<div className="mt-12 md:mt-16">
+
+  <div
+    className="
+      relative
+      overflow-hidden
+      border
+      border-slate-200
+      bg-white
+      shadow-[0_15px_45px_rgba(15,23,42,.12)]
+    "
+  >
+
+    {/* ================= DESKTOP / MAIN BANNER ================= */}
+
+    <div className="grid min-h-[190px] md:grid-cols-12">
+
+      {/* ================= Ambulance Image ================= */}
+
+      <div className="relative h-[180px] overflow-hidden md:col-span-5 md:h-auto">
+
+        <img
+          src="/images/emergency-ambulance.jpg"
+          alt="Dew Care Hospital 24x7 Emergency Ambulance"
+          className="
+            h-full
+            w-full
+            object-cover
+            object-center
+          "
+        />
+
+        {/* Image gradient */}
+
+        <div
+          className="
+            absolute
+            inset-0
+            bg-gradient-to-r
+            from-transparent
+            via-transparent
+            to-white/20
+            md:bg-gradient-to-r
+            md:from-transparent
+            md:via-transparent
+            md:to-white/10
+          "
+        />
+
+      </div>
+
+
+      {/* ================= Middle Text ================= */}
+
+      <div
+        className="
+          flex
+          flex-col
+          justify-center
+          px-5
+          py-6
+          sm:px-8
+          md:col-span-3
+          md:px-5
+          lg:px-8
+        "
+      >
+
+        <p
+          className="
+            text-xs
+            font-semibold
+            tracking-wide
+            text-slate-700
+            sm:text-sm
+          "
+        >
+          When seconds count,
+        </p>
+
+        <h3
+          className="
+            mt-1
+            text-3xl
+            font-black
+            leading-none
+            text-emerald-700
+            sm:text-4xl
+            lg:text-[42px]
+          "
+        >
+          trust us
+        </h3>
+
+        <p
+          className="
+            mt-1
+            text-sm
+            font-bold
+            text-slate-800
+            sm:text-base
+          "
+        >
+          to be there!
+        </p>
+
+      </div>
+
+
+      {/* ================= Emergency Features ================= */}
+
+      <div
+        className="
+          grid
+          grid-cols-2
+          gap-3
+          border-t
+          border-slate-200
+          px-4
+          py-5
+          sm:px-6
+          md:col-span-4
+          md:grid-cols-1
+          md:border-l
+          md:border-t-0
+          md:px-5
+          lg:px-7
+        "
+      >
+
+        {/* 24x7 Emergency */}
+
+        <div className="flex items-center gap-3">
+
+          <div
+            className="
+              flex
+              h-10
+              w-10
+              shrink-0
+              items-center
+              justify-center
+              bg-emerald-100
+              text-lg
+            "
+          >
+            🚑
+          </div>
+
+          <div>
+            <p className="text-xs font-black text-slate-900 sm:text-sm">
+              24×7
+            </p>
+
+            <p className="text-[11px] font-semibold leading-4 text-slate-700 sm:text-xs">
+              Emergency Care
+            </p>
+          </div>
+
+        </div>
+
+
+        {/* ICU */}
+
+        <div className="flex items-center gap-3">
+
+          <div
+            className="
+              flex
+              h-10
+              w-10
+              shrink-0
+              items-center
+              justify-center
+              bg-cyan-100
+              text-lg
+            "
+          >
+            ❤️
+          </div>
+
+          <div>
+            <p className="text-xs font-black text-slate-900 sm:text-sm">
+              Fully
+            </p>
+
+            <p className="text-[11px] font-semibold leading-4 text-slate-700 sm:text-xs">
+              Equipped ICU
+            </p>
+          </div>
+
+        </div>
+
+
+        {/* Emergency Button */}
+
+        <a
+          href="tel:7086803380"
+          className="
+            col-span-2
+            flex
+            min-h-[52px]
+            items-center
+            justify-center
+            gap-3
+            bg-emerald-700
+            px-4
+            py-3
+            text-white
+            shadow-lg
+            transition
+            hover:bg-emerald-800
+            md:col-span-1
+          "
+        >
+
+          <span className="text-lg">
+            📞
+          </span>
+
+          <span className="text-center">
+            <span
+              className="
+                block
+                text-[9px]
+                font-bold
+                uppercase
+                tracking-wider
+                text-emerald-100
+              "
+            >
+              Emergency Helpline
+            </span>
+
+            <span
+              className="
+                block
+                text-lg
+                font-black
+                leading-none
+                sm:text-xl
+              "
+            >
+              7086803380
+            </span>
+          </span>
+
+        </a>
+
+      </div>
+
+    </div>
+
+
+    {/* ================= ENQUIRY TAB ================= */}
+
+    <Link
+      href="/appointment"
+      className="
+        absolute
+        right-0
+        top-1/2
+        hidden
+        h-[110px]
+        w-9
+        -translate-y-1/2
+        items-center
+        justify-center
+        bg-cyan-600
+        text-white
+        shadow-lg
+        transition
+        hover:bg-cyan-700
+        md:flex
+      "
+    >
+
+      <span
+        className="
+          text-[10px]
+          font-black
+          uppercase
+          tracking-[0.28em]
+          [writing-mode:vertical-rl]
+        "
+      >
+        ENQUIRY
+      </span>
+
+    </Link>
+
+  </div>
+
+</div>
+
         {/* ==================================================
             BOTTOM CTA
         ================================================== */}
