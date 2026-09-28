@@ -1,12 +1,12 @@
 export const siteInfo = {
   name: "Dew Care Hospital & Research Centre",
   tagline: "Compassionate Care • Advanced Treatment • Trusted Healthcare",
-  phone: "+91901988910",
-  whatsapp: "91901988910",
+  phone: "+91910988910",
+  whatsapp: "9101988910",
   email: "Drforidulhussaindchr@gmail.com",
   address: "Dhing Road, Haibargaon, Nagaon, Assam - 782003",
 
-  emergency: "+91 901988910",
+  emergency: "+91 9101988910",
 
   timings: {
     opd: "10:00 AM - 05:00 PM",
