@@ -989,187 +989,612 @@ export default function ServicesSect({
 </div>
 
         {/* ==================================================
-            BOTTOM CTA
-        ================================================== */}
+    BOTTOM CTA
+================================================== */}
 
-        <div className="mt-16">
+<div className="mt-14 md:mt-20">
 
-          {/* Stats */}
+  {/* ================= STATS ================= */}
 
-          <div
-            className="
-              mb-12
-              grid
-              grid-cols-2
-              gap-5
-              rounded-[30px]
-              border
-              border-emerald-100
-              bg-white
-              p-6
-              shadow-lg
-              lg:grid-cols-4
-            "
-          >
+  <div
+    className="
+      relative
+      overflow-hidden
+      rounded-2xl
+      border
+      border-emerald-100
+      bg-white/95
+      p-4
+      shadow-[0_15px_50px_rgba(15,23,42,.10)]
+      backdrop-blur
+      sm:p-6
+      md:rounded-3xl
+      md:p-8
+    "
+  >
 
-            <div className="text-center">
-              <h3 className="text-3xl font-black text-emerald-600">
-                20+
-              </h3>
+    {/* Background Glow */}
 
-              <p className="mt-2 text-sm font-medium text-slate-600">
-                Medical Services
-              </p>
-            </div>
+    <div
+      className="
+        pointer-events-none
+        absolute
+        -left-20
+        -top-20
+        h-48
+        w-48
+        rounded-full
+        bg-emerald-200/30
+        blur-3xl
+      "
+    />
 
+    <div
+      className="
+        pointer-events-none
+        absolute
+        -bottom-20
+        -right-20
+        h-48
+        w-48
+        rounded-full
+        bg-cyan-200/30
+        blur-3xl
+      "
+    />
 
-            <div className="text-center">
-              <h3 className="text-3xl font-black text-cyan-600">
-                25+
-              </h3>
+    {/* Stats Grid */}
 
-              <p className="mt-2 text-sm font-medium text-slate-600">
-                Expert Doctors
-              </p>
-            </div>
+    <div
+      className="
+        relative
+        grid
+        grid-cols-2
+        gap-3
+        sm:gap-5
+        lg:grid-cols-4
+      "
+    >
 
+      {/* ================= MEDICAL SERVICES ================= */}
 
-            <div className="text-center">
-              <h3 className="text-3xl font-black text-emerald-600">
-                10K+
-              </h3>
+      <div
+        className="
+          group
+          relative
+          overflow-hidden
+          rounded-xl
+          border
+          border-emerald-100
+          bg-gradient-to-br
+          from-emerald-50
+          to-white
+          p-4
+          text-center
+          transition-all
+          duration-300
+          hover:-translate-y-1
+          hover:shadow-xl
+          sm:p-6
+          md:rounded-2xl
+        "
+      >
 
-              <p className="mt-2 text-sm font-medium text-slate-600">
-                Happy Patients
-              </p>
-            </div>
-
-
-            <div className="text-center">
-              <h3 className="text-3xl font-black text-cyan-600">
-                24×7
-              </h3>
-
-              <p className="mt-2 text-sm font-medium text-slate-600">
-                Emergency Care
-              </p>
-            </div>
-
-          </div>
-
-
-          {/* ================= CTA ================= */}
-
-          <div
-            className="
-              overflow-hidden
-              rounded-xl
-              bg-blue-300
-              p-8
-              text-center
-              shadow-[0_20px_50px_rgba(22,163,74,.30)]
-              md:rounded-2xl
-            "
-          >
-
-            <h3 className="text-2xl font-black text-blue-950 md:text-3xl">
-              Need Medical Assistance?
-            </h3>
-
-
-            <p
-              className="
-                mx-auto
-                mt-4
-                max-w-2xl
-                text-sm
-                leading-7
-                text-black
-                md:text-base
-              "
-            >
-              Explore all our healthcare services or book an appointment
-              with our experienced specialists today.
-            </p>
-
-
-            <div
-              className="
-                mt-8
-                flex
-                flex-col
-                justify-center
-                gap-4
-                sm:flex-row
-              "
-            >
-
-              {/* View All Services */}
-
-              <Link
-                href="/services"
-                className="
-                  group
-                  inline-flex
-                  items-center
-                  justify-center
-                  gap-2
-                  rounded-xl
-                  bg-gradient-to-r
-                  from-[#C89B3C]
-                  via-[#E6C76A]
-                  to-[#B8860B]
-                  px-8
-                  py-3
-                  text-sm
-                  font-bold
-                  text-[#3A2A00]
-                  shadow-[0_6px_0_#8B6A18]
-                  transition-all
-                  duration-300
-                  hover:-translate-y-1
-                  hover:shadow-[0_12px_20px_rgba(200,155,60,.45)]
-                "
-              >
-                View All Services →
-              </Link>
-
-
-              {/* Book Appointment */}
-
-              <Link
-                href="/appointment"
-                className="
-                  group
-                  inline-flex
-                  items-center
-                  justify-center
-                  gap-2
-                  rounded-xl
-                  bg-gradient-to-r
-                  from-[#303435]
-                  via-[#43463b]
-                  to-[#333838]
-                  px-8
-                  py-3
-                  text-sm
-                  font-bold
-                  text-white
-                  shadow-[0_6px_0_#0B5964]
-                  transition-all
-                  duration-300
-                  hover:-translate-y-1
-                  hover:shadow-[0_12px_20px_rgba(14,118,134,.45)]
-                "
-              >
-                Book Appointment →
-              </Link>
-
-            </div>
-
-          </div>
-
+        <div
+          className="
+            mx-auto
+            flex
+            h-11
+            w-11
+            items-center
+            justify-center
+            rounded-full
+            bg-emerald-100
+            text-xl
+            shadow-sm
+            sm:h-14
+            sm:w-14
+            sm:text-2xl
+          "
+        >
+          🏥
         </div>
+
+        <h3
+          className="
+            mt-3
+            text-2xl
+            font-black
+            text-emerald-600
+            sm:text-3xl
+            md:text-4xl
+          "
+        >
+          <AnimatedCounter
+            end={20}
+            suffix="+"
+          />
+        </h3>
+
+        <p
+          className="
+            mt-1
+            text-[11px]
+            font-semibold
+            text-slate-600
+            sm:text-sm
+          "
+        >
+          Medical Services
+        </p>
+
+      </div>
+
+
+      {/* ================= DOCTORS ================= */}
+
+      <div
+        className="
+          group
+          relative
+          overflow-hidden
+          rounded-xl
+          border
+          border-cyan-100
+          bg-gradient-to-br
+          from-cyan-50
+          to-white
+          p-4
+          text-center
+          transition-all
+          duration-300
+          hover:-translate-y-1
+          hover:shadow-xl
+          sm:p-6
+          md:rounded-2xl
+        "
+      >
+
+        <div
+          className="
+            mx-auto
+            flex
+            h-11
+            w-11
+            items-center
+            justify-center
+            rounded-full
+            bg-cyan-100
+            text-xl
+            shadow-sm
+            sm:h-14
+            sm:w-14
+            sm:text-2xl
+          "
+        >
+          👨‍⚕️
+        </div>
+
+        <h3
+          className="
+            mt-3
+            text-2xl
+            font-black
+            text-cyan-600
+            sm:text-3xl
+            md:text-4xl
+          "
+        >
+          <AnimatedCounter
+            end={25}
+            suffix="+"
+          />
+        </h3>
+
+        <p
+          className="
+            mt-1
+            text-[11px]
+            font-semibold
+            text-slate-600
+            sm:text-sm
+          "
+        >
+          Expert Doctors
+        </p>
+
+      </div>
+
+
+      {/* ================= PATIENTS ================= */}
+
+      <div
+        className="
+          group
+          relative
+          overflow-hidden
+          rounded-xl
+          border
+          border-emerald-100
+          bg-gradient-to-br
+          from-emerald-50
+          to-white
+          p-4
+          text-center
+          transition-all
+          duration-300
+          hover:-translate-y-1
+          hover:shadow-xl
+          sm:p-6
+          md:rounded-2xl
+        "
+      >
+
+        <div
+          className="
+            mx-auto
+            flex
+            h-11
+            w-11
+            items-center
+            justify-center
+            rounded-full
+            bg-emerald-100
+            text-xl
+            shadow-sm
+            sm:h-14
+            sm:w-14
+            sm:text-2xl
+          "
+        >
+          ❤️
+        </div>
+
+        <h3
+          className="
+            mt-3
+            text-2xl
+            font-black
+            text-emerald-600
+            sm:text-3xl
+            md:text-4xl
+          "
+        >
+          <AnimatedCounter
+            end={10}
+            suffix="K+"
+          />
+        </h3>
+
+        <p
+          className="
+            mt-1
+            text-[11px]
+            font-semibold
+            text-slate-600
+            sm:text-sm
+          "
+        >
+          Happy Patients
+        </p>
+
+      </div>
+
+
+      {/* ================= EMERGENCY ================= */}
+
+      <div
+        className="
+          group
+          relative
+          overflow-hidden
+          rounded-xl
+          border
+          border-cyan-100
+          bg-gradient-to-br
+          from-cyan-50
+          to-white
+          p-4
+          text-center
+          transition-all
+          duration-300
+          hover:-translate-y-1
+          hover:shadow-xl
+          sm:p-6
+          md:rounded-2xl
+        "
+      >
+
+        <div
+          className="
+            mx-auto
+            flex
+            h-11
+            w-11
+            items-center
+            justify-center
+            rounded-full
+            bg-cyan-100
+            text-xl
+            shadow-sm
+            sm:h-14
+            sm:w-14
+            sm:text-2xl
+          "
+        >
+          🚑
+        </div>
+
+        <h3
+          className="
+            mt-3
+            text-2xl
+            font-black
+            text-cyan-600
+            sm:text-3xl
+            md:text-4xl
+          "
+        >
+          24×7
+        </h3>
+
+        <p
+          className="
+            mt-1
+            text-[11px]
+            font-semibold
+            text-slate-600
+            sm:text-sm
+          "
+        >
+          Emergency Care
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  {/* ==================================================
+      CTA
+  ================================================== */}
+
+  <div
+    className="
+      relative
+      mt-8
+      overflow-hidden
+      rounded-2xl
+      border
+      border-emerald-200/50
+      bg-gradient-to-br
+      from-emerald-700
+      via-emerald-600
+      to-cyan-700
+      px-5
+      py-8
+      text-center
+      shadow-[0_20px_60px_rgba(16,185,129,.25)]
+      sm:px-8
+      sm:py-10
+      md:mt-10
+      md:rounded-3xl
+      md:px-12
+      md:py-12
+    "
+  >
+
+    {/* Background Glow */}
+
+    <div
+      className="
+        pointer-events-none
+        absolute
+        -left-24
+        -top-24
+        h-64
+        w-64
+        rounded-full
+        bg-white/10
+        blur-3xl
+      "
+    />
+
+    <div
+      className="
+        pointer-events-none
+        absolute
+        -bottom-24
+        -right-24
+        h-64
+        w-64
+        rounded-full
+        bg-cyan-300/20
+        blur-3xl
+      "
+    />
+
+    {/* Content */}
+
+    <div className="relative z-10">
+
+      <span
+        className="
+          inline-flex
+          items-center
+          gap-2
+          rounded-full
+          border
+          border-white/20
+          bg-white/10
+          px-4
+          py-1.5
+          text-[10px]
+          font-bold
+          uppercase
+          tracking-[0.2em]
+          text-emerald-50
+          backdrop-blur
+          sm:text-xs
+        "
+      >
+        🏥 Dew Care Hospital
+      </span>
+
+
+      <h3
+        className="
+          mt-4
+          text-2xl
+          font-black
+          leading-tight
+          text-white
+          sm:text-3xl
+          md:text-4xl
+        "
+      >
+        Need Medical Assistance?
+      </h3>
+
+
+      <p
+        className="
+          mx-auto
+          mt-3
+          max-w-2xl
+          text-sm
+          leading-6
+          text-emerald-50/90
+          sm:text-base
+          sm:leading-7
+        "
+      >
+        Explore our healthcare services or book an appointment
+        with our experienced specialists today.
+      </p>
+
+
+      {/* Buttons */}
+
+      <div
+        className="
+          mt-7
+          flex
+          flex-col
+          items-stretch
+          justify-center
+          gap-3
+          sm:flex-row
+          sm:items-center
+          sm:gap-4
+        "
+      >
+
+        {/* View Services */}
+
+        <Link
+          href="/services"
+          className="
+            group
+            inline-flex
+            min-h-[48px]
+            items-center
+            justify-center
+            gap-2
+            rounded-xl
+            bg-gradient-to-r
+            from-[#C89B3C]
+            via-[#E6C76A]
+            to-[#B8860B]
+            px-6
+            py-3
+            text-sm
+            font-black
+            text-[#3A2A00]
+            shadow-[0_5px_0_#8B6A18]
+            transition-all
+            duration-300
+            hover:-translate-y-1
+            hover:shadow-[0_10px_20px_rgba(200,155,60,.35)]
+            active:translate-y-[2px]
+          "
+        >
+          <span>🏥</span>
+
+          <span>
+            View All Services
+          </span>
+
+          <span
+            className="
+              transition-transform
+              duration-300
+              group-hover:translate-x-1
+            "
+          >
+            →
+          </span>
+
+        </Link>
+
+
+        {/* Appointment */}
+
+        <Link
+          href="/appointment"
+          className="
+            group
+            inline-flex
+            min-h-[48px]
+            items-center
+            justify-center
+            gap-2
+            rounded-xl
+            border
+            border-white/20
+            bg-slate-900/80
+            px-6
+            py-3
+            text-sm
+            font-black
+            text-white
+            shadow-[0_5px_0_rgba(15,23,42,.5)]
+            backdrop-blur
+            transition-all
+            duration-300
+            hover:-translate-y-1
+            hover:bg-slate-900
+            hover:shadow-[0_10px_20px_rgba(15,23,42,.35)]
+            active:translate-y-[2px]
+          "
+        >
+          <span>📅</span>
+
+          <span>
+            Book Appointment
+          </span>
+
+          <span
+            className="
+              transition-transform
+              duration-300
+              group-hover:translate-x-1
+            "
+          >
+            →
+          </span>
+
+        </Link>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
 
       </div>
 
