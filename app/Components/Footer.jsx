@@ -52,10 +52,10 @@ export default function Footer() {
                 <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-400 opacity-30 blur" />
 
                 <img
-                  src="https://dewcarehospital.com/uploads/doctors/logo.jpg"
-                  alt={siteInfo.name || "Dew Care Hospital"}
-                  className="relative h-12 w-12 rounded-xl border border-emerald-200 bg-white object-cover shadow-lg sm:h-14 sm:w-14 sm:rounded-2xl"
-                />
+  src="/images/logo.jpg"
+  alt={siteInfo.name}
+  className="relative h-11 w-11 rounded-xl border border-emerald-100 bg-white object-contain p-1 shadow-md sm:h-14 sm:w-14 sm:rounded-2xl"
+/>
               </div>
 
               <div className="min-w-0">
