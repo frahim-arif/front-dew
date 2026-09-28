@@ -39,7 +39,7 @@ async function getDoctors() {
     return data.success
       ? (data.data || [])
         .filter((doctor) => doctor.status === "Active")
-        .slice(0, 6)
+        .slice(0, 8)
       : [];
   } catch (error) {
     console.error("Doctors fetch error:", error);
@@ -58,7 +58,7 @@ async function getFacilities() {
     return data.success
       ? (data.data || [])
         .filter((facility) => facility.status === "Active")
-        .slice(0, 6)
+        .slice(0, 8)
       : [];
   } catch (error) {
     console.error("Facilities fetch error:", error);
@@ -76,7 +76,7 @@ async function getServices() {
     return data.success
       ? (data.data || [])
         .filter((service) => service.status === "Active")
-        .slice(0, 6)
+        .slice(0, 8)
       : [];
   } catch (error) {
     console.error("Services fetch error:", error);
