@@ -39,7 +39,7 @@ async function getDoctors() {
     return data.success
       ? (data.data || [])
         .filter((doctor) => doctor.status === "Active")
-        .slice(0, 12)
+        .slice(0, 16)
       : [];
   } catch (error) {
     console.error("Doctors fetch error:", error);
