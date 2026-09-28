@@ -1,7 +1,63 @@
 
 "use client";
-
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
+
+// ==================================================
+// ANIMATED COUNTER
+// ==================================================
+
+function AnimatedCounter({
+  end,
+  suffix = "",
+  duration = 1800,
+}) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    let startTime = null;
+    let animationFrame;
+
+    const animate = (currentTime) => {
+      if (startTime === null) {
+        startTime = currentTime;
+      }
+
+      const progress = Math.min(
+        (currentTime - startTime) / duration,
+        1
+      );
+
+      // Smooth ease-out
+      const easedProgress =
+        1 - Math.pow(1 - progress, 3);
+
+      setCount(Math.floor(easedProgress * end));
+
+      if (progress < 1) {
+        animationFrame =
+          requestAnimationFrame(animate);
+      } else {
+        setCount(end);
+      }
+    };
+
+    animationFrame =
+      requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(animationFrame);
+    };
+  }, [end, duration]);
+
+  return (
+    <>
+      {count}
+      {suffix}
+    </>
+  );
+}
+
 
 export default function ServicesSect({
   services,
