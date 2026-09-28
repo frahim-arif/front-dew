@@ -568,10 +568,10 @@ export default function ServicesSect({
 ================================================== */}
 
 <div className="mt-12 md:mt-16">
-
   <div
     className="
       relative
+      w-full
       overflow-hidden
       border
       border-slate-200
@@ -580,18 +580,42 @@ export default function ServicesSect({
     "
   >
 
-    {/* ================= DESKTOP / MAIN BANNER ================= */}
+    {/* ==================================================
+        MAIN BANNER
+    ================================================== */}
 
-    <div className="grid min-h-[190px] md:grid-cols-12">
+    <div
+      className="
+        flex
+        min-h-[180px]
+        w-full
+        flex-col
+        md:min-h-[210px]
+        md:flex-row
+      "
+    >
 
-      {/* ================= Ambulance Image ================= */}
+      {/* ==================================================
+          AMBULANCE IMAGE
+      ================================================== */}
 
-      <div className="relative h-[180px] overflow-hidden md:col-span-5 md:h-auto">
-
+      <div
+        className="
+          relative
+          h-[180px]
+          w-full
+          shrink-0
+          overflow-hidden
+          sm:h-[210px]
+          md:h-auto
+          md:w-[42%]
+        "
+      >
         <img
           src="/images/emergency-ambulance.jpg"
           alt="Dew Care Hospital 24x7 Emergency Ambulance"
           className="
+            block
             h-full
             w-full
             object-cover
@@ -599,8 +623,7 @@ export default function ServicesSect({
           "
         />
 
-        {/* Image gradient */}
-
+        {/* Image Overlay */}
         <div
           className="
             absolute
@@ -608,220 +631,291 @@ export default function ServicesSect({
             bg-gradient-to-r
             from-transparent
             via-transparent
-            to-white/20
-            md:bg-gradient-to-r
-            md:from-transparent
-            md:via-transparent
-            md:to-white/10
+            to-white/10
           "
         />
-
       </div>
 
 
-      {/* ================= Middle Text ================= */}
+      {/* ==================================================
+          RIGHT CONTENT
+      ================================================== */}
 
       <div
         className="
           flex
+          min-w-0
+          flex-1
           flex-col
           justify-center
-          px-5
-          py-6
-          sm:px-8
-          md:col-span-3
-          md:px-5
-          lg:px-8
+          md:flex-row
         "
       >
 
-        <p
+        {/* ==================================================
+            MIDDLE TEXT
+        ================================================== */}
+
+        <div
           className="
-            text-xs
-            font-semibold
-            tracking-wide
-            text-slate-700
-            sm:text-sm
-          "
-        >
-          When seconds count,
-        </p>
-
-        <h3
-          className="
-            mt-1
-            text-3xl
-            font-black
-            leading-none
-            text-emerald-700
-            sm:text-4xl
-            lg:text-[42px]
-          "
-        >
-          trust us
-        </h3>
-
-        <p
-          className="
-            mt-1
-            text-sm
-            font-bold
-            text-slate-800
-            sm:text-base
-          "
-        >
-          to be there!
-        </p>
-
-      </div>
-
-
-      {/* ================= Emergency Features ================= */}
-
-      <div
-        className="
-          grid
-          grid-cols-2
-          gap-3
-          border-t
-          border-slate-200
-          px-4
-          py-5
-          sm:px-6
-          md:col-span-4
-          md:grid-cols-1
-          md:border-l
-          md:border-t-0
-          md:px-5
-          lg:px-7
-        "
-      >
-
-        {/* 24x7 Emergency */}
-
-        <div className="flex items-center gap-3">
-
-          <div
-            className="
-              flex
-              h-10
-              w-10
-              shrink-0
-              items-center
-              justify-center
-              bg-emerald-100
-              text-lg
-            "
-          >
-            🚑
-          </div>
-
-          <div>
-            <p className="text-xs font-black text-slate-900 sm:text-sm">
-              24×7
-            </p>
-
-            <p className="text-[11px] font-semibold leading-4 text-slate-700 sm:text-xs">
-              Emergency Care
-            </p>
-          </div>
-
-        </div>
-
-
-        {/* ICU */}
-
-        <div className="flex items-center gap-3">
-
-          <div
-            className="
-              flex
-              h-10
-              w-10
-              shrink-0
-              items-center
-              justify-center
-              bg-cyan-100
-              text-lg
-            "
-          >
-            ❤️
-          </div>
-
-          <div>
-            <p className="text-xs font-black text-slate-900 sm:text-sm">
-              Fully
-            </p>
-
-            <p className="text-[11px] font-semibold leading-4 text-slate-700 sm:text-xs">
-              Equipped ICU
-            </p>
-          </div>
-
-        </div>
-
-
-        {/* Emergency Button */}
-
-        <a
-          href="tel:7086803380"
-          className="
-            col-span-2
             flex
-            min-h-[52px]
-            items-center
+            flex-1
+            flex-col
             justify-center
-            gap-3
-            bg-emerald-700
-            px-4
-            py-3
-            text-white
-            shadow-lg
-            transition
-            hover:bg-emerald-800
-            md:col-span-1
+            px-5
+            py-6
+            sm:px-7
+            md:px-6
+            lg:px-8
+          "
+        >
+          <p
+            className="
+              text-xs
+              font-semibold
+              tracking-wide
+              text-slate-600
+              sm:text-sm
+            "
+          >
+            When seconds count,
+          </p>
+
+          <h3
+            className="
+              mt-1
+              text-3xl
+              font-black
+              leading-none
+              text-emerald-700
+              sm:text-4xl
+              lg:text-[40px]
+            "
+          >
+            trust us
+          </h3>
+
+          <p
+            className="
+              mt-1
+              text-sm
+              font-bold
+              text-slate-800
+              sm:text-base
+            "
+          >
+            to be there!
+          </p>
+        </div>
+
+
+        {/* ==================================================
+            EMERGENCY FEATURES
+        ================================================== */}
+
+        <div
+          className="
+            grid
+            w-full
+            grid-cols-2
+            border-t
+            border-slate-200
+            md:w-[48%]
+            md:grid-cols-2
+            md:border-l
+            md:border-t-0
           "
         >
 
-          <span className="text-lg">
-            📞
-          </span>
+          {/* ==================================================
+              24×7 EMERGENCY
+          ================================================== */}
 
-          <span className="text-center">
-            <span
+          <div
+            className="
+              flex
+              items-center
+              gap-2
+              border-r
+              border-slate-200
+              px-3
+              py-4
+              sm:gap-3
+              sm:px-5
+              md:border-r
+              md:px-4
+            "
+          >
+            <div
               className="
-                block
-                text-[9px]
-                font-bold
-                uppercase
-                tracking-wider
-                text-emerald-100
-              "
-            >
-              Emergency Helpline
-            </span>
-
-            <span
-              className="
-                block
+                flex
+                h-9
+                w-9
+                shrink-0
+                items-center
+                justify-center
+                bg-emerald-100
                 text-lg
-                font-black
-                leading-none
+                sm:h-10
+                sm:w-10
                 sm:text-xl
               "
             >
-              7086803380
+              🚑
+            </div>
+
+            <div className="min-w-0">
+              <p
+                className="
+                  text-[11px]
+                  font-black
+                  text-slate-900
+                  sm:text-sm
+                "
+              >
+                24×7
+              </p>
+
+              <p
+                className="
+                  text-[10px]
+                  font-semibold
+                  leading-4
+                  text-slate-600
+                  sm:text-xs
+                "
+              >
+                Emergency Care
+              </p>
+            </div>
+          </div>
+
+
+          {/* ==================================================
+              ICU
+          ================================================== */}
+
+          <div
+            className="
+              flex
+              items-center
+              gap-2
+              px-3
+              py-4
+              sm:gap-3
+              sm:px-5
+              md:px-4
+            "
+          >
+            <div
+              className="
+                flex
+                h-9
+                w-9
+                shrink-0
+                items-center
+                justify-center
+                bg-cyan-100
+                text-lg
+                sm:h-10
+                sm:w-10
+                sm:text-xl
+              "
+            >
+              ❤️
+            </div>
+
+            <div className="min-w-0">
+              <p
+                className="
+                  text-[11px]
+                  font-black
+                  text-slate-900
+                  sm:text-sm
+                "
+              >
+                Fully
+              </p>
+
+              <p
+                className="
+                  text-[10px]
+                  font-semibold
+                  leading-4
+                  text-slate-600
+                  sm:text-xs
+                "
+              >
+                Equipped ICU
+              </p>
+            </div>
+          </div>
+
+
+          {/* ==================================================
+              EMERGENCY PHONE
+          ================================================== */}
+
+          <a
+            href="tel:7086803380"
+            className="
+              col-span-2
+              flex
+              min-h-[54px]
+              items-center
+              justify-center
+              gap-3
+              bg-emerald-700
+              px-4
+              py-3
+              text-white
+              shadow-lg
+              transition
+              hover:bg-emerald-800
+              md:col-span-2
+            "
+          >
+            <span className="text-lg sm:text-xl">
+              📞
             </span>
-          </span>
 
-        </a>
+            <span className="text-center">
+              <span
+                className="
+                  block
+                  text-[8px]
+                  font-bold
+                  uppercase
+                  tracking-[0.18em]
+                  text-emerald-100
+                  sm:text-[9px]
+                "
+              >
+                Emergency Helpline
+              </span>
 
+              <span
+                className="
+                  block
+                  text-lg
+                  font-black
+                  leading-none
+                  sm:text-xl
+                "
+              >
+                7086803380
+              </span>
+            </span>
+          </a>
+
+        </div>
       </div>
-
     </div>
 
 
-    {/* ================= ENQUIRY TAB ================= */}
+    {/* ==================================================
+        ENQUIRY TAB - DESKTOP ONLY
+    ================================================== */}
 
     <Link
       href="/appointment"
@@ -843,7 +937,6 @@ export default function ServicesSect({
         md:flex
       "
     >
-
       <span
         className="
           text-[10px]
@@ -855,11 +948,9 @@ export default function ServicesSect({
       >
         ENQUIRY
       </span>
-
     </Link>
 
   </div>
-
 </div>
 
         {/* ==================================================
