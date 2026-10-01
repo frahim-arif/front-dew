@@ -996,7 +996,7 @@ export default function ServicesSect({
 
 
 {/* ==================================================
-    DESKTOP VERSION — PREMIUM EMERGENCY BANNER
+    DESKTOP VERSION — IMAGE + EMERGENCY INFO
 ================================================== */}
 
 <div
@@ -1021,25 +1021,19 @@ export default function ServicesSect({
     "
   />
 
-  <div className="relative grid min-h-[230px] md:grid-cols-12">
+  <div className="relative grid min-h-[250px] md:grid-cols-12">
 
     {/* ==================================================
-        IMAGE SECTION
+        LARGE LEFT IMAGE
     ================================================== */}
 
-    <div
-      className="
-        relative
-        overflow-hidden
-        md:col-span-5
-      "
-    >
+    <div className="relative overflow-hidden md:col-span-8">
       <img
         src="/images/emergency-ambulance.jpg"
         alt="Dew Care Hospital 24x7 Emergency Ambulance"
         className="
           h-full
-          min-h-[230px]
+          min-h-[250px]
           w-full
           object-cover
           object-center
@@ -1049,14 +1043,14 @@ export default function ServicesSect({
         "
       />
 
-      {/* Image Overlay */}
+      {/* Dark image overlay */}
       <div
         className="
           absolute
           inset-0
           bg-gradient-to-r
-          from-slate-950/55
-          via-slate-900/15
+          from-slate-950/45
+          via-slate-900/10
           to-transparent
         "
       />
@@ -1065,14 +1059,14 @@ export default function ServicesSect({
       <div
         className="
           absolute
-          left-5
-          top-5
+          left-6
+          top-6
           flex
           items-center
           gap-2
           bg-red-600
           px-4
-          py-2
+          py-2.5
           text-xs
           font-black
           uppercase
@@ -1109,7 +1103,7 @@ export default function ServicesSect({
         24×7 Emergency
       </div>
 
-      {/* Bottom Image Text */}
+      {/* Bottom Image Branding */}
       <div
         className="
           absolute
@@ -1117,117 +1111,38 @@ export default function ServicesSect({
           left-0
           right-0
           bg-gradient-to-t
-          from-slate-950/80
+          from-slate-950/90
+          via-slate-950/40
           to-transparent
-          px-5
-          pb-5
-          pt-14
+          px-7
+          pb-6
+          pt-20
         "
       >
-        <p className="text-xs font-bold uppercase tracking-[0.18em] text-emerald-300">
+        <p
+          className="
+            text-xs
+            font-black
+            uppercase
+            tracking-[0.2em]
+            text-emerald-300
+          "
+        >
           Dew Care Hospital LLP
         </p>
 
-        <p className="mt-1 text-sm font-bold text-white">
+        <p className="mt-1 text-xl font-black text-white">
           Emergency & Critical Care
+        </p>
+
+        <p className="mt-1 text-xs font-medium text-white/75">
+          Immediate medical assistance when you need it most
         </p>
       </div>
     </div>
 
     {/* ==================================================
-        MIDDLE MESSAGE
-    ================================================== */}
-
-    <div
-      className="
-        relative
-        flex
-        flex-col
-        justify-center
-        px-6
-        py-7
-        md:col-span-3
-        lg:px-8
-      "
-    >
-      {/* Small Label */}
-      <div className="mb-3 flex items-center gap-2">
-        <span className="h-px w-8 bg-emerald-600" />
-
-        <span
-          className="
-            text-[10px]
-            font-black
-            uppercase
-            tracking-[0.22em]
-            text-emerald-700
-          "
-        >
-          Emergency Care
-        </span>
-      </div>
-
-      <p
-        className="
-          text-sm
-          font-semibold
-          leading-relaxed
-          text-slate-600
-        "
-      >
-        When every second matters,
-      </p>
-
-      <h3
-        className="
-          mt-1
-          text-[38px]
-          font-black
-          leading-[.95]
-          tracking-tight
-          text-emerald-700
-          lg:text-[44px]
-        "
-      >
-        trust us
-      </h3>
-
-      <p
-        className="
-          mt-2
-          text-xl
-          font-black
-          text-slate-900
-        "
-      >
-        to be there.
-      </p>
-
-      {/* Small Description */}
-      <p
-        className="
-          mt-4
-          max-w-[230px]
-          text-xs
-          font-medium
-          leading-relaxed
-          text-slate-500
-        "
-      >
-        Dedicated emergency support with round-the-clock medical
-        assistance when you need it most.
-      </p>
-
-      {/* Accent */}
-      <div className="mt-5 flex items-center gap-2">
-        <span className="h-1.5 w-10 bg-emerald-600" />
-        <span className="h-1.5 w-2 bg-cyan-500" />
-        <span className="h-1.5 w-2 bg-slate-300" />
-      </div>
-    </div>
-
-    {/* ==================================================
-        RIGHT INFORMATION PANEL
+        RIGHT EMERGENCY INFORMATION
     ================================================== */}
 
     <div
@@ -1238,18 +1153,14 @@ export default function ServicesSect({
         gap-3
         border-l
         border-slate-200
-        bg-slate-50/70
+        bg-slate-50/80
         p-5
         md:col-span-4
-        lg:grid-cols-2
         lg:p-6
       "
     >
 
-      {/* ==================================================
-          24x7 EMERGENCY
-      ================================================== */}
-
+      {/* 24x7 Emergency */}
       <div
         className="
           group
@@ -1282,15 +1193,7 @@ export default function ServicesSect({
           🚑
         </div>
 
-        <p
-          className="
-            mt-3
-            text-lg
-            font-black
-            leading-none
-            text-slate-900
-          "
-        >
+        <p className="mt-3 text-lg font-black leading-none text-slate-900">
           24×7
         </p>
 
@@ -1301,10 +1204,7 @@ export default function ServicesSect({
         <div className="mt-3 h-1 w-8 bg-emerald-600" />
       </div>
 
-      {/* ==================================================
-          ICU
-      ================================================== */}
-
+      {/* ICU */}
       <div
         className="
           group
@@ -1337,15 +1237,7 @@ export default function ServicesSect({
           ❤️
         </div>
 
-        <p
-          className="
-            mt-3
-            text-lg
-            font-black
-            leading-none
-            text-slate-900
-          "
-        >
+        <p className="mt-3 text-lg font-black leading-none text-slate-900">
           Fully
         </p>
 
@@ -1356,17 +1248,14 @@ export default function ServicesSect({
         <div className="mt-3 h-1 w-8 bg-cyan-600" />
       </div>
 
-      {/* ==================================================
-          EMERGENCY PHONE
-      ================================================== */}
-
+      {/* Emergency Phone */}
       <a
         href="tel:7086803380"
         className="
           group
           col-span-2
           flex
-          min-h-[70px]
+          min-h-[78px]
           items-center
           justify-between
           gap-4
@@ -1400,7 +1289,7 @@ export default function ServicesSect({
               ring-white/20
             "
           >
-            <span className="text-xl">📞</span>
+            📞
           </div>
 
           <div>
@@ -1451,7 +1340,6 @@ export default function ServicesSect({
           →
         </div>
       </a>
-
     </div>
   </div>
 
@@ -1497,7 +1385,6 @@ export default function ServicesSect({
       ENQUIRY
     </span>
   </Link>
-
 </div>
 </div>
 
