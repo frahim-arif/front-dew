@@ -185,7 +185,7 @@ export default function AdminDoctorsPage() {
       alert("Server error while deleting doctor");
     }
   };
-
+  
   return (
     <>
       <div className="mb-8">

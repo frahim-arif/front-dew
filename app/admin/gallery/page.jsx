@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -18,6 +19,10 @@ export default function AdminGallery() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("All");
 
+  // ==================================================
+  // FORM DATA
+  // ==================================================
+
   const [formData, setFormData] = useState({
     title: "",
     category: "Hospital",
@@ -25,56 +30,54 @@ export default function AdminGallery() {
     type: "image",
     image: null,
     youtubeUrl: "",
+    facebookUrl: "",
   });
+
+  // ==================================================
+  // FETCH GALLERY
+  // ==================================================
 
   useEffect(() => {
     fetchGallery();
   }, []);
 
-  // ===============================
-  // Fetch Gallery
-  // ===============================
-
   const fetchGallery = async () => {
     try {
       setLoading(true);
 
-      const res = await axios.get(`${API_URL}/gallery`);
+      const res = await axios.get(
+        `${API_URL}/gallery`
+      );
 
       setGallery(res.data.data || []);
     } catch (err) {
-      console.log(err);
+      console.log("Fetch Gallery Error:", err);
     } finally {
       setLoading(false);
     }
   };
 
-  // ===============================
-  // Handle Input
-  // ===============================
+  // ==================================================
+  // HANDLE INPUT
+  // ==================================================
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    // =========================
+    // TYPE CHANGE
+    // =========================
+
     if (name === "type") {
-      if (value === "image") {
-        setPreview("");
+      setPreview("");
 
-        setFormData((prev) => ({
-          ...prev,
-          type: "image",
-          image: null,
-          youtubeUrl: "",
-        }));
-      } else {
-        setPreview("");
-
-        setFormData((prev) => ({
-          ...prev,
-          type: "video",
-          image: null,
-        }));
-      }
+      setFormData((prev) => ({
+        ...prev,
+        type: value,
+        image: null,
+        youtubeUrl: "",
+        facebookUrl: "",
+      }));
 
       return;
     }
@@ -85,12 +88,12 @@ export default function AdminGallery() {
     }));
   };
 
-  // ===============================
-  // Image
-  // ===============================
+  // ==================================================
+  // IMAGE
+  // ==================================================
 
   const handleImage = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
 
     if (!file) return;
 
@@ -99,12 +102,33 @@ export default function AdminGallery() {
       image: file,
     }));
 
-    setPreview(URL.createObjectURL(file));
+    setPreview(
+      URL.createObjectURL(file)
+    );
   };
 
-  // ===============================
-  // Submit
-  // ===============================
+  // ==================================================
+  // RESET FORM
+  // ==================================================
+
+  const resetForm = () => {
+    setFormData({
+      title: "",
+      category: "Hospital",
+      status: "Active",
+      type: "image",
+      image: null,
+      youtubeUrl: "",
+      facebookUrl: "",
+    });
+
+    setPreview("");
+    setEditingId(null);
+  };
+
+  // ==================================================
+  // SUBMIT
+  // ==================================================
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -114,21 +138,64 @@ export default function AdminGallery() {
 
       const data = new FormData();
 
-      data.append("title", formData.title);
-      data.append("category", formData.category);
-      data.append("status", formData.status);
-      data.append("type", formData.type);
+      data.append(
+        "title",
+        formData.title
+      );
+
+      data.append(
+        "category",
+        formData.category
+      );
+
+      data.append(
+        "status",
+        formData.status
+      );
+
+      data.append(
+        "type",
+        formData.type
+      );
+
+      // =========================
+      // IMAGE
+      // =========================
 
       if (formData.type === "image") {
         if (formData.image) {
-          data.append("image", formData.image);
+          data.append(
+            "image",
+            formData.image
+          );
         }
-      } else {
+      }
+
+      // =========================
+      // YOUTUBE
+      // =========================
+
+      if (formData.type === "video") {
         data.append(
           "youtubeUrl",
           formData.youtubeUrl
         );
       }
+
+      // =========================
+      // FACEBOOK
+      // =========================
+
+      if (formData.type === "facebook") {
+        data.append(
+          "facebookUrl",
+          formData.facebookUrl
+        );
+      }
+
+      // =========================
+      // UPDATE
+      // =========================
 
       if (editingId) {
         await axios.put(
@@ -142,8 +209,16 @@ export default function AdminGallery() {
           }
         );
 
-        alert("Gallery Updated Successfully");
-      } else {
+        alert(
+          "Gallery Updated Successfully"
+        );
+      }
+
+      // =========================
+      // CREATE
+      // =========================
+
+      else {
         await axios.post(
           `${API_URL}/gallery`,
           data,
@@ -155,71 +230,101 @@ export default function AdminGallery() {
           }
         );
 
-        alert("Gallery Added Successfully");
+        alert(
+          "Gallery Added Successfully"
+        );
       }
 
-      setFormData({
-        title: "",
-        category: "Hospital",
-        status: "Active",
-        type: "image",
-        image: null,
-        youtubeUrl: "",
-      });
-
-      setPreview("");
-      setEditingId(null);
-
+      resetForm();
       fetchGallery();
-
     } catch (err) {
-      console.log(err);
+      console.log(
+        "Gallery Submit Error:",
+        err
+      );
 
       alert(
         err.response?.data?.message ||
-        "Something went wrong"
+          "Something went wrong"
       );
     } finally {
       setLoading(false);
     }
   };
 
-  // ===============================
-  // Delete
-  // ===============================
+  // ==================================================
+  // DELETE
+  // ==================================================
 
   const deleteGallery = async (id) => {
-    if (!window.confirm("Delete this item?")) return;
+    if (
+      !window.confirm(
+        "Delete this gallery item?"
+      )
+    ) {
+      return;
+    }
 
     try {
-      await axios.delete(`${API_URL}/gallery/${id}`);
+      setLoading(true);
+
+      await axios.delete(
+        `${API_URL}/gallery/${id}`
+      );
+
+      alert(
+        "Deleted Successfully"
+      );
 
       fetchGallery();
-
-      alert("Deleted Successfully");
     } catch (err) {
-      console.log(err);
+      console.log(
+        "Delete Gallery Error:",
+        err
+      );
+
+      alert(
+        err.response?.data?.message ||
+          "Delete failed"
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
-  // ===============================
-  // Edit
-  // ===============================
+  // ==================================================
+  // EDIT
+  // ==================================================
 
   const editGallery = (item) => {
     setEditingId(item._id);
 
     setFormData({
-      title: item.title,
-      category: item.category,
-      status: item.status,
-      type: item.type,
+      title: item.title || "",
+      category:
+        item.category || "Hospital",
+      status:
+        item.status || "Active",
+      type:
+        item.type || "image",
       image: null,
-      youtubeUrl: item.youtubeUrl || "",
+      youtubeUrl:
+        item.youtubeUrl || "",
+      facebookUrl:
+        item.facebookUrl || "",
     });
 
-    if (item.type === "image") {
-      setPreview(`${SERVER_URL}${item.image}`);
+    // =========================
+    // IMAGE PREVIEW
+    // =========================
+
+    if (
+      item.type === "image" &&
+      item.image
+    ) {
+      setPreview(
+        `${SERVER_URL}${item.image}`
+      );
     } else {
       setPreview("");
     }
@@ -230,259 +335,493 @@ export default function AdminGallery() {
     });
   };
 
-  // ===============================
-  // Filter
-  // ===============================
+  // ==================================================
+  // YOUTUBE ID
+  // ==================================================
 
-  const filteredGallery = gallery.filter((item) => {
-    const searchMatch =
-      item.title
-        .toLowerCase()
-        .includes(search.toLowerCase()) ||
-      item.category
-        .toLowerCase()
-        .includes(search.toLowerCase());
+  const getYoutubeId = (url = "") => {
+    try {
+      const u = new URL(url);
 
-    const filterMatch =
-      filter === "All"
-        ? true
-        : item.type === filter.toLowerCase();
+      if (
+        u.hostname === "youtu.be"
+      ) {
+        return u.pathname.slice(1);
+      }
 
-    return searchMatch && filterMatch;
-  });
+      if (
+        u.searchParams.get("v")
+      ) {
+        return u.searchParams.get("v");
+      }
+
+      if (
+        u.pathname.includes(
+          "/embed/"
+        )
+      ) {
+        return u.pathname
+          .split("/embed/")[1]
+          .split("/")[0];
+      }
+
+      if (
+        u.pathname.includes(
+          "/shorts/"
+        )
+      ) {
+        return u.pathname
+          .split("/shorts/")[1]
+          .split("/")[0];
+      }
+
+      return "";
+    } catch {
+      return "";
+    }
+  };
+
+  // ==================================================
+  // FACEBOOK EMBED URL
+  // ==================================================
+
+  const getFacebookEmbedUrl = (
+    url = ""
+  ) => {
+    if (!url) return "";
+
+    try {
+      return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
+        url
+      )}&show_text=false&width=560`;
+    } catch {
+      return "";
+    }
+  };
+
+  // ==================================================
+  // FILTER
+  // ==================================================
+
+  const filteredGallery =
+    gallery.filter((item) => {
+      const title =
+        item.title || "";
+
+      const category =
+        item.category || "";
+
+      const searchText =
+        search.toLowerCase();
+
+      const searchMatch =
+        title
+          .toLowerCase()
+          .includes(searchText) ||
+        category
+          .toLowerCase()
+          .includes(searchText);
+
+      const filterMatch =
+        filter === "All"
+          ? true
+          : item.type ===
+            filter.toLowerCase();
+
+      return (
+        searchMatch &&
+        filterMatch
+      );
+    });
+
+  // ==================================================
+  // UI
+  // ==================================================
 
   return (
     <div className="min-h-screen bg-slate-100 p-6">
 
-  {/* Header */}
+      {/* ==================================================
+          HEADER
+      ================================================== */}
 
-  <div className="mb-8 rounded-3xl bg-gradient-to-r from-emerald-700 via-green-700 to-teal-700 p-8 text-white shadow-xl">
+      <div className="mb-8 rounded-3xl bg-gradient-to-r from-emerald-700 via-green-700 to-teal-700 p-8 text-white shadow-xl">
 
-    <h1 className="text-4xl font-black">
-      Gallery Management
-    </h1>
+        <h1 className="text-4xl font-black">
+          Gallery Management
+        </h1>
 
-    <p className="mt-2 text-emerald-100">
-      Upload Hospital Images & YouTube Videos
-    </p>
-
-  </div>
-
-  {/* Upload Form */}
-
-  <div className="rounded-3xl bg-white p-8 shadow-xl">
-
-    <form onSubmit={handleSubmit}>
-
-      <div className="grid gap-6 md:grid-cols-2">
-
-        {/* Title */}
-
-        <div className="md:col-span-2">
-
-          <label className="mb-2 block font-bold">
-            Gallery Title
-          </label>
-
-          <input
-            type="text"
-            name="title"
-            required
-            value={formData.title}
-            onChange={handleChange}
-            placeholder="Enter Gallery Title"
-            className="w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-emerald-500"
-          />
-
-        </div>
-
-        {/* Category */}
-
-        <div>
-
-          <label className="mb-2 block font-bold">
-            Category
-          </label>
-
-          <select
-            name="category"
-            value={formData.category}
-            onChange={handleChange}
-            className="w-full rounded-xl border border-gray-300 p-3"
-          >
-            <option>Hospital</option>
-            <option>Doctors</option>
-            <option>Patients</option>
-            <option>Events</option>
-            <option>Operation</option>
-            <option>Facilities</option>
-            <option>Emergency</option>
-            <option>Others</option>
-          </select>
-
-        </div>
-
-        {/* Status */}
-
-        <div>
-
-          <label className="mb-2 block font-bold">
-            Status
-          </label>
-
-          <select
-            name="status"
-            value={formData.status}
-            onChange={handleChange}
-            className="w-full rounded-xl border border-gray-300 p-3"
-          >
-            <option value="Active">
-              Active
-            </option>
-
-            <option value="Inactive">
-              Inactive
-            </option>
-
-          </select>
-
-        </div>
+        <p className="mt-2 text-emerald-100">
+          Upload Hospital Images,
+          YouTube Videos & Facebook Videos
+        </p>
 
       </div>
 
-      {/* Type */}
+      {/* ==================================================
+          FORM
+      ================================================== */}
 
-      <div className="mt-8">
+      <div className="rounded-3xl bg-white p-8 shadow-xl">
 
-        <label className="mb-3 block font-bold">
-          Upload Type
-        </label>
+        <form onSubmit={handleSubmit}>
 
-        <div className="flex gap-8">
+          {/* =========================
+              BASIC INFORMATION
+          ========================= */}
 
-          <label className="flex cursor-pointer items-center gap-2">
+          <div className="grid gap-6 md:grid-cols-2">
 
-            <input
-              type="radio"
-              name="type"
-              value="image"
-              checked={formData.type === "image"}
-              onChange={handleChange}
-            />
+            {/* TITLE */}
 
-            📷 Image
+            <div className="md:col-span-2">
 
-          </label>
+              <label className="mb-2 block font-bold">
+                Gallery Title
+              </label>
 
-          <label className="flex cursor-pointer items-center gap-2">
+              <input
+                type="text"
+                name="title"
+                required
+                value={formData.title}
+                onChange={handleChange}
+                placeholder="Enter Gallery Title"
+                className="w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-emerald-500"
+              />
 
-            <input
-              type="radio"
-              name="type"
-              value="video"
-              checked={formData.type === "video"}
-              onChange={handleChange}
-            />
+            </div>
 
-            ▶ YouTube Video
+            {/* CATEGORY */}
 
-          </label>
+            <div>
 
-        </div>
+              <label className="mb-2 block font-bold">
+                Category
+              </label>
+
+              <select
+                name="category"
+                value={
+                  formData.category
+                }
+                onChange={handleChange}
+                className="w-full rounded-xl border border-gray-300 p-3"
+              >
+
+                <option>
+                  Hospital
+                </option>
+
+                <option>
+                  Doctors
+                </option>
+
+                <option>
+                  Patients
+                </option>
+
+                <option>
+                  Events
+                </option>
+
+                <option>
+                  Operation
+                </option>
+
+                <option>
+                  Facilities
+                </option>
+
+                <option>
+                  Emergency
+                </option>
+
+                <option>
+                  Others
+                </option>
+
+              </select>
+
+            </div>
+
+            {/* STATUS */}
+
+            <div>
+
+              <label className="mb-2 block font-bold">
+                Status
+              </label>
+
+              <select
+                name="status"
+                value={
+                  formData.status
+                }
+                onChange={handleChange}
+                className="w-full rounded-xl border border-gray-300 p-3"
+              >
+
+                <option value="Active">
+                  Active
+                </option>
+
+                <option value="Inactive">
+                  Inactive
+                </option>
+
+              </select>
+
+            </div>
+
+          </div>
+
+          {/* ==================================================
+              TYPE
+          ================================================== */}
+
+          <div className="mt-8">
+
+            <label className="mb-3 block font-bold">
+              Upload Type
+            </label>
+
+            <div className="flex flex-wrap gap-6">
+
+              {/* IMAGE */}
+
+              <label className="flex cursor-pointer items-center gap-2">
+
+                <input
+                  type="radio"
+                  name="type"
+                  value="image"
+                  checked={
+                    formData.type ===
+                    "image"
+                  }
+                  onChange={
+                    handleChange
+                  }
+                />
+
+                📷 Image
+
+              </label>
+
+              {/* YOUTUBE */}
+
+              <label className="flex cursor-pointer items-center gap-2">
+
+                <input
+                  type="radio"
+                  name="type"
+                  value="video"
+                  checked={
+                    formData.type ===
+                    "video"
+                  }
+                  onChange={
+                    handleChange
+                  }
+                />
+
+                ▶ YouTube Video
+
+              </label>
+
+              {/* FACEBOOK */}
+
+              <label className="flex cursor-pointer items-center gap-2">
+
+                <input
+                  type="radio"
+                  name="type"
+                  value="facebook"
+                  checked={
+                    formData.type ===
+                    "facebook"
+                  }
+                  onChange={
+                    handleChange
+                  }
+                />
+
+                📘 Facebook Video
+
+              </label>
+
+            </div>
+
+          </div>
+
+          {/* ==================================================
+              IMAGE UPLOAD
+          ================================================== */}
+
+          {formData.type ===
+            "image" && (
+            <div className="mt-6">
+
+              <label className="mb-2 block font-bold">
+                Upload Image
+              </label>
+
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImage}
+                className="w-full rounded-xl border border-gray-300 p-3"
+              />
+
+              <p className="mt-2 text-sm text-gray-500">
+                JPG, PNG, WEBP or GIF.
+                Maximum 10 MB.
+              </p>
+
+            </div>
+          )}
+
+          {/* ==================================================
+              YOUTUBE URL
+          ================================================== */}
+
+          {formData.type ===
+            "video" && (
+            <div className="mt-6">
+
+              <label className="mb-2 block font-bold">
+                YouTube Video URL
+              </label>
+
+              <input
+                type="url"
+                name="youtubeUrl"
+                required
+                value={
+                  formData.youtubeUrl
+                }
+                onChange={
+                  handleChange
+                }
+                placeholder="https://youtu.be/xxxxxxxxxxx"
+                className="w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-emerald-500"
+              />
+
+              <p className="mt-2 text-sm text-gray-500">
+                Supported:
+                youtube.com/watch?v=
+                <br />
+                youtu.be/
+                <br />
+                youtube.com/embed/
+                <br />
+                youtube.com/shorts/
+              </p>
+
+            </div>
+          )}
+
+          {/* ==================================================
+              FACEBOOK URL
+          ================================================== */}
+
+          {formData.type ===
+            "facebook" && (
+            <div className="mt-6">
+
+              <label className="mb-2 block font-bold">
+                Facebook Video URL
+              </label>
+
+              <input
+                type="url"
+                name="facebookUrl"
+                required
+                value={
+                  formData.facebookUrl
+                }
+                onChange={
+                  handleChange
+                }
+                placeholder="https://www.facebook.com/watch/?v=123456789"
+                className="w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-emerald-500"
+              />
+
+              <p className="mt-2 text-sm text-gray-500">
+                Paste the public Facebook
+                video URL here.
+                <br />
+                Example:
+                facebook.com/watch/?v=...
+              </p>
+
+            </div>
+          )}
+
+          {/* ==================================================
+              IMAGE PREVIEW
+          ================================================== */}
+
+          {preview &&
+            formData.type ===
+              "image" && (
+              <div className="mt-8">
+
+                <p className="mb-3 font-bold">
+                  Image Preview
+                </p>
+
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="h-64 w-full max-w-xl rounded-2xl border object-cover shadow"
+                />
+
+              </div>
+            )}
+
+          {/* ==================================================
+              BUTTONS
+          ================================================== */}
+
+          <div className="mt-8 flex flex-wrap gap-3">
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="rounded-xl bg-emerald-600 px-8 py-3 font-bold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {loading
+                ? "Saving..."
+                : editingId
+                ? "Update Gallery"
+                : "Add Gallery"}
+            </button>
+
+            {editingId && (
+              <button
+                type="button"
+                onClick={resetForm}
+                className="rounded-xl bg-gray-600 px-8 py-3 font-bold text-white transition hover:bg-gray-700"
+              >
+                Cancel Edit
+              </button>
+            )}
+
+          </div>
+
+        </form>
 
       </div>
 
-      {/* Image */}
-
-      {formData.type === "image" && (
-
-        <div className="mt-6">
-
-          <label className="mb-2 block font-bold">
-            Upload Image
-          </label>
-
-          <input
-            type="file"
-            accept="image/*"
-            onChange={handleImage}
-            className="w-full rounded-xl border border-gray-300 p-3"
-          />
-
-        </div>
-
-      )}
-
-      {/* YouTube */}
-
-      {formData.type === "video" && (
-
-        <div className="mt-6">
-
-          <label className="mb-2 block font-bold">
-            YouTube URL
-          </label>
-
-          <input
-            type="text"
-            name="youtubeUrl"
-            value={formData.youtubeUrl}
-            onChange={handleChange}
-            placeholder="https://youtu.be/xxxxxxxxxxx"
-            className="w-full rounded-xl border border-gray-300 p-3"
-          />
-
-          <p className="mt-2 text-sm text-gray-500">
-            Supported:
-            youtube.com/watch?v=
-            <br />
-            youtu.be/
-            <br />
-            youtube.com/embed/
-            <br />
-            youtube.com/shorts/
-          </p>
-
-        </div>
-
-      )}
-
-      {/* Preview */}
-
-      {preview && formData.type === "image" && (
-
-        <div className="mt-8">
-
-          <img
-            src={preview}
-            alt="Preview"
-            className="h-64 rounded-2xl border object-cover shadow"
-          />
-
-        </div>
-
-      )}
-
-      {/* Button */}
-
-      <button
-        type="submit"
-        disabled={loading}
-        className="mt-8 rounded-xl bg-emerald-600 px-8 py-3 font-bold text-white transition hover:bg-emerald-700"
-      >
-        {editingId
-          ? "Update Gallery"
-          : "Add Gallery"}
-      </button>
-
-    </form>
-
-  </div>
-        {/* ============================= */}
-      {/* Gallery List */}
-      {/* ============================= */}
+      {/* ==================================================
+          GALLERY LIST
+      ================================================== */}
 
       <div className="mt-12">
+
+        {/* HEADER */}
 
         <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
 
@@ -490,25 +829,34 @@ export default function AdminGallery() {
             Gallery Items
           </h2>
 
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-3 sm:flex-row">
+
+            {/* SEARCH */}
 
             <input
               type="text"
               placeholder="Search..."
               value={search}
               onChange={(e) =>
-                setSearch(e.target.value)
+                setSearch(
+                  e.target.value
+                )
               }
               className="rounded-xl border border-gray-300 px-4 py-3 outline-none focus:border-emerald-500"
             />
 
+            {/* FILTER */}
+
             <select
               value={filter}
               onChange={(e) =>
-                setFilter(e.target.value)
+                setFilter(
+                  e.target.value
+                )
               }
               className="rounded-xl border border-gray-300 px-4"
             >
+
               <option value="All">
                 All
               </option>
@@ -518,7 +866,11 @@ export default function AdminGallery() {
               </option>
 
               <option value="Video">
-                Videos
+                YouTube Videos
+              </option>
+
+              <option value="Facebook">
+                Facebook Videos
               </option>
 
             </select>
@@ -526,6 +878,10 @@ export default function AdminGallery() {
           </div>
 
         </div>
+
+        {/* ==================================================
+            LOADING
+        ================================================== */}
 
         {loading ? (
 
@@ -535,151 +891,223 @@ export default function AdminGallery() {
 
           </div>
 
+        ) : filteredGallery.length ===
+          0 ? (
+
+          <div className="rounded-3xl bg-white p-12 text-center shadow">
+
+            <p className="text-lg font-semibold text-gray-500">
+              No gallery items found.
+            </p>
+
+          </div>
+
         ) : (
+
+          /* ==================================================
+             GRID
+          ================================================== */
 
           <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
 
-            {filteredGallery.map((item) => {
+            {filteredGallery.map(
+              (item) => {
 
-              const getYoutubeId = (url = "") => {
+                const youtubeId =
+                  getYoutubeId(
+                    item.youtubeUrl
+                  );
 
-                try {
+                const facebookEmbedUrl =
+                  getFacebookEmbedUrl(
+                    item.facebookUrl
+                  );
 
-                  const u = new URL(url);
+                return (
 
-                  if (u.hostname === "youtu.be") {
-                    return u.pathname.slice(1);
-                  }
+                  <div
+                    key={item._id}
+                    className="overflow-hidden rounded-3xl bg-white shadow-lg transition hover:-translate-y-2 hover:shadow-2xl"
+                  >
 
-                  if (u.searchParams.get("v")) {
-                    return u.searchParams.get("v");
-                  }
+                    {/* ==================================================
+                        MEDIA
+                    ================================================== */}
 
-                  if (
-                    u.pathname.includes("/embed/")
-                  ) {
-                    return u.pathname.split(
-                      "/embed/"
-                    )[1];
-                  }
+                    <div className="bg-black">
 
-                  if (
-                    u.pathname.includes("/shorts/")
-                  ) {
-                    return u.pathname.split(
-                      "/shorts/"
-                    )[1];
-                  }
+                      {/* IMAGE */}
 
-                  return "";
+                      {item.type ===
+                        "image" && (
+                        <img
+                          src={`${SERVER_URL}${item.image}`}
+                          alt={
+                            item.title
+                          }
+                          className="h-64 w-full object-cover"
+                        />
+                      )}
 
-                } catch {
+                      {/* YOUTUBE */}
 
-                  return "";
+                      {item.type ===
+                        "video" &&
+                        youtubeId && (
+                        <iframe
+                          src={`https://www.youtube.com/embed/${youtubeId}`}
+                          title={
+                            item.title
+                          }
+                          className="h-64 w-full"
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowFullScreen
+                        />
+                      )}
 
-                }
+                      {/* FACEBOOK */}
 
-              };
+                      {item.type ===
+                        "facebook" &&
+                        facebookEmbedUrl && (
+                        <iframe
+                          src={
+                            facebookEmbedUrl
+                          }
+                          title={
+                            item.title
+                          }
+                          className="h-64 w-full"
+                          style={{
+                            border: "none",
+                            overflow:
+                              "hidden",
+                          }}
+                          scrolling="no"
+                          frameBorder="0"
+                          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                          allowFullScreen
+                        />
+                      )}
 
-              const youtubeId =
-                getYoutubeId(
-                  item.youtubeUrl
-                );
+                      {/* INVALID VIDEO */}
 
-              return (
+                      {item.type ===
+                        "video" &&
+                        !youtubeId && (
+                        <div className="flex h-64 items-center justify-center text-white">
+                          Invalid YouTube URL
+                        </div>
+                      )}
 
-                <div
-                  key={item._id}
-                  className="overflow-hidden rounded-3xl bg-white shadow-lg transition hover:-translate-y-2 hover:shadow-2xl"
-                >
-
-                  {/* Media */}
-
-                  {item.type ===
-                  "image" ? (
-
-                    <img
-                      src={`${SERVER_URL}${item.image}`}
-                      alt={item.title}
-                      className="h-64 w-full object-cover"
-                    />
-
-                  ) : (
-
-                    <iframe
-                      src={`https://www.youtube.com/embed/${youtubeId}`}
-                      className="h-64 w-full"
-                      allowFullScreen
-                    />
-
-                  )}
-
-                  {/* Content */}
-
-                  <div className="space-y-4 p-6">
-
-                    <div className="flex items-center justify-between">
-
-                      <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-700">
-                        {item.category}
-                      </span>
-
-                      <span
-                        className={`rounded-full px-3 py-1 text-sm font-semibold ${
-                          item.status ===
-                          "Active"
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
-                        }`}
-                      >
-                        {item.status}
-                      </span>
+                      {item.type ===
+                        "facebook" &&
+                        !facebookEmbedUrl && (
+                        <div className="flex h-64 items-center justify-center text-white">
+                          Invalid Facebook URL
+                        </div>
+                      )}
 
                     </div>
 
-                    <h3 className="text-xl font-bold">
-                      {item.title}
-                    </h3>
+                    {/* ==================================================
+                        CONTENT
+                    ================================================== */}
 
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="space-y-4 p-6">
 
-                      <button
-                        onClick={() =>
-                          editGallery(item)
-                        }
-                        className="rounded-xl bg-amber-500 py-3 font-bold text-white hover:bg-amber-600"
-                      >
-                        ✏ Edit
-                      </button>
+                      {/* BADGES */}
 
-                      <button
-                        onClick={() =>
-                          deleteGallery(
-                            item._id
-                          )
-                        }
-                        className="rounded-xl bg-red-600 py-3 font-bold text-white hover:bg-red-700"
-                      >
-                        🗑 Delete
-                      </button>
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+
+                        <span className="rounded-full bg-emerald-100 px-3 py-1 text-sm font-semibold text-emerald-700">
+                          {
+                            item.category
+                          }
+                        </span>
+
+                        <span
+                          className={`rounded-full px-3 py-1 text-sm font-semibold ${
+                            item.status ===
+                            "Active"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-red-100 text-red-700"
+                          }`}
+                        >
+                          {
+                            item.status
+                          }
+                        </span>
+
+                      </div>
+
+                      {/* TYPE */}
+
+                      <div>
+
+                        <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                          {item.type ===
+                          "image"
+                            ? "📷 Image"
+                            : item.type ===
+                              "video"
+                            ? "▶ YouTube"
+                            : "📘 Facebook"}
+                        </span>
+
+                      </div>
+
+                      {/* TITLE */}
+
+                      <h3 className="text-xl font-bold">
+                        {item.title}
+                      </h3>
+
+                      {/* BUTTONS */}
+
+                      <div className="grid grid-cols-2 gap-3">
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            editGallery(
+                              item
+                            )
+                          }
+                          className="rounded-xl bg-amber-500 py-3 font-bold text-white hover:bg-amber-600"
+                        >
+                          ✏ Edit
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() =>
+                            deleteGallery(
+                              item._id
+                            )
+                          }
+                          className="rounded-xl bg-red-600 py-3 font-bold text-white hover:bg-red-700"
+                        >
+                          🗑 Delete
+                        </button>
+
+                      </div>
 
                     </div>
 
                   </div>
 
-                </div>
-
-              );
-
-            })}
+                );
+              }
+            )}
 
           </div>
 
         )}
 
       </div>
-          </div>
 
-
-);
+    </div>
+  );
 }
+
