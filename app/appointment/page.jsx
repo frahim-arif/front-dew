@@ -2,1148 +2,1093 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { siteInfo } from "../data/siteData";
+import siteInfo from "../siteInfo";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://backend-dew-c2to.onrender.com/api";
 
-const APPOINTMENT_FEE = 500;
-
-const emptyForm = {
-  name: "",
-  phone: "",
-  email: "",
-  age: "",
-  gender: "",
-  department: "",
-  date: "",
-  doctor: "",
-  message: "",
-};
-
-/* =========================================
-   Razorpay Script Loader
-========================================= */
-
-const loadRazorpayScript = () => {
-  return new Promise((resolve) => {
-    if (typeof window === "undefined") {
-      resolve(false);
-      return;
-    }
-
-    if (window.Razorpay) {
-      resolve(true);
-      return;
-    }
-
-    const existingScript = document.querySelector(
-      'script[src="https://checkout.razorpay.com/v1/checkout.js"]'
-    );
-
-    if (existingScript) {
-      existingScript.addEventListener("load", () =>
-        resolve(true)
-      );
-
-      existingScript.addEventListener("error", () =>
-        resolve(false)
-      );
-
-      return;
-    }
-
-    const script = document.createElement("script");
-
-    script.src =
-      "https://checkout.razorpay.com/v1/checkout.js";
-
-    script.async = true;
-
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-
-    document.body.appendChild(script);
-  });
-};
-
-/* =========================================
-   Date Helpers
-========================================= */
-
-const formatDateForInput = (date) => {
-  const year = date.getFullYear();
-
-  const month = String(
-    date.getMonth() + 1
-  ).padStart(2, "0");
-
-  const day = String(
-    date.getDate()
-  ).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-};
-
-/* =========================================
-   TODAY DATE
-   Appointment can be booked from today
-========================================= */
-
 const getTodayDate = () => {
   const today = new Date();
 
-  today.setHours(0, 0, 0, 0);
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
 
-  return formatDateForInput(today);
+  return `${year}-${month}-${day}`;
 };
-
-/* =========================================
-   Appointment Page
-========================================= */
 
 export default function AppointmentPage() {
   const router = useRouter();
 
   const [doctors, setDoctors] = useState([]);
-  const [form, setForm] = useState(emptyForm);
+  const [loadingDoctors, setLoadingDoctors] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
-  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState({
+    type: "",
+    text: "",
+  });
 
-  const [doctorsLoading, setDoctorsLoading] =
-    useState(true);
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    age: "",
+    gender: "",
+    doctor: "",
+    department: "",
+    date: getTodayDate(),
+    time: "",
+    message: "",
+  });
 
-  const [paymentMessage, setPaymentMessage] =
-    useState("");
-
-  /*
-   * Appointment can be booked today or any
-   * future date.
-   */
-  const todayDate = getTodayDate();
-
-  /* =========================================
-     Fetch Active Doctors
-  ========================================= */
+  /* ==================================================
+     FETCH DOCTORS
+  ================================================== */
 
   useEffect(() => {
     const fetchDoctors = async () => {
       try {
-        setDoctorsLoading(true);
+        setLoadingDoctors(true);
 
-        const response = await fetch(
-          `${API_URL}/doctors`,
-          {
-            cache: "no-store",
-          }
-        );
+        const res = await fetch(`${API_URL}/doctors`, {
+          cache: "no-store",
+        });
 
-        const result = await response.json();
+        const data = await res.json();
 
-        if (!response.ok || !result.success) {
+        if (!res.ok || !data.success) {
           throw new Error(
-            result.message ||
-              "Unable to fetch doctors."
+            data.message || "Unable to fetch doctors"
           );
         }
 
-        const activeDoctors = (
-          Array.isArray(result.data)
-            ? result.data
-            : []
-        ).filter((doctor) => {
-          return (
-            doctor?.status
-              ?.trim()
-              .toLowerCase() === "active"
-          );
-        });
+        const activeDoctors = Array.isArray(data.data)
+          ? data.data.filter(
+              (doctor) =>
+                String(doctor.status || "").toLowerCase() ===
+                "active"
+            )
+          : [];
 
         setDoctors(activeDoctors);
       } catch (error) {
-        console.error(
-          "Doctors fetch error:",
-          error
-        );
+        console.error("FETCH DOCTORS ERROR:", error);
 
         setDoctors([]);
+
+        setMessage({
+          type: "error",
+          text: "Doctors load nahi ho paaye. Please try again.",
+        });
       } finally {
-        setDoctorsLoading(false);
+        setLoadingDoctors(false);
       }
     };
 
     fetchDoctors();
   }, []);
 
-  /* =========================================
-     Unique Departments From Doctors
-  ========================================= */
+  /* ==================================================
+     DEPARTMENTS
+  ================================================== */
 
   const departments = useMemo(() => {
-    const departmentList = doctors
-      .map((doctor) => {
-        return doctor?.department?.trim();
-      })
-      .filter(Boolean);
+    const values = doctors
+      .map((doctor) => doctor.department)
+      .filter(Boolean)
+      .map((department) => department.trim());
 
-    return [...new Set(departmentList)].sort(
-      (first, second) =>
-        first.localeCompare(second)
-    );
+    return [...new Set(values)];
   }, [doctors]);
 
-  /* =========================================
-     Doctors For Selected Department
-  ========================================= */
+  /* ==================================================
+     FILTER DOCTORS BY DEPARTMENT
+  ================================================== */
 
   const filteredDoctors = useMemo(() => {
     if (!form.department) {
-      return [];
+      return doctors;
     }
 
-    const selectedDepartment =
-      form.department.trim().toLowerCase();
-
-    return doctors.filter((doctor) => {
-      const doctorDepartment =
-        doctor?.department
-          ?.trim()
-          .toLowerCase() || "";
-
-      return (
-        doctorDepartment ===
-        selectedDepartment
-      );
-    });
+    return doctors.filter(
+      (doctor) =>
+        String(doctor.department || "").trim() ===
+        String(form.department).trim()
+    );
   }, [doctors, form.department]);
 
-  /* =========================================
-     Selected Doctor Object
-  ========================================= */
+  /* ==================================================
+     SELECTED DOCTOR
+  ================================================== */
 
   const selectedDoctor = useMemo(() => {
-    return filteredDoctors.find(
-      (doctor) =>
-        doctor.name === form.doctor
+    return (
+      doctors.find(
+        (doctor) =>
+          String(doctor._id) === String(form.doctor)
+      ) || null
     );
-  }, [filteredDoctors, form.doctor]);
+  }, [doctors, form.doctor]);
 
-  /* =========================================
-     Form Helpers
-  ========================================= */
+  /* ==================================================
+     DYNAMIC DOCTOR FEE
+     DATABASE SOURCE: doctor.opdFee
+  ================================================== */
 
-  const resetForm = () => {
-    setForm(emptyForm);
-  };
+  const selectedDoctorFee = Number(
+    selectedDoctor?.opdFee || 0
+  );
+
+  /* ==================================================
+     DOCTOR OPD DAYS
+  ================================================== */
+
+  const doctorOpdDays = selectedDoctor?.opdDays || [];
+
+  /* ==================================================
+     HANDLE FORM CHANGE
+  ================================================== */
 
   const handleChange = (event) => {
-    const { name, value } =
-      event.target;
+    const { name, value } = event.target;
 
-    setPaymentMessage("");
+    setMessage({
+      type: "",
+      text: "",
+    });
 
-    setForm((previousForm) => {
-      if (name === "department") {
-        return {
-          ...previousForm,
-          department: value,
-          doctor: "",
-        };
-      }
-
-      return {
-        ...previousForm,
+    setForm((previous) => {
+      const next = {
+        ...previous,
         [name]: value,
       };
+
+      /* ----------------------------------------------
+         Department changed
+      ---------------------------------------------- */
+
+      if (name === "department") {
+        next.doctor = "";
+        next.time = "";
+      }
+
+      /* ----------------------------------------------
+         Doctor changed
+      ---------------------------------------------- */
+
+      if (name === "doctor") {
+        const doctor = doctors.find(
+          (item) => String(item._id) === String(value)
+        );
+
+        next.department = doctor?.department || "";
+        next.time = "";
+      }
+
+      return next;
     });
   };
 
-  /* =========================================
-     Mark Failed Payment
-  ========================================= */
+  /* ==================================================
+     SUBMIT APPOINTMENT
+  ================================================== */
 
-  const markPaymentFailed = async ({
-    appointmentId,
-    razorpayOrderId,
-    errorCode = "",
-    errorDescription = "",
-  }) => {
-    try {
-      await fetch(
-        `${API_URL}/payments/failed`,
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-
-          body: JSON.stringify({
-            appointmentId,
-            razorpayOrderId,
-            errorCode,
-            errorDescription,
-          }),
-        }
-      );
-    } catch (error) {
-      console.error(
-        "Failed payment update error:",
-        error
-      );
-    }
-  };
-
-  /* =========================================
-     Submit + Razorpay Payment
-  ========================================= */
-
-  const submitForm = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    setPaymentMessage("");
+    setMessage({
+      type: "",
+      text: "",
+    });
 
-    if (
-      !form.name.trim() ||
-      !form.phone.trim() ||
-      !form.department ||
-      !form.date ||
-      !form.doctor
-    ) {
-      alert(
-        "Patient name, phone, department, date aur doctor select karna zaroori hai."
-      );
+    /* ----------------------------------------------
+       BASIC VALIDATION
+    ---------------------------------------------- */
 
+    if (!form.name.trim()) {
+      setMessage({
+        type: "error",
+        text: "Please enter patient name.",
+      });
       return;
     }
 
-    /*
-     * Same-day appointment is allowed.
-     * Only past dates are blocked.
-     */
+    if (!/^[6-9]\d{9}$/.test(form.phone.trim())) {
+      setMessage({
+        type: "error",
+        text: "Please enter a valid 10-digit mobile number.",
+      });
+      return;
+    }
+
+    if (!form.doctor) {
+      setMessage({
+        type: "error",
+        text: "Please select a doctor.",
+      });
+      return;
+    }
+
+    if (!form.date) {
+      setMessage({
+        type: "error",
+        text: "Please select appointment date.",
+      });
+      return;
+    }
+
+    if (!form.time) {
+      setMessage({
+        type: "error",
+        text: "Please select appointment time.",
+      });
+      return;
+    }
+
+    /* ----------------------------------------------
+       PAST DATE VALIDATION
+       Same-day appointment IS allowed.
+    ---------------------------------------------- */
+
+    const todayDate = getTodayDate();
 
     if (form.date < todayDate) {
-      alert(
-        "Past date ke liye appointment book nahi ki ja sakti."
-      );
-
+      setMessage({
+        type: "error",
+        text: "Past date appointment allowed nahi hai.",
+      });
       return;
     }
 
-    if (
-      !/^[0-9]{10}$/.test(
-        form.phone.trim()
-      )
-    ) {
-      alert(
-        "Valid 10 digit mobile number enter karein."
-      );
-
-      return;
-    }
-
-    if (
-      form.age &&
-      (Number(form.age) < 1 ||
-        Number(form.age) > 120)
-    ) {
-      alert(
-        "Valid age enter karein."
-      );
-
-      return;
-    }
+    /* ----------------------------------------------
+       DOCTOR VALIDATION
+    ---------------------------------------------- */
 
     if (!selectedDoctor) {
-      alert(
-        "Selected doctor is department mein available nahi hai."
-      );
-
+      setMessage({
+        type: "error",
+        text: "Selected doctor not found.",
+      });
       return;
     }
 
-    setLoading(true);
+    if (
+      String(selectedDoctor.status || "").toLowerCase() !==
+      "active"
+    ) {
+      setMessage({
+        type: "error",
+        text: "Selected doctor is currently unavailable.",
+      });
+      return;
+    }
 
-    setPaymentMessage(
-      "Secure payment prepare ho raha hai..."
-    );
+    if (selectedDoctor.opdAvailable === false) {
+      setMessage({
+        type: "error",
+        text: "OPD is currently unavailable for this doctor.",
+      });
+      return;
+    }
+
+    /* ----------------------------------------------
+       SUBMIT
+    ---------------------------------------------- */
 
     try {
-      /* =========================================
-         Load Razorpay
-      ========================================= */
-
-      const razorpayLoaded =
-        await loadRazorpayScript();
-
-      if (!razorpayLoaded) {
-        throw new Error(
-          "Razorpay load nahi ho saka. Internet connection check karein."
-        );
-      }
-
-      /* =========================================
-         Appointment Data
-      ========================================= */
+      setSubmitting(true);
 
       const appointmentData = {
         name: form.name.trim(),
-
         phone: form.phone.trim(),
-
         email: form.email.trim(),
-
-        age: form.age
-          ? String(form.age).trim()
-          : "",
-
+        age: form.age ? Number(form.age) : null,
         gender: form.gender,
-
-        department:
-          selectedDoctor.department,
-
-        date: form.date,
-
         doctor: selectedDoctor.name,
 
-        doctorId:
-          selectedDoctor._id,
+        doctorId: selectedDoctor._id,
 
-        message:
-          form.message.trim(),
+        department:
+          form.department ||
+          selectedDoctor.department ||
+          "",
+
+        date: form.date,
+        time: form.time,
+        message: form.message.trim(),
+
+        /*
+         * This is only useful as frontend metadata/display.
+         * Backend MUST calculate actual payment amount
+         * from Doctor.opdFee using doctorId.
+         */
+        doctorFee: selectedDoctorFee,
       };
 
-      /* =========================================
-         Create Razorpay Order
-      ========================================= */
+      /* ----------------------------------------------
+         CREATE APPOINTMENT
+      ---------------------------------------------- */
 
-      const orderResponse =
-        await fetch(
-          `${API_URL}/payments/create-order`,
-          {
-            method: "POST",
+      const appointmentResponse = await fetch(
+        `${API_URL}/appointments`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(appointmentData),
+        }
+      );
 
-            headers: {
-              "Content-Type":
-                "application/json",
-            },
-
-            body: JSON.stringify(
-              appointmentData
-            ),
-          }
-        );
-
-      const orderResult =
-        await orderResponse.json();
+      const appointmentDataResponse =
+        await appointmentResponse.json();
 
       if (
-        !orderResponse.ok ||
-        !orderResult.success
+        !appointmentResponse.ok ||
+        !appointmentDataResponse.success
       ) {
         throw new Error(
-          orderResult.message ||
-            "Payment order create nahi ho saka."
+          appointmentDataResponse.message ||
+            "Unable to create appointment."
         );
       }
 
-      const orderData =
-        orderResult.data;
+      const appointment =
+        appointmentDataResponse.data ||
+        appointmentDataResponse.appointment ||
+        appointmentDataResponse;
 
-      setPaymentMessage(
-        "Payment window open ho raha hai..."
+      /* ----------------------------------------------
+         CREATE RAZORPAY ORDER
+      ---------------------------------------------- */
+
+      const paymentResponse = await fetch(
+        `${API_URL}/payments/create-order`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            appointmentId:
+              appointment?._id ||
+              appointment?.id,
+
+            doctorId: selectedDoctor._id,
+
+            /*
+             * Send for reference only.
+             * Backend should NOT trust this value.
+             */
+            doctorFee: selectedDoctorFee,
+
+            name: form.name.trim(),
+            phone: form.phone.trim(),
+            email: form.email.trim(),
+          }),
+        }
       );
 
-      /* =========================================
-         Razorpay Options
-      ========================================= */
+      const paymentData = await paymentResponse.json();
 
-      const options = {
-        key: orderData.keyId,
+      if (
+        !paymentResponse.ok ||
+        !paymentData.success
+      ) {
+        throw new Error(
+          paymentData.message ||
+            "Unable to create payment order."
+        );
+      }
 
-        amount: orderData.amount,
+      /* ----------------------------------------------
+         RAZORPAY
+      ---------------------------------------------- */
+
+      if (typeof window === "undefined") {
+        throw new Error("Payment system unavailable.");
+      }
+
+      if (!window.Razorpay) {
+        throw new Error(
+          "Razorpay is not loaded. Please refresh the page and try again."
+        );
+      }
+
+      const razorpayOrder =
+        paymentData.order ||
+        paymentData.data ||
+        paymentData;
+
+      const razorpayOptions = {
+        key:
+          paymentData.key ||
+          paymentData.keyId ||
+          process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+
+        amount: razorpayOrder.amount,
 
         currency:
-          orderData.currency,
+          razorpayOrder.currency || "INR",
 
-        name: "Dew Care Hospital",
+        name:
+          siteInfo?.name ||
+          "Dew Care Hospital",
 
         description:
           `Appointment with ${selectedDoctor.name}`,
 
         order_id:
-          orderData.orderId,
+          razorpayOrder.id ||
+          razorpayOrder.order_id,
 
         prefill: {
           name: form.name.trim(),
-
           email: form.email.trim(),
-
-          contact:
-            form.phone.trim(),
+          contact: form.phone.trim(),
         },
 
         notes: {
           appointmentId:
-            orderData.appointmentId,
+            appointment?._id ||
+            appointment?.id ||
+            "",
 
           doctorId:
             selectedDoctor._id,
 
-          doctor:
+          doctorName:
             selectedDoctor.name,
 
-          appointmentDate:
-            form.date,
+          doctorFee:
+            String(selectedDoctorFee),
         },
 
         theme: {
-          color: "#0891b2",
+          color: "#047857",
         },
 
-        modal: {
-          confirm_close: true,
-
-          ondismiss: () => {
-            setLoading(false);
-
-            setPaymentMessage(
-              "Payment window close ho gayi. Appointment confirm nahi hui."
-            );
-          },
-        },
-
-        /* =========================================
-           Successful Payment
-        ========================================= */
-
-        handler: async (
-          paymentResponse
-        ) => {
+        handler: async function (response) {
           try {
-            setLoading(true);
+            const verifyResponse = await fetch(
+              `${API_URL}/payments/verify`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  appointmentId:
+                    appointment?._id ||
+                    appointment?.id,
 
-            setPaymentMessage(
-              "Payment receive ho gayi. Verification chal rahi hai..."
+                  razorpay_order_id:
+                    response.razorpay_order_id,
+
+                  razorpay_payment_id:
+                    response.razorpay_payment_id,
+
+                  razorpay_signature:
+                    response.razorpay_signature,
+                }),
+              }
             );
 
-            const verifyResponse =
-              await fetch(
-                `${API_URL}/payments/verify`,
-                {
-                  method: "POST",
-
-                  headers: {
-                    "Content-Type":
-                      "application/json",
-                  },
-
-                  body: JSON.stringify({
-                    appointmentId:
-                      orderData.appointmentId,
-
-                    razorpay_order_id:
-                      paymentResponse.razorpay_order_id,
-
-                    razorpay_payment_id:
-                      paymentResponse.razorpay_payment_id,
-
-                    razorpay_signature:
-                      paymentResponse.razorpay_signature,
-                  }),
-                }
-              );
-
-            const verifyResult =
+            const verifyData =
               await verifyResponse.json();
 
             if (
               !verifyResponse.ok ||
-              !verifyResult.success
+              !verifyData.success
             ) {
               throw new Error(
-                verifyResult.message ||
+                verifyData.message ||
                   "Payment verification failed."
               );
             }
 
-            setPaymentMessage(
-              "Payment successful. Appointment confirmed."
+            setMessage({
+              type: "success",
+              text:
+                "Appointment booked successfully! Payment received.",
+            });
+
+            router.push(
+              `/appointment/success?id=${
+                appointment?._id ||
+                appointment?.id ||
+                ""
+              }`
             );
-
-            resetForm();
-
-            alert(
-              `✅ Payment successful!\n\nAppointment confirmed.\nPayment ID: ${paymentResponse.razorpay_payment_id}`
-            );
-
-            router.push("/");
           } catch (error) {
             console.error(
-              "Payment verification error:",
+              "PAYMENT VERIFY ERROR:",
               error
             );
 
-            setPaymentMessage(
-              error.message ||
-                "Payment verification failed."
-            );
-
-            alert(
-              error.message ||
-                "Payment verification failed."
-            );
-          } finally {
-            setLoading(false);
+            setMessage({
+              type: "error",
+              text:
+                error.message ||
+                "Payment verification failed.",
+            });
           }
+        },
+
+        modal: {
+          ondismiss: function () {
+            setMessage({
+              type: "error",
+              text:
+                "Payment cancelled. Your appointment is not confirmed yet.",
+            });
+          },
         },
       };
 
-      /* =========================================
-         Razorpay Checkout
-      ========================================= */
+      const razorpay =
+        new window.Razorpay(razorpayOptions);
 
-      const razorpayCheckout =
-        new window.Razorpay(options);
-
-      /* =========================================
-         Payment Failed
-      ========================================= */
-
-      razorpayCheckout.on(
+      razorpay.on(
         "payment.failed",
-        async (response) => {
-          const errorCode =
-            response?.error?.code ||
-            "PAYMENT_FAILED";
+        function (response) {
+          console.error(
+            "RAZORPAY PAYMENT FAILED:",
+            response
+          );
 
-          const errorDescription =
-            response?.error?.description ||
-            "Razorpay payment failed.";
-
-          await markPaymentFailed({
-            appointmentId:
-              orderData.appointmentId,
-
-            razorpayOrderId:
-              orderData.orderId,
-
-            errorCode,
-
-            errorDescription,
+          setMessage({
+            type: "error",
+            text:
+              response?.error?.description ||
+              "Payment failed. Please try again.",
           });
-
-          setLoading(false);
-
-          setPaymentMessage(
-            errorDescription
-          );
-
-          alert(
-            `❌ Payment failed: ${errorDescription}`
-          );
         }
       );
 
-      razorpayCheckout.open();
-
-      setLoading(false);
+      razorpay.open();
     } catch (error) {
       console.error(
-        "Appointment payment error:",
+        "APPOINTMENT SUBMIT ERROR:",
         error
       );
 
-      setLoading(false);
-
-      setPaymentMessage(
-        error.message ||
-          "Payment start karte waqt problem hui."
-      );
-
-      alert(
-        error.message ||
-          "Payment start karte waqt problem hui."
-      );
+      setMessage({
+        type: "error",
+        text:
+          error.message ||
+          "Something went wrong. Please try again.",
+      });
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  /* =========================================
-     Input Class
-  ========================================= */
-
-  const inputClass =
-    "w-full rounded-2xl border border-sky-100 bg-white px-5 py-4 text-gray-800 shadow-sm outline-none transition placeholder:text-gray-400 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-100 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500";
-
-  /* =========================================
+  /* ==================================================
      UI
-  ========================================= */
+  ================================================== */
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-sky-50 via-white to-cyan-50">
+    <main className="min-h-screen bg-[#f7faf9]">
+      {/* ==================================================
+          HERO
+      ================================================== */}
 
-      {/* =========================================
-          Hero Section
-      ========================================= */}
+      <section className="relative overflow-hidden bg-[#071c19]">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(200,174,106,0.18),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.16),transparent_35%)]" />
 
-      <section className="relative overflow-hidden bg-gradient-to-br from-sky-950 via-sky-800 to-cyan-700 py-20 text-white sm:py-24">
+        <div className="relative mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
+          <div className="max-w-3xl">
+            <span className="mb-5 inline-flex border border-emerald-300/30 bg-emerald-400/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-emerald-100">
+              Online Appointment
+            </span>
 
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,.35),transparent_35%)]" />
+            <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
+              Book Your Appointment
+            </h1>
 
-        <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-cyan-400/20 blur-3xl" />
-
-        <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-
-          <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-5 py-2 text-sm font-bold backdrop-blur">
-            Appointment
-          </span>
-
-          <h1 className="mt-5 text-4xl font-extrabold md:text-6xl">
-            Book Your Appointment
-          </h1>
-
-          <p className="mt-6 max-w-3xl text-lg text-sky-100">
-            Department aur doctor select
-            karke secure online payment ke
-            through appointment confirm
-            karein.
-          </p>
-
-          <div className="mt-5 flex flex-wrap gap-3">
-
-            <p className="inline-flex rounded-xl border border-cyan-300/30 bg-white/10 px-4 py-3 text-sm font-semibold text-cyan-100 backdrop-blur">
-              Same-day aur future
-              appointments available.
+            <p className="mt-5 max-w-2xl text-base leading-8 text-emerald-50/80 sm:text-lg">
+              Select your preferred doctor, date and time.
+              Same-day aur future appointments available.
             </p>
 
-            <p className="inline-flex rounded-xl border border-emerald-300/30 bg-emerald-400/10 px-4 py-3 text-sm font-semibold text-emerald-100 backdrop-blur">
-              Appointment Fee: ₹
-              {APPOINTMENT_FEE}
-            </p>
-
+            {/* DYNAMIC FEE */}
+            <div className="mt-7">
+              <p className="inline-flex border border-emerald-300/30 bg-emerald-400/10 px-4 py-3 text-sm font-semibold text-emerald-100 backdrop-blur">
+                {selectedDoctor
+                  ? `Appointment Fee: ₹${selectedDoctorFee.toLocaleString(
+                      "en-IN"
+                    )}`
+                  : "Select Doctor for Appointment Fee"}
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* =========================================
-          Main Section
-      ========================================= */}
+      {/* ==================================================
+          FORM
+      ================================================== */}
 
-      <section className="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-3 lg:px-8 lg:py-20">
+      <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:px-10 lg:py-16">
+        <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
+          {/* FORM CARD */}
 
-        {/* =========================================
-            Appointment Form
-        ========================================= */}
+          <div className="border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+            <div className="mb-8">
+              <h2 className="text-2xl font-black text-slate-900">
+                Patient Details
+              </h2>
 
-        <div className="rounded-[2rem] border border-sky-100 bg-white p-5 shadow-2xl sm:p-8 lg:col-span-2">
-
-          <div className="mb-8">
-
-            <p className="font-bold text-cyan-700">
-              Patient Information
-            </p>
-
-            <h2 className="mt-2 text-3xl font-extrabold text-sky-950">
-              Patient Details
-            </h2>
-
-            <p className="mt-3 text-gray-500">
-              Accurate details provide karein.
-              Payment successful hone ke baad
-              appointment confirm hogi.
-            </p>
-
-          </div>
-
-          <form
-            onSubmit={submitForm}
-            className="grid gap-5"
-          >
-
-            {/* Name + Phone */}
-
-            <div className="grid gap-5 md:grid-cols-2">
-
-              <input
-                type="text"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                required
-                placeholder="Patient Name"
-                autoComplete="name"
-                className={inputClass}
-              />
-
-              <input
-                type="tel"
-                name="phone"
-                value={form.phone}
-                onChange={handleChange}
-                required
-                maxLength={10}
-                inputMode="numeric"
-                pattern="[0-9]{10}"
-                placeholder="10 Digit Mobile Number"
-                autoComplete="tel"
-                className={inputClass}
-              />
-
+              <p className="mt-2 text-sm text-slate-500">
+                Please enter correct patient information.
+              </p>
             </div>
 
-            {/* Email + Age */}
-
-            <div className="grid gap-5 md:grid-cols-2">
-
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                placeholder="Email Address"
-                autoComplete="email"
-                className={inputClass}
-              />
-
-              <input
-                type="number"
-                name="age"
-                value={form.age}
-                onChange={handleChange}
-                min="1"
-                max="120"
-                placeholder="Age"
-                className={inputClass}
-              />
-
-            </div>
-
-            {/* Gender + Department */}
-
-            <div className="grid gap-5 md:grid-cols-2">
-
-              <select
-                name="gender"
-                value={form.gender}
-                onChange={handleChange}
-                className={inputClass}
+            {message.text && (
+              <div
+                className={`mb-6 border px-4 py-3 text-sm font-semibold ${
+                  message.type === "success"
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                    : "border-red-200 bg-red-50 text-red-700"
+                }`}
               >
+                {message.text}
+              </div>
+            )}
 
-                <option value="">
-                  Select Gender
-                </option>
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-6"
+            >
+              {/* NAME / PHONE */}
 
-                <option value="Male">
-                  Male
-                </option>
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-bold text-slate-700">
+                    Patient Name *
+                  </label>
 
-                <option value="Female">
-                  Female
-                </option>
+                  <input
+                    type="text"
+                    name="name"
+                    value={form.name}
+                    onChange={handleChange}
+                    placeholder="Enter patient name"
+                    className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+                    required
+                  />
+                </div>
 
-                <option value="Other">
-                  Other
-                </option>
+                <div>
+                  <label className="mb-2 block text-sm font-bold text-slate-700">
+                    Mobile Number *
+                  </label>
 
-              </select>
-
-              <select
-                name="department"
-                value={form.department}
-                onChange={handleChange}
-                required
-                disabled={
-                  doctorsLoading ||
-                  departments.length === 0
-                }
-                className={inputClass}
-              >
-
-                <option value="">
-                  {doctorsLoading
-                    ? "Loading Departments..."
-                    : departments.length === 0
-                      ? "No Department Available"
-                      : "Select Department"}
-                </option>
-
-                {departments.map(
-                  (department) => (
-                    <option
-                      key={department}
-                      value={department}
-                    >
-                      {department}
-                    </option>
-                  )
-                )}
-
-              </select>
-
-            </div>
-
-            {/* Date + Doctor */}
-
-            <div className="grid gap-5 md:grid-cols-2">
-
-              <div>
-
-                <input
-                  type="date"
-                  name="date"
-                  value={form.date}
-                  onChange={handleChange}
-                  min={todayDate}
-                  required
-                  className={inputClass}
-                />
-
-                <p className="mt-2 px-1 text-sm text-gray-500">
-                  Appointment aaj ya kisi bhi
-                  future date ke liye book ki ja
-                  sakti hai.
-                </p>
-
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={form.phone}
+                    onChange={handleChange}
+                    placeholder="10-digit mobile number"
+                    maxLength={10}
+                    className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+                    required
+                  />
+                </div>
               </div>
 
+              {/* EMAIL / AGE */}
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-bold text-slate-700">
+                    Email
+                  </label>
+
+                  <input
+                    type="email"
+                    name="email"
+                    value={form.email}
+                    onChange={handleChange}
+                    placeholder="Enter email"
+                    className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-bold text-slate-700">
+                    Age
+                  </label>
+
+                  <input
+                    type="number"
+                    name="age"
+                    value={form.age}
+                    onChange={handleChange}
+                    min="0"
+                    max="120"
+                    placeholder="Patient age"
+                    className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+                  />
+                </div>
+              </div>
+
+              {/* GENDER */}
+
               <div>
+                <label className="mb-2 block text-sm font-bold text-slate-700">
+                  Gender
+                </label>
 
                 <select
-                  name="doctor"
-                  value={form.doctor}
+                  name="gender"
+                  value={form.gender}
                   onChange={handleChange}
-                  required
-                  disabled={
-                    doctorsLoading ||
-                    !form.department ||
-                    filteredDoctors.length === 0
-                  }
-                  className={inputClass}
+                  className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
                 >
-
                   <option value="">
-                    {doctorsLoading
-                      ? "Loading Doctors..."
-                      : !form.department
-                        ? "First Select Department"
-                        : filteredDoctors.length === 0
-                          ? "No Doctor Available"
-                          : "Select Doctor"}
+                    Select gender
                   </option>
-
-                  {filteredDoctors.map(
-                    (doctor) => (
-                      <option
-                        key={doctor._id}
-                        value={doctor.name}
-                      >
-                        {doctor.name}
-
-                        {doctor.specialist
-                          ? ` - ${doctor.specialist}`
-                          : ""}
-                      </option>
-                    )
-                  )}
-
+                  <option value="Male">
+                    Male
+                  </option>
+                  <option value="Female">
+                    Female
+                  </option>
+                  <option value="Other">
+                    Other
+                  </option>
                 </select>
+              </div>
 
-                {form.department &&
-                  !doctorsLoading &&
-                  filteredDoctors.length ===
-                    0 && (
-                    <p className="mt-2 px-1 text-sm font-medium text-red-500">
-                      Is department mein koi
-                      active doctor available
-                      nahi hai.
+              {/* DEPARTMENT / DOCTOR */}
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-bold text-slate-700">
+                    Department
+                  </label>
+
+                  <select
+                    name="department"
+                    value={form.department}
+                    onChange={handleChange}
+                    className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+                  >
+                    <option value="">
+                      All Departments
+                    </option>
+
+                    {departments.map(
+                      (department) => (
+                        <option
+                          key={department}
+                          value={department}
+                        >
+                          {department}
+                        </option>
+                      )
+                    )}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-bold text-slate-700">
+                    Doctor *
+                  </label>
+
+                  <select
+                    name="doctor"
+                    value={form.doctor}
+                    onChange={handleChange}
+                    disabled={loadingDoctors}
+                    className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600 disabled:bg-slate-100"
+                    required
+                  >
+                    <option value="">
+                      {loadingDoctors
+                        ? "Loading doctors..."
+                        : "Select Doctor"}
+                    </option>
+
+                    {filteredDoctors.map(
+                      (doctor) => (
+                        <option
+                          key={doctor._id}
+                          value={doctor._id}
+                        >
+                          {doctor.name}
+                          {doctor.specialist
+                            ? ` — ${doctor.specialist}`
+                            : ""}
+                        </option>
+                      )
+                    )}
+                  </select>
+                </div>
+              </div>
+
+              {/* SELECTED DOCTOR INFO */}
+
+              {selectedDoctor && (
+                <div className="border border-emerald-100 bg-emerald-50 p-5">
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-wider text-emerald-700">
+                        Selected Doctor
+                      </p>
+
+                      <h3 className="mt-1 text-xl font-black text-slate-900">
+                        {selectedDoctor.name}
+                      </h3>
+
+                      {selectedDoctor.specialist && (
+                        <p className="mt-1 text-sm text-slate-600">
+                          {selectedDoctor.specialist}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="sm:text-right">
+                      <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                        OPD Fee
+                      </p>
+
+                      <p className="mt-1 text-2xl font-black text-emerald-700">
+                        ₹
+                        {selectedDoctorFee.toLocaleString(
+                          "en-IN"
+                        )}
+                      </p>
+                    </div>
+                  </div>
+
+                  {selectedDoctor.qualification && (
+                    <p className="mt-4 text-sm text-slate-600">
+                      <span className="font-bold">
+                        Qualification:
+                      </span>{" "}
+                      {selectedDoctor.qualification}
                     </p>
                   )}
 
-                {form.department &&
-                  filteredDoctors.length > 0 && (
-                    <p className="mt-2 px-1 text-sm text-gray-500">
-                      {filteredDoctors.length}{" "}
-                      doctor
-                      {filteredDoctors.length >
-                      1
-                        ? "s"
-                        : ""}{" "}
-                      available.
+                  {selectedDoctor.experience && (
+                    <p className="mt-1 text-sm text-slate-600">
+                      <span className="font-bold">
+                        Experience:
+                      </span>{" "}
+                      {selectedDoctor.experience}
                     </p>
                   )}
+                </div>
+              )}
 
+              {/* DATE / TIME */}
+
+              <div className="grid gap-5 md:grid-cols-2">
+                <div>
+                  <label className="mb-2 block text-sm font-bold text-slate-700">
+                    Appointment Date *
+                  </label>
+
+                  <input
+                    type="date"
+                    name="date"
+                    value={form.date}
+                    onChange={handleChange}
+                    min={getTodayDate()}
+                    className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+                    required
+                  />
+
+                  <p className="mt-2 text-xs text-slate-500">
+                    Same-day appointment bhi available hai.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="mb-2 block text-sm font-bold text-slate-700">
+                    Appointment Time *
+                  </label>
+
+                  <input
+                    type="time"
+                    name="time"
+                    value={form.time}
+                    onChange={handleChange}
+                    min={
+                      selectedDoctor?.opdStartTime ||
+                      undefined
+                    }
+                    max={
+                      selectedDoctor?.opdEndTime ||
+                      undefined
+                    }
+                    className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+                    required
+                  />
+
+                  {selectedDoctor && (
+                    <p className="mt-2 text-xs text-slate-500">
+                      OPD:{" "}
+                      {selectedDoctor.opdStartTime ||
+                        "--"}{" "}
+                      -{" "}
+                      {selectedDoctor.opdEndTime ||
+                        "--"}
+                    </p>
+                  )}
+                </div>
               </div>
 
-            </div>
+              {/* OPD DAYS */}
 
-            {/* Selected Doctor */}
+              {selectedDoctor &&
+                doctorOpdDays.length > 0 && (
+                  <div className="border border-slate-200 bg-slate-50 p-4">
+                    <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                      OPD Days
+                    </p>
 
-            {selectedDoctor && (
-              <div className="rounded-2xl border border-cyan-100 bg-cyan-50 p-4">
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {doctorOpdDays.map(
+                        (day) => (
+                          <span
+                            key={day}
+                            className="border border-emerald-200 bg-white px-3 py-1 text-xs font-semibold text-emerald-700"
+                          >
+                            {day}
+                          </span>
+                        )
+                      )}
+                    </div>
+                  </div>
+                )}
 
-                <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-700">
-                  Selected Doctor
-                </p>
+              {/* MESSAGE */}
 
-                <h3 className="mt-1 font-extrabold text-sky-950">
-                  {selectedDoctor.name}
-                </h3>
+              <div>
+                <label className="mb-2 block text-sm font-bold text-slate-700">
+                  Message / Symptoms
+                </label>
 
-                <p className="mt-1 text-sm text-gray-600">
-                  {selectedDoctor.specialist}
-                </p>
-
-                <p className="mt-1 text-sm text-gray-500">
-                  Department:{" "}
-                  {selectedDoctor.department}
-                </p>
-
-                <p className="mt-2 text-sm font-semibold text-cyan-700">
-                  Appointment Fee: ₹
-                  {APPOINTMENT_FEE}
-                </p>
-
+                <textarea
+                  name="message"
+                  value={form.message}
+                  onChange={handleChange}
+                  rows={5}
+                  placeholder="Briefly describe your concern..."
+                  className="w-full resize-none border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+                />
               </div>
-            )}
 
-            {/* Message */}
+              {/* PAYMENT INFO */}
 
-            <textarea
-              name="message"
-              value={form.message}
-              onChange={handleChange}
-              rows={5}
-              placeholder="Describe your health problem..."
-              className={inputClass}
-            />
+              {selectedDoctor && (
+                <div className="border border-emerald-200 bg-emerald-50 p-5">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-sm font-semibold text-slate-700">
+                      Appointment Fee
+                    </span>
 
-            {/* Payment Message */}
+                    <span className="text-2xl font-black text-emerald-700">
+                      ₹
+                      {selectedDoctorFee.toLocaleString(
+                        "en-IN"
+                      )}
+                    </span>
+                  </div>
 
-            {paymentMessage && (
-              <div className="rounded-2xl border border-cyan-100 bg-cyan-50 px-4 py-3 text-sm font-semibold text-cyan-800">
-                {paymentMessage}
-              </div>
-            )}
+                  <p className="mt-2 text-xs leading-5 text-slate-500">
+                    Payment Razorpay ke through secure
+                    checkout par process hoga.
+                  </p>
+                </div>
+              )}
 
-            {/* Submit */}
+              {/* SUBMIT */}
 
-            <button
-              type="submit"
-              disabled={
-                loading ||
-                doctorsLoading ||
-                !form.department ||
-                !form.doctor ||
-                filteredDoctors.length === 0
-              }
-              className="mt-2 rounded-2xl bg-gradient-to-r from-sky-800 to-cyan-500 py-4 font-extrabold text-white shadow-xl transition hover:scale-[1.02] hover:shadow-2xl disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {loading
-                ? "Please Wait..."
-                : `Pay ₹${APPOINTMENT_FEE} & Book Appointment`}
-            </button>
+              <button
+                type="submit"
+                disabled={
+                  submitting ||
+                  loadingDoctors ||
+                  !selectedDoctor
+                }
+                className="w-full bg-emerald-700 px-6 py-4 text-sm font-black uppercase tracking-wider text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {submitting
+                  ? "Processing..."
+                  : selectedDoctor
+                  ? `Pay ₹${selectedDoctorFee.toLocaleString(
+                      "en-IN"
+                    )} & Book Appointment`
+                  : "Select Doctor"}
+              </button>
+            </form>
+          </div>
 
-            <p className="text-center text-xs text-gray-500">
-              Secure payment powered by
-              Razorpay. Payment verification ke
-              baad appointment confirm hogi.
-            </p>
+          {/* ==================================================
+              SIDE INFO
+          ================================================== */}
 
-          </form>
-        </div>
-
-        {/* =========================================
-            Emergency Card
-        ========================================= */}
-
-        <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-sky-950 via-sky-900 to-cyan-700 p-8 text-white shadow-2xl">
-
-          <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-cyan-400/20 blur-3xl" />
-
-          <div className="relative">
-
-            <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-4xl">
-              🚑
-            </div>
-
-            <h3 className="text-3xl font-extrabold">
-              Emergency Help
+          <aside className="h-fit border border-slate-200 bg-white p-6 shadow-sm">
+            <h3 className="text-xl font-black text-slate-900">
+              Appointment Information
             </h3>
 
-            <p className="mt-4 text-sky-100">
-              Our emergency medical team is
-              available 24 hours a day, 7 days
-              a week.
-            </p>
+            <div className="mt-6 space-y-5">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  Doctor Fee
+                </p>
 
-            <a
-              href={`tel:${siteInfo.phone}`}
-              className="mt-8 block rounded-2xl bg-white px-5 py-4 text-center font-bold text-sky-900 shadow-lg transition hover:scale-105"
-            >
-              📞 Call {siteInfo.phone}
-            </a>
+                <p className="mt-1 text-lg font-black text-emerald-700">
+                  {selectedDoctor
+                    ? `₹${selectedDoctorFee.toLocaleString(
+                        "en-IN"
+                      )}`
+                    : "Select doctor"}
+                </p>
+              </div>
 
-            <div className="mt-8 rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  Appointment
+                </p>
 
-              <h4 className="font-bold text-cyan-200">
-                Hospital Address
-              </h4>
+                <p className="mt-1 text-sm leading-6 text-slate-600">
+                  Same-day and future appointments can
+                  be requested.
+                </p>
+              </div>
 
-              <p className="mt-2 text-sky-100">
-                {siteInfo.address}
-              </p>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  Payment
+                </p>
 
+                <p className="mt-1 text-sm leading-6 text-slate-600">
+                  Secure online payment through Razorpay.
+                </p>
+              </div>
+
+              <div className="border-t border-slate-100 pt-5">
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  Hospital
+                </p>
+
+                <p className="mt-1 text-sm leading-6 text-slate-600">
+                  {siteInfo?.name ||
+                    "Dew Care Hospital"}
+                </p>
+              </div>
             </div>
-
-            <div className="mt-5 rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur">
-
-              <h4 className="font-bold text-cyan-200">
-                Email
-              </h4>
-
-              <p className="mt-2 break-all text-sky-100">
-                {siteInfo.email}
-              </p>
-
-            </div>
-
-            <div className="mt-5 rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur">
-
-              <h4 className="font-bold text-cyan-200">
-                OPD Timing
-              </h4>
-
-              <p className="mt-2 text-sky-100">
-                {siteInfo.opdDays ||
-                  "Monday - Saturday"}
-              </p>
-
-              <p className="text-sky-100">
-                {siteInfo.opdTime ||
-                  "10:00 AM – 05:00 PM"}
-              </p>
-
-            </div>
-
-            <div className="mt-5 rounded-2xl border border-emerald-300/20 bg-emerald-400/10 p-5 backdrop-blur">
-
-              <h4 className="font-bold text-emerald-200">
-                Secure Online Payment
-              </h4>
-
-              <p className="mt-2 text-sm text-emerald-50">
-                ₹{APPOINTMENT_FEE} appointment
-                fee Razorpay ke through securely
-                pay karein.
-              </p>
-
-            </div>
-
-          </div>
+          </aside>
         </div>
-
       </section>
     </main>
   );
