@@ -1,21 +1,30 @@
 export const siteInfo = {
   name: "Dew Care Hospital & Research Centre",
   tagline: "Compassionate Care • Advanced Treatment • Trusted Healthcare",
-   phone: "7086803380",
-  phone: "09101988910",
+
+  // Hospital Contact Numbers
+  phone: "7086803380",
+  phone2: "09101988910",
+
+  // WhatsApp
   whatsapp: "9101988910",
+
+  // Email
   email: "Drforidulhussaindchr@gmail.com",
+
+  // Address
   address: "Dhing Road, Haibargaon, Nagaon, Assam - 782002",
 
+  // Emergency
   emergency: "+91 9101988910",
 
+  // Timings
   timings: {
     opd: "10:00 AM - 05:00 PM",
     emergency: "24 × 7",
   },
 
-  
-
+  // Social Media
   social: {
     facebook: "#",
     instagram: "#",
