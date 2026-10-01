@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { siteInfo } from "../data/siteData";
 
 const API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://backend-dew-c2to.onrender.com/api";
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://backend-dew-c2to.onrender.com/api";
 
 const APPOINTMENT_FEE = 500;
 
@@ -42,14 +43,22 @@ const loadRazorpayScript = () => {
     );
 
     if (existingScript) {
-      existingScript.addEventListener("load", () => resolve(true));
-      existingScript.addEventListener("error", () => resolve(false));
+      existingScript.addEventListener("load", () =>
+        resolve(true)
+      );
+
+      existingScript.addEventListener("error", () =>
+        resolve(false)
+      );
+
       return;
     }
 
     const script = document.createElement("script");
 
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.src =
+      "https://checkout.razorpay.com/v1/checkout.js";
+
     script.async = true;
 
     script.onload = () => resolve(true);
@@ -66,23 +75,28 @@ const loadRazorpayScript = () => {
 const formatDateForInput = (date) => {
   const year = date.getFullYear();
 
-  const month = String(date.getMonth() + 1).padStart(
-    2,
-    "0"
-  );
+  const month = String(
+    date.getMonth() + 1
+  ).padStart(2, "0");
 
-  const day = String(date.getDate()).padStart(2, "0");
+  const day = String(
+    date.getDate()
+  ).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
 };
 
-const getTomorrowDate = () => {
-  const tomorrow = new Date();
+/* =========================================
+   TODAY DATE
+   Appointment can be booked from today
+========================================= */
 
-  tomorrow.setHours(0, 0, 0, 0);
-  tomorrow.setDate(tomorrow.getDate() + 1);
+const getTodayDate = () => {
+  const today = new Date();
 
-  return formatDateForInput(tomorrow);
+  today.setHours(0, 0, 0, 0);
+
+  return formatDateForInput(today);
 };
 
 /* =========================================
@@ -96,13 +110,18 @@ export default function AppointmentPage() {
   const [form, setForm] = useState(emptyForm);
 
   const [loading, setLoading] = useState(false);
+
   const [doctorsLoading, setDoctorsLoading] =
     useState(true);
 
   const [paymentMessage, setPaymentMessage] =
     useState("");
 
-  const tomorrowDate = getTomorrowDate();
+  /*
+   * Appointment can be booked today or any
+   * future date.
+   */
+  const todayDate = getTodayDate();
 
   /* =========================================
      Fetch Active Doctors
@@ -135,8 +154,9 @@ export default function AppointmentPage() {
             : []
         ).filter((doctor) => {
           return (
-            doctor?.status?.trim().toLowerCase() ===
-            "active"
+            doctor?.status
+              ?.trim()
+              .toLowerCase() === "active"
           );
         });
 
@@ -192,7 +212,8 @@ export default function AppointmentPage() {
           .toLowerCase() || "";
 
       return (
-        doctorDepartment === selectedDepartment
+        doctorDepartment ===
+        selectedDepartment
       );
     });
   }, [doctors, form.department]);
@@ -203,7 +224,8 @@ export default function AppointmentPage() {
 
   const selectedDoctor = useMemo(() => {
     return filteredDoctors.find(
-      (doctor) => doctor.name === form.doctor
+      (doctor) =>
+        doctor.name === form.doctor
     );
   }, [filteredDoctors, form.doctor]);
 
@@ -216,7 +238,8 @@ export default function AppointmentPage() {
   };
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value } =
+      event.target;
 
     setPaymentMessage("");
 
@@ -253,7 +276,8 @@ export default function AppointmentPage() {
           method: "POST",
 
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
 
           body: JSON.stringify({
@@ -295,9 +319,14 @@ export default function AppointmentPage() {
       return;
     }
 
-    if (form.date < tomorrowDate) {
+    /*
+     * Same-day appointment is allowed.
+     * Only past dates are blocked.
+     */
+
+    if (form.date < todayDate) {
       alert(
-        "Appointment kam se kam 1 din pehle book karna hoga."
+        "Past date ke liye appointment book nahi ki ja sakti."
       );
 
       return;
@@ -320,7 +349,9 @@ export default function AppointmentPage() {
       (Number(form.age) < 1 ||
         Number(form.age) > 120)
     ) {
-      alert("Valid age enter karein.");
+      alert(
+        "Valid age enter karein."
+      );
 
       return;
     }
@@ -340,6 +371,10 @@ export default function AppointmentPage() {
     );
 
     try {
+      /* =========================================
+         Load Razorpay
+      ========================================= */
+
       const razorpayLoaded =
         await loadRazorpayScript();
 
@@ -349,9 +384,15 @@ export default function AppointmentPage() {
         );
       }
 
+      /* =========================================
+         Appointment Data
+      ========================================= */
+
       const appointmentData = {
         name: form.name.trim(),
+
         phone: form.phone.trim(),
+
         email: form.email.trim(),
 
         age: form.age
@@ -359,31 +400,41 @@ export default function AppointmentPage() {
           : "",
 
         gender: form.gender,
-        department: selectedDoctor.department,
+
+        department:
+          selectedDoctor.department,
+
         date: form.date,
 
         doctor: selectedDoctor.name,
-        doctorId: selectedDoctor._id,
 
-        message: form.message.trim(),
+        doctorId:
+          selectedDoctor._id,
+
+        message:
+          form.message.trim(),
       };
 
-      /* Create Razorpay Order */
+      /* =========================================
+         Create Razorpay Order
+      ========================================= */
 
-      const orderResponse = await fetch(
-        `${API_URL}/payments/create-order`,
-        {
-          method: "POST",
+      const orderResponse =
+        await fetch(
+          `${API_URL}/payments/create-order`,
+          {
+            method: "POST",
 
-          headers: {
-            "Content-Type": "application/json",
-          },
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
 
-          body: JSON.stringify(
-            appointmentData
-          ),
-        }
-      );
+            body: JSON.stringify(
+              appointmentData
+            ),
+          }
+        );
 
       const orderResult =
         await orderResponse.json();
@@ -398,38 +449,54 @@ export default function AppointmentPage() {
         );
       }
 
-      const orderData = orderResult.data;
+      const orderData =
+        orderResult.data;
 
       setPaymentMessage(
         "Payment window open ho raha hai..."
       );
 
+      /* =========================================
+         Razorpay Options
+      ========================================= */
+
       const options = {
         key: orderData.keyId,
+
         amount: orderData.amount,
-        currency: orderData.currency,
+
+        currency:
+          orderData.currency,
 
         name: "Dew Care Hospital",
 
-        description: `Appointment with ${selectedDoctor.name}`,
+        description:
+          `Appointment with ${selectedDoctor.name}`,
 
-        order_id: orderData.orderId,
+        order_id:
+          orderData.orderId,
 
         prefill: {
           name: form.name.trim(),
+
           email: form.email.trim(),
-          contact: form.phone.trim(),
+
+          contact:
+            form.phone.trim(),
         },
 
         notes: {
           appointmentId:
             orderData.appointmentId,
 
-          doctorId: selectedDoctor._id,
+          doctorId:
+            selectedDoctor._id,
 
-          doctor: selectedDoctor.name,
+          doctor:
+            selectedDoctor.name,
 
-          appointmentDate: form.date,
+          appointmentDate:
+            form.date,
         },
 
         theme: {
@@ -447,6 +514,10 @@ export default function AppointmentPage() {
             );
           },
         },
+
+        /* =========================================
+           Successful Payment
+        ========================================= */
 
         handler: async (
           paymentResponse
@@ -530,8 +601,16 @@ export default function AppointmentPage() {
         },
       };
 
+      /* =========================================
+         Razorpay Checkout
+      ========================================= */
+
       const razorpayCheckout =
         new window.Razorpay(options);
+
+      /* =========================================
+         Payment Failed
+      ========================================= */
 
       razorpayCheckout.on(
         "payment.failed",
@@ -552,6 +631,7 @@ export default function AppointmentPage() {
               orderData.orderId,
 
             errorCode,
+
             errorDescription,
           });
 
@@ -590,19 +670,32 @@ export default function AppointmentPage() {
     }
   };
 
+  /* =========================================
+     Input Class
+  ========================================= */
+
   const inputClass =
     "w-full rounded-2xl border border-sky-100 bg-white px-5 py-4 text-gray-800 shadow-sm outline-none transition placeholder:text-gray-400 focus:border-cyan-400 focus:ring-4 focus:ring-cyan-100 disabled:cursor-not-allowed disabled:bg-gray-100 disabled:text-gray-500";
 
+  /* =========================================
+     UI
+  ========================================= */
+
   return (
     <main className="min-h-screen bg-gradient-to-b from-sky-50 via-white to-cyan-50">
-      {/* Hero Section */}
+
+      {/* =========================================
+          Hero Section
+      ========================================= */}
 
       <section className="relative overflow-hidden bg-gradient-to-br from-sky-950 via-sky-800 to-cyan-700 py-20 text-white sm:py-24">
+
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(34,211,238,.35),transparent_35%)]" />
 
         <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-cyan-400/20 blur-3xl" />
 
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
           <span className="inline-flex rounded-full border border-white/20 bg-white/10 px-5 py-2 text-sm font-bold backdrop-blur">
             Appointment
           </span>
@@ -619,26 +712,35 @@ export default function AppointmentPage() {
           </p>
 
           <div className="mt-5 flex flex-wrap gap-3">
+
             <p className="inline-flex rounded-xl border border-cyan-300/30 bg-white/10 px-4 py-3 text-sm font-semibold text-cyan-100 backdrop-blur">
-              Appointment minimum 1 din
-              pehle book hogi.
+              Same-day aur future
+              appointments available.
             </p>
 
             <p className="inline-flex rounded-xl border border-emerald-300/30 bg-emerald-400/10 px-4 py-3 text-sm font-semibold text-emerald-100 backdrop-blur">
               Appointment Fee: ₹
               {APPOINTMENT_FEE}
             </p>
+
           </div>
         </div>
       </section>
 
-      {/* Main Section */}
+      {/* =========================================
+          Main Section
+      ========================================= */}
 
       <section className="mx-auto grid max-w-7xl gap-8 px-4 py-16 sm:px-6 lg:grid-cols-3 lg:px-8 lg:py-20">
-        {/* Appointment Form */}
+
+        {/* =========================================
+            Appointment Form
+        ========================================= */}
 
         <div className="rounded-[2rem] border border-sky-100 bg-white p-5 shadow-2xl sm:p-8 lg:col-span-2">
+
           <div className="mb-8">
+
             <p className="font-bold text-cyan-700">
               Patient Information
             </p>
@@ -652,15 +754,18 @@ export default function AppointmentPage() {
               Payment successful hone ke baad
               appointment confirm hogi.
             </p>
+
           </div>
 
           <form
             onSubmit={submitForm}
             className="grid gap-5"
           >
-            {/* Name and Phone */}
+
+            {/* Name + Phone */}
 
             <div className="grid gap-5 md:grid-cols-2">
+
               <input
                 type="text"
                 name="name"
@@ -685,11 +790,13 @@ export default function AppointmentPage() {
                 autoComplete="tel"
                 className={inputClass}
               />
+
             </div>
 
-            {/* Email and Age */}
+            {/* Email + Age */}
 
             <div className="grid gap-5 md:grid-cols-2">
+
               <input
                 type="email"
                 name="email"
@@ -710,17 +817,20 @@ export default function AppointmentPage() {
                 placeholder="Age"
                 className={inputClass}
               />
+
             </div>
 
-            {/* Gender and Department */}
+            {/* Gender + Department */}
 
             <div className="grid gap-5 md:grid-cols-2">
+
               <select
                 name="gender"
                 value={form.gender}
                 onChange={handleChange}
                 className={inputClass}
               >
+
                 <option value="">
                   Select Gender
                 </option>
@@ -736,6 +846,7 @@ export default function AppointmentPage() {
                 <option value="Other">
                   Other
                 </option>
+
               </select>
 
               <select
@@ -749,6 +860,7 @@ export default function AppointmentPage() {
                 }
                 className={inputClass}
               >
+
                 <option value="">
                   {doctorsLoading
                     ? "Loading Departments..."
@@ -767,30 +879,37 @@ export default function AppointmentPage() {
                     </option>
                   )
                 )}
+
               </select>
+
             </div>
 
-            {/* Date and Doctor */}
+            {/* Date + Doctor */}
 
             <div className="grid gap-5 md:grid-cols-2">
+
               <div>
+
                 <input
                   type="date"
                   name="date"
                   value={form.date}
                   onChange={handleChange}
-                  min={tomorrowDate}
+                  min={todayDate}
                   required
                   className={inputClass}
                 />
 
                 <p className="mt-2 px-1 text-sm text-gray-500">
-                  Appointment kal ya uske baad
-                  ki date par book hogi.
+                  Appointment aaj ya kisi bhi
+                  future date ke liye book ki ja
+                  sakti hai.
                 </p>
+
               </div>
 
               <div>
+
                 <select
                   name="doctor"
                   value={form.doctor}
@@ -803,6 +922,7 @@ export default function AppointmentPage() {
                   }
                   className={inputClass}
                 >
+
                   <option value="">
                     {doctorsLoading
                       ? "Loading Doctors..."
@@ -820,12 +940,14 @@ export default function AppointmentPage() {
                         value={doctor.name}
                       >
                         {doctor.name}
+
                         {doctor.specialist
                           ? ` - ${doctor.specialist}`
                           : ""}
                       </option>
                     )
                   )}
+
                 </select>
 
                 {form.department &&
@@ -851,13 +973,16 @@ export default function AppointmentPage() {
                       available.
                     </p>
                   )}
+
               </div>
+
             </div>
 
             {/* Selected Doctor */}
 
             {selectedDoctor && (
               <div className="rounded-2xl border border-cyan-100 bg-cyan-50 p-4">
+
                 <p className="text-xs font-extrabold uppercase tracking-wider text-cyan-700">
                   Selected Doctor
                 </p>
@@ -879,6 +1004,7 @@ export default function AppointmentPage() {
                   Appointment Fee: ₹
                   {APPOINTMENT_FEE}
                 </p>
+
               </div>
             )}
 
@@ -901,7 +1027,7 @@ export default function AppointmentPage() {
               </div>
             )}
 
-            {/* Submit Button */}
+            {/* Submit */}
 
             <button
               type="submit"
@@ -924,15 +1050,20 @@ export default function AppointmentPage() {
               Razorpay. Payment verification ke
               baad appointment confirm hogi.
             </p>
+
           </form>
         </div>
 
-        {/* Emergency Card */}
+        {/* =========================================
+            Emergency Card
+        ========================================= */}
 
         <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-sky-950 via-sky-900 to-cyan-700 p-8 text-white shadow-2xl">
+
           <div className="absolute -right-12 -top-12 h-40 w-40 rounded-full bg-cyan-400/20 blur-3xl" />
 
           <div className="relative">
+
             <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 text-4xl">
               🚑
             </div>
@@ -955,6 +1086,7 @@ export default function AppointmentPage() {
             </a>
 
             <div className="mt-8 rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur">
+
               <h4 className="font-bold text-cyan-200">
                 Hospital Address
               </h4>
@@ -962,9 +1094,11 @@ export default function AppointmentPage() {
               <p className="mt-2 text-sky-100">
                 {siteInfo.address}
               </p>
+
             </div>
 
             <div className="mt-5 rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur">
+
               <h4 className="font-bold text-cyan-200">
                 Email
               </h4>
@@ -972,9 +1106,11 @@ export default function AppointmentPage() {
               <p className="mt-2 break-all text-sky-100">
                 {siteInfo.email}
               </p>
+
             </div>
 
             <div className="mt-5 rounded-2xl border border-white/10 bg-white/10 p-5 backdrop-blur">
+
               <h4 className="font-bold text-cyan-200">
                 OPD Timing
               </h4>
@@ -988,9 +1124,11 @@ export default function AppointmentPage() {
                 {siteInfo.opdTime ||
                   "10:00 AM – 05:00 PM"}
               </p>
+
             </div>
 
             <div className="mt-5 rounded-2xl border border-emerald-300/20 bg-emerald-400/10 p-5 backdrop-blur">
+
               <h4 className="font-bold text-emerald-200">
                 Secure Online Payment
               </h4>
@@ -1000,9 +1138,12 @@ export default function AppointmentPage() {
                 fee Razorpay ke through securely
                 pay karein.
               </p>
+
             </div>
+
           </div>
         </div>
+
       </section>
     </main>
   );
