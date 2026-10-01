@@ -743,255 +743,366 @@ export default function ServicesSect({
         </div>
 
 
-        {/* ==================================================
-            EMERGENCY AMBULANCE BANNER
-        ================================================== */}
+{/* ==================================================
+    MOBILE VERSION — PREMIUM EMERGENCY BANNER
+================================================== */}
 
-        <div className="mt-12 md:mt-16">
+<div
+  className="
+    overflow-hidden
+    border
+    border-slate-200
+    bg-white
+    shadow-[0_15px_45px_rgba(15,23,42,.14)]
+    md:hidden
+  "
+>
 
+  {/* ==================================================
+      HERO IMAGE
+  ================================================== */}
 
-          {/* ==================================================
-              MOBILE VERSION
-          ================================================== */}
+  <div className="relative overflow-hidden bg-slate-100">
 
-          <div
-            className="
-              overflow-hidden
-              border
-              border-slate-200
-              bg-white
-              shadow-[0_15px_45px_rgba(15,23,42,.12)]
-              md:hidden
-            "
-          >
+    <img
+      src="/images/emergency-ambulance.jpg"
+      alt="Dew Care Hospital 24x7 Emergency Ambulance"
+      className="
+        block
+        h-auto
+        min-h-[210px]
+        w-full
+        object-cover
+        object-center
+      "
+    />
 
-            {/* FULL IMAGE */}
+    {/* Image Overlay */}
+    <div
+      className="
+        pointer-events-none
+        absolute
+        inset-0
+        bg-gradient-to-t
+        from-slate-950/45
+        via-transparent
+        to-slate-950/10
+      "
+    />
 
-            <div className="w-full bg-slate-100">
+    {/* Emergency Badge */}
+    <div
+      className="
+        absolute
+        left-4
+        top-4
+        flex
+        items-center
+        gap-2
+        bg-red-600
+        px-3.5
+        py-2
+        text-[10px]
+        font-black
+        uppercase
+        tracking-[0.12em]
+        text-white
+        shadow-lg
+      "
+    >
+      <span className="relative flex h-2.5 w-2.5">
+        <span
+          className="
+            absolute
+            inline-flex
+            h-full
+            w-full
+            animate-ping
+            rounded-full
+            bg-white
+            opacity-75
+          "
+        />
 
-              <img
-                src="/images/emergency-ambulance.jpg"
-                alt="Dew Care Hospital 24x7 Emergency Ambulance"
-                className="
-                  block
-                  h-auto
-                  w-full
-                  object-contain
-                "
-              />
+        <span
+          className="
+            relative
+            inline-flex
+            h-2.5
+            w-2.5
+            rounded-full
+            bg-white
+          "
+        />
+      </span>
 
-            </div>
+      24×7 Emergency
+    </div>
 
+    {/* Image Bottom Label */}
+    <div
+      className="
+        absolute
+        bottom-0
+        left-0
+        right-0
+        bg-gradient-to-t
+        from-slate-950/80
+        to-transparent
+        px-4
+        pb-4
+        pt-10
+      "
+    >
+      <p
+        className="
+          text-[9px]
+          font-black
+          uppercase
+          tracking-[0.18em]
+          text-emerald-300
+        "
+      >
+        Dew Care Hospital LLP
+      </p>
 
-            {/* TEXT */}
+      <p className="mt-0.5 text-sm font-black text-white">
+        Emergency & Critical Care
+      </p>
+    </div>
 
-            <div className="px-5 py-6">
-
-              <p
-                className="
-                  text-sm
-                  font-semibold
-                  tracking-wide
-                  text-slate-700
-                "
-              >
-                When seconds count,
-              </p>
-
-              <h3
-                className="
-                  mt-1
-                  text-3xl
-                  font-black
-                  leading-none
-                  text-emerald-700
-                "
-              >
-                trust us
-              </h3>
-
-              <p
-                className="
-                  mt-2
-                  text-base
-                  font-bold
-                  text-slate-800
-                "
-              >
-                to be there!
-              </p>
-
-            </div>
-
-
-            {/* FEATURES */}
-
-            <div
-              className="
-                grid
-                grid-cols-2
-                border-t
-                border-slate-200
-              "
-            >
-
-              {/* 24x7 */}
-
-              <div
-                className="
-                  flex
-                  items-center
-                  gap-3
-                  border-r
-                  border-slate-200
-                  px-4
-                  py-5
-                "
-              >
-
-                <div
-                  className="
-                    flex
-                    h-11
-                    w-11
-                    shrink-0
-                    items-center
-                    justify-center
-                    bg-emerald-100
-                    text-xl
-                  "
-                >
-                  🚑
-                </div>
-
-                <div>
-
-                  <p className="text-sm font-black text-slate-900">
-                    24×7
-                  </p>
-
-                  <p
-                    className="
-                      text-xs
-                      font-semibold
-                      leading-4
-                      text-slate-600
-                    "
-                  >
-                    Emergency Care
-                  </p>
-
-                </div>
-
-              </div>
+  </div>
 
 
-              {/* ICU */}
+  {/* ==================================================
+      EMERGENCY FEATURES
+  ================================================== */}
 
-              <div
-                className="
-                  flex
-                  items-center
-                  gap-3
-                  px-4
-                  py-5
-                "
-              >
+  <div
+    className="
+      grid
+      grid-cols-2
+      gap-3
+      bg-slate-50
+      p-3
+    "
+  >
 
-                <div
-                  className="
-                    flex
-                    h-11
-                    w-11
-                    shrink-0
-                    items-center
-                    justify-center
-                    bg-cyan-100
-                    text-xl
-                  "
-                >
-                  ❤️
-                </div>
+    {/* 24×7 Emergency */}
+    <div
+      className="
+        border
+        border-emerald-100
+        bg-white
+        p-3.5
+        shadow-sm
+      "
+    >
 
-                <div>
+      <div
+        className="
+          flex
+          h-10
+          w-10
+          items-center
+          justify-center
+          bg-emerald-100
+          text-lg
+        "
+      >
+        🚑
+      </div>
 
-                  <p className="text-sm font-black text-slate-900">
-                    Fully
-                  </p>
+      <p
+        className="
+          mt-3
+          text-base
+          font-black
+          leading-none
+          text-slate-900
+        "
+      >
+        24×7
+      </p>
 
-                  <p
-                    className="
-                      text-xs
-                      font-semibold
-                      leading-4
-                      text-slate-600
-                    "
-                  >
-                    Equipped ICU
-                  </p>
+      <p
+        className="
+          mt-1
+          text-[11px]
+          font-bold
+          leading-4
+          text-slate-600
+        "
+      >
+        Emergency Care
+      </p>
 
-                </div>
+      <div className="mt-2.5 h-1 w-7 bg-emerald-600" />
 
-              </div>
-
-            </div>
+    </div>
 
 
-            {/* PHONE */}
+    {/* Fully Equipped ICU */}
+    <div
+      className="
+        border
+        border-cyan-100
+        bg-white
+        p-3.5
+        shadow-sm
+      "
+    >
 
-            <a
-              href="tel:7086803380"
-              className="
-                flex
-                min-h-[62px]
-                w-full
-                items-center
-                justify-center
-                gap-3
-                bg-emerald-700
-                px-4
-                py-3
-                text-white
-                transition
-                hover:bg-emerald-800
-              "
-            >
+      <div
+        className="
+          flex
+          h-10
+          w-10
+          items-center
+          justify-center
+          bg-cyan-100
+          text-lg
+        "
+      >
+        ❤️
+      </div>
 
-              <span className="text-xl">
-                📞
-              </span>
+      <p
+        className="
+          mt-3
+          text-base
+          font-black
+          leading-none
+          text-slate-900
+        "
+      >
+        Fully
+      </p>
 
-              <span className="text-center">
+      <p
+        className="
+          mt-1
+          text-[11px]
+          font-bold
+          leading-4
+          text-slate-600
+        "
+      >
+        Equipped ICU
+      </p>
 
-                <span
-                  className="
-                    block
-                    text-[9px]
-                    font-bold
-                    uppercase
-                    tracking-wider
-                    text-emerald-100
-                  "
-                >
-                  Emergency Helpline
-                </span>
+      <div className="mt-2.5 h-1 w-7 bg-cyan-600" />
 
-                <span
-                  className="
-                    block
-                    text-xl
-                    font-black
-                    leading-none
-                  "
-                >
-                  7086803380
-                </span>
+    </div>
 
-              </span>
+  </div>
 
-            </a>
 
-          </div>
+  {/* ==================================================
+      EMERGENCY HELPLINE
+  ================================================== */}
+
+  <a
+    href="tel:7086803380"
+    className="
+      group
+      flex
+      min-h-[76px]
+      w-full
+      items-center
+      justify-between
+      gap-3
+      bg-gradient-to-r
+      from-emerald-700
+      to-emerald-600
+      px-4
+      py-3
+      text-white
+      shadow-[0_-4px_18px_rgba(5,150,105,.12)]
+      transition
+      active:scale-[.99]
+    "
+  >
+
+    {/* Phone Icon */}
+    <div
+      className="
+        flex
+        h-11
+        w-11
+        shrink-0
+        items-center
+        justify-center
+        rounded-full
+        bg-white/15
+        text-xl
+        ring-1
+        ring-white/25
+      "
+    >
+      📞
+    </div>
+
+
+    {/* Number */}
+    <div className="min-w-0 flex-1">
+
+      <span
+        className="
+          block
+          text-[9px]
+          font-black
+          uppercase
+          tracking-[0.16em]
+          text-emerald-100
+        "
+      >
+        Emergency Helpline
+      </span>
+
+      <span
+        className="
+          mt-1
+          block
+          truncate
+          text-[21px]
+          font-black
+          leading-none
+          tracking-wide
+        "
+      >
+        7086803380
+      </span>
+
+    </div>
+
+
+    {/* Arrow */}
+    <div
+      className="
+        flex
+        h-9
+        w-9
+        shrink-0
+        items-center
+        justify-center
+        rounded-full
+        bg-white
+        text-lg
+        font-black
+        text-emerald-700
+        transition
+        group-active:scale-90
+      "
+    >
+      →
+    </div>
+
+  </a>
+
+</div>
+
+
 
 
 
@@ -1386,7 +1497,7 @@ export default function ServicesSect({
     </span>
   </Link>
 </div>
-</div>
+
 
 
 
