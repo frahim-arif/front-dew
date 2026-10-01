@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -51,7 +50,10 @@ export default function AdminGallery() {
 
       setGallery(res.data.data || []);
     } catch (err) {
-      console.log("Fetch Gallery Error:", err);
+      console.error(
+        "Fetch Gallery Error:",
+        err
+      );
     } finally {
       setLoading(false);
     }
@@ -64,10 +66,7 @@ export default function AdminGallery() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    // =========================
     // TYPE CHANGE
-    // =========================
-
     if (name === "type") {
       setPreview("");
 
@@ -140,7 +139,7 @@ export default function AdminGallery() {
 
       data.append(
         "title",
-        formData.title
+        formData.title.trim()
       );
 
       data.append(
@@ -158,10 +157,7 @@ export default function AdminGallery() {
         formData.type
       );
 
-      // =========================
       // IMAGE
-      // =========================
-
       if (formData.type === "image") {
         if (formData.image) {
           data.append(
@@ -171,32 +167,23 @@ export default function AdminGallery() {
         }
       }
 
-      // =========================
       // YOUTUBE
-      // =========================
-
       if (formData.type === "video") {
         data.append(
           "youtubeUrl",
-          formData.youtubeUrl
+          formData.youtubeUrl.trim()
         );
       }
 
-      // =========================
       // FACEBOOK
-      // =========================
-
       if (formData.type === "facebook") {
         data.append(
           "facebookUrl",
-          formData.facebookUrl
+          formData.facebookUrl.trim()
         );
       }
 
-      // =========================
       // UPDATE
-      // =========================
-
       if (editingId) {
         await axios.put(
           `${API_URL}/gallery/${editingId}`,
@@ -214,10 +201,7 @@ export default function AdminGallery() {
         );
       }
 
-      // =========================
       // CREATE
-      // =========================
-
       else {
         await axios.post(
           `${API_URL}/gallery`,
@@ -236,9 +220,9 @@ export default function AdminGallery() {
       }
 
       resetForm();
-      fetchGallery();
+      await fetchGallery();
     } catch (err) {
-      console.log(
+      console.error(
         "Gallery Submit Error:",
         err
       );
@@ -276,9 +260,9 @@ export default function AdminGallery() {
         "Deleted Successfully"
       );
 
-      fetchGallery();
+      await fetchGallery();
     } catch (err) {
-      console.log(
+      console.error(
         "Delete Gallery Error:",
         err
       );
@@ -314,10 +298,7 @@ export default function AdminGallery() {
         item.facebookUrl || "",
     });
 
-    // =========================
     // IMAGE PREVIEW
-    // =========================
-
     if (
       item.type === "image" &&
       item.image
@@ -340,19 +321,29 @@ export default function AdminGallery() {
   // ==================================================
 
   const getYoutubeId = (url = "") => {
+    if (!url) return "";
+
     try {
-      const u = new URL(url);
+      const u = new URL(
+        url.trim()
+      );
+
+      const hostname =
+        u.hostname.toLowerCase();
 
       if (
-        u.hostname === "youtu.be"
+        hostname === "youtu.be"
       ) {
-        return u.pathname.slice(1);
+        return u.pathname
+          .replace("/", "")
+          .split("/")[0];
       }
 
-      if (
-        u.searchParams.get("v")
-      ) {
-        return u.searchParams.get("v");
+      const videoId =
+        u.searchParams.get("v");
+
+      if (videoId) {
+        return videoId;
       }
 
       if (
@@ -382,20 +373,103 @@ export default function AdminGallery() {
   };
 
   // ==================================================
+  // FACEBOOK URL VALIDATION
+  // ==================================================
+
+  const isFacebookUrl = (url = "") => {
+    if (!url.trim()) return false;
+
+    try {
+      const u = new URL(
+        url.trim()
+      );
+
+      const hostname =
+        u.hostname
+          .toLowerCase()
+          .replace(/^www\./, "");
+
+      return (
+        hostname ===
+          "facebook.com" ||
+        hostname.endsWith(
+          ".facebook.com"
+        ) ||
+        hostname === "fb.watch"
+      );
+    } catch {
+      return false;
+    }
+  };
+
+  // ==================================================
   // FACEBOOK EMBED URL
   // ==================================================
 
   const getFacebookEmbedUrl = (
     url = ""
   ) => {
+    if (!isFacebookUrl(url)) {
+      return "";
+    }
+
+    try {
+      const cleanUrl =
+        url.trim();
+
+      return (
+        "https://www.facebook.com/plugins/video.php" +
+        `?href=${encodeURIComponent(
+          cleanUrl
+        )}` +
+        "&show_text=false" +
+        "&width=560"
+      );
+    } catch {
+      return "";
+    }
+  };
+
+  // ==================================================
+  // FACEBOOK URL TYPE
+  // ==================================================
+
+  const getFacebookUrlType = (
+    url = ""
+  ) => {
     if (!url) return "";
 
     try {
-      return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
-        url
-      )}&show_text=false&width=560`;
+      const pathname =
+        new URL(url).pathname.toLowerCase();
+
+      if (
+        pathname.includes("/share/v/")
+      ) {
+        return "Facebook Share Video";
+      }
+
+      if (
+        pathname.includes("/reel/")
+      ) {
+        return "Facebook Reel";
+      }
+
+      if (
+        pathname.includes("/watch")
+      ) {
+        return "Facebook Watch";
+      }
+
+      if (
+        pathname.includes("/videos/")
+      ) {
+        return "Facebook Video";
+      }
+
+      return "Facebook Video";
     } catch {
-      return "";
+      return "Facebook Video";
     }
   };
 
@@ -466,9 +540,9 @@ export default function AdminGallery() {
 
         <form onSubmit={handleSubmit}>
 
-          {/* =========================
+          {/* ==================================================
               BASIC INFORMATION
-          ========================= */}
+          ================================================== */}
 
           <div className="grid gap-6 md:grid-cols-2">
 
@@ -509,35 +583,35 @@ export default function AdminGallery() {
                 className="w-full rounded-xl border border-gray-300 p-3"
               >
 
-                <option>
+                <option value="Hospital">
                   Hospital
                 </option>
 
-                <option>
+                <option value="Doctors">
                   Doctors
                 </option>
 
-                <option>
+                <option value="Patients">
                   Patients
                 </option>
 
-                <option>
+                <option value="Events">
                   Events
                 </option>
 
-                <option>
+                <option value="Operation">
                   Operation
                 </option>
 
-                <option>
+                <option value="Facilities">
                   Facilities
                 </option>
 
-                <option>
+                <option value="Emergency">
                   Emergency
                 </option>
 
-                <option>
+                <option value="Others">
                   Others
                 </option>
 
@@ -656,7 +730,7 @@ export default function AdminGallery() {
           </div>
 
           {/* ==================================================
-              IMAGE UPLOAD
+              IMAGE
           ================================================== */}
 
           {formData.type ===
@@ -669,7 +743,7 @@ export default function AdminGallery() {
 
               <input
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
                 onChange={handleImage}
                 className="w-full rounded-xl border border-gray-300 p-3"
               />
@@ -683,7 +757,7 @@ export default function AdminGallery() {
           )}
 
           {/* ==================================================
-              YOUTUBE URL
+              YOUTUBE
           ================================================== */}
 
           {formData.type ===
@@ -723,7 +797,7 @@ export default function AdminGallery() {
           )}
 
           {/* ==================================================
-              FACEBOOK URL
+              FACEBOOK
           ================================================== */}
 
           {formData.type ===
@@ -744,17 +818,49 @@ export default function AdminGallery() {
                 onChange={
                   handleChange
                 }
-                placeholder="https://www.facebook.com/watch/?v=123456789"
+                placeholder="https://www.facebook.com/..."
                 className="w-full rounded-xl border border-gray-300 p-3 outline-none focus:border-emerald-500"
               />
 
-              <p className="mt-2 text-sm text-gray-500">
-                Paste the public Facebook
-                video URL here.
-                <br />
-                Example:
-                facebook.com/watch/?v=...
-              </p>
+              <div className="mt-3 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
+
+                <p className="font-bold">
+                  Facebook Video Instructions
+                </p>
+
+                <p className="mt-1">
+                  Paste the public Facebook
+                  video, Reel, Watch or
+                  Share Video URL.
+                </p>
+
+                <p className="mt-2">
+                  Example:
+                </p>
+
+                <p className="break-all font-mono text-xs">
+                  https://www.facebook.com/share/v/...
+                </p>
+
+                <p className="mt-2">
+                  The Facebook video must be
+                  public and allowed to be
+                  embedded.
+                </p>
+
+              </div>
+
+              {/* URL VALIDATION */}
+
+              {formData.facebookUrl &&
+                !isFacebookUrl(
+                  formData.facebookUrl
+                ) && (
+                  <p className="mt-2 text-sm font-semibold text-red-600">
+                    Please enter a valid
+                    Facebook URL.
+                  </p>
+                )}
 
             </div>
           )}
@@ -927,7 +1033,7 @@ export default function AdminGallery() {
 
                   <div
                     key={item._id}
-                    className="overflow-hidden rounded-3xl bg-white shadow-lg transition hover:-translate-y-2 hover:shadow-2xl"
+                    className="overflow-hidden rounded-3xl bg-white shadow-lg transition hover:-translate-y-1 hover:shadow-2xl"
                   >
 
                     {/* ==================================================
@@ -969,7 +1075,7 @@ export default function AdminGallery() {
 
                       {item.type ===
                         "facebook" &&
-                        facebookEmbedUrl && (
+                        facebookEmbedUrl ? (
                         <iframe
                           src={
                             facebookEmbedUrl
@@ -988,23 +1094,45 @@ export default function AdminGallery() {
                           allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
                           allowFullScreen
                         />
-                      )}
+                      ) : null}
 
-                      {/* INVALID VIDEO */}
+                      {/* INVALID YOUTUBE */}
 
                       {item.type ===
                         "video" &&
                         !youtubeId && (
-                        <div className="flex h-64 items-center justify-center text-white">
-                          Invalid YouTube URL
+                        <div className="flex h-64 items-center justify-center bg-slate-900 px-6 text-center text-white">
+                          <div>
+                            <p className="font-bold">
+                              Invalid YouTube
+                              URL
+                            </p>
+
+                            <p className="mt-1 text-sm text-slate-400">
+                              Please edit this
+                              gallery item.
+                            </p>
+                          </div>
                         </div>
                       )}
+
+                      {/* INVALID FACEBOOK */}
 
                       {item.type ===
                         "facebook" &&
                         !facebookEmbedUrl && (
-                        <div className="flex h-64 items-center justify-center text-white">
-                          Invalid Facebook URL
+                        <div className="flex h-64 items-center justify-center bg-slate-900 px-6 text-center text-white">
+                          <div>
+                            <p className="font-bold">
+                              Invalid Facebook
+                              URL
+                            </p>
+
+                            <p className="mt-1 text-sm text-slate-400">
+                              Please edit this
+                              gallery item.
+                            </p>
+                          </div>
                         </div>
                       )}
 
@@ -1046,6 +1174,7 @@ export default function AdminGallery() {
                       <div>
 
                         <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
+
                           {item.type ===
                           "image"
                             ? "📷 Image"
@@ -1053,6 +1182,7 @@ export default function AdminGallery() {
                               "video"
                             ? "▶ YouTube"
                             : "📘 Facebook"}
+
                         </span>
 
                       </div>
@@ -1062,6 +1192,35 @@ export default function AdminGallery() {
                       <h3 className="text-xl font-bold">
                         {item.title}
                       </h3>
+
+                      {/* FACEBOOK INFO */}
+
+                      {item.type ===
+                        "facebook" &&
+                        item.facebookUrl && (
+                        <div className="rounded-xl bg-blue-50 p-3">
+
+                          <p className="text-xs font-bold text-blue-700">
+                            {
+                              getFacebookUrlType(
+                                item.facebookUrl
+                              )
+                            }
+                          </p>
+
+                          <a
+                            href={
+                              item.facebookUrl
+                            }
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-1 block truncate text-xs text-blue-600 underline"
+                          >
+                            Open on Facebook
+                          </a>
+
+                        </div>
+                      )}
 
                       {/* BUTTONS */}
 
@@ -1110,4 +1269,3 @@ export default function AdminGallery() {
     </div>
   );
 }
-
