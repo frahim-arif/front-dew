@@ -1,6 +1,7 @@
 export const siteInfo = {
   name: "Dew Care Hospital & Research Centre",
   tagline: "Compassionate Care • Advanced Treatment • Trusted Healthcare",
+   phone: "7086803380",
   phone: "09101988910",
   whatsapp: "9101988910",
   email: "Drforidulhussaindchr@gmail.com",
