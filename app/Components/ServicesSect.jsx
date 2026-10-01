@@ -745,7 +745,7 @@ export default function ServicesSect({
 
 
 {/* ==================================================
-    MOBILE VERSION — AMBULANCE + HOSPITAL FOCUS
+    MOBILE VERSION — CLEAN HOSPITAL EMERGENCY
 ================================================== */}
 
 <div
@@ -754,138 +754,135 @@ export default function ServicesSect({
     border
     border-slate-200
     bg-white
-    shadow-[0_12px_40px_rgba(15,23,42,.12)]
+    shadow-[0_12px_35px_rgba(15,23,42,.12)]
     md:hidden
   "
 >
 
   {/* ==================================================
-      AMBULANCE / HOSPITAL IMAGE
+      FULL AMBULANCE IMAGE
   ================================================== */}
 
-  <div className="relative h-[235px] overflow-hidden bg-slate-100">
+  <div className="relative w-full bg-slate-100">
 
     <img
       src="/images/emergency-ambulance.jpg"
       alt="Dew Care Hospital Emergency Ambulance"
       className="
-        h-full
+        block
+        h-auto
         w-full
-        object-cover
-        object-center
+        object-contain
       "
     />
 
-    {/* Image Overlay */}
+    {/* Small Emergency Badge */}
     <div
       className="
         absolute
-        inset-0
-        bg-gradient-to-t
-        from-slate-950/75
-        via-slate-950/15
-        to-transparent
-      "
-    />
-
-    {/* Emergency Badge */}
-    <div
-      className="
-        absolute
-        left-4
-        top-4
+        left-3
+        top-3
         flex
         items-center
-        gap-2
+        gap-1.5
         bg-red-600
         px-3
         py-1.5
         text-[9px]
         font-black
         uppercase
-        tracking-[0.12em]
+        tracking-wider
         text-white
         shadow-lg
       "
     >
-      <span className="relative flex h-2 w-2">
-        <span
-          className="
-            absolute
-            inline-flex
-            h-full
-            w-full
-            animate-ping
-            rounded-full
-            bg-white
-            opacity-75
-          "
-        />
-
-        <span
-          className="
-            relative
-            inline-flex
-            h-2
-            w-2
-            rounded-full
-            bg-white
-          "
-        />
-      </span>
+      <span
+        className="
+          h-2
+          w-2
+          rounded-full
+          bg-white
+        "
+      />
 
       24×7 Emergency
     </div>
 
+  </div>
 
-    {/* Hospital Branding */}
-    <div
-      className="
-        absolute
-        bottom-0
-        left-0
-        right-0
-        px-4
-        pb-4
-        pt-12
-      "
-    >
 
-      <p
+  {/* ==================================================
+      SMALL TRUST CONTENT
+  ================================================== */}
+
+  <div
+    className="
+      border-t
+      border-slate-200
+      bg-white
+      px-4
+      py-4
+    "
+  >
+
+    <div className="flex items-center justify-between gap-3">
+
+      {/* Hospital Name */}
+      <div className="min-w-0">
+
+        <p
+          className="
+            text-[9px]
+            font-black
+            uppercase
+            tracking-[0.15em]
+            text-emerald-600
+          "
+        >
+          Dew Care Hospital LLP
+        </p>
+
+        <p
+          className="
+            mt-0.5
+            text-base
+            font-black
+            leading-tight
+            text-slate-900
+          "
+        >
+          Emergency & Critical Care
+        </p>
+
+        <p
+          className="
+            mt-1
+            text-[10px]
+            font-medium
+            text-slate-500
+          "
+        >
+          When seconds count, trust us.
+        </p>
+
+      </div>
+
+
+      {/* Emergency Icon */}
+      <div
         className="
-          text-[9px]
-          font-bold
-          uppercase
-          tracking-[0.16em]
-          text-emerald-300
+          flex
+          h-12
+          w-12
+          shrink-0
+          items-center
+          justify-center
+          bg-emerald-100
+          text-2xl
         "
       >
-        Dew Care Hospital LLP
-      </p>
-
-      <h3
-        className="
-          mt-1
-          text-xl
-          font-black
-          leading-tight
-          text-white
-        "
-      >
-        Emergency & Critical Care
-      </h3>
-
-      {/* Very Short Trust Message */}
-      <p
-        className="
-          mt-1
-          text-[11px]
-          font-medium
-          text-white/85
-        "
-      >
-        When seconds count, trust Dew Care.
-      </p>
+        🚑
+      </div>
 
     </div>
 
@@ -893,7 +890,7 @@ export default function ServicesSect({
 
 
   {/* ==================================================
-      QUICK FEATURES
+      FEATURES
   ================================================== */}
 
   <div
@@ -902,7 +899,6 @@ export default function ServicesSect({
       grid-cols-2
       border-t
       border-slate-200
-      bg-white
     "
   >
 
@@ -911,35 +907,35 @@ export default function ServicesSect({
       className="
         flex
         items-center
-        gap-3
+        gap-2.5
         border-r
         border-slate-200
         px-4
-        py-4
+        py-3.5
       "
     >
 
       <div
         className="
           flex
-          h-10
-          w-10
+          h-9
+          w-9
           shrink-0
           items-center
           justify-center
           bg-emerald-100
-          text-lg
+          text-base
         "
       >
         🚑
       </div>
 
       <div>
-        <p className="text-sm font-black text-slate-900">
+        <p className="text-sm font-black leading-none text-slate-900">
           24×7
         </p>
 
-        <p className="text-[10px] font-semibold text-slate-600">
+        <p className="mt-1 text-[10px] font-semibold text-slate-600">
           Emergency Care
         </p>
       </div>
@@ -952,33 +948,33 @@ export default function ServicesSect({
       className="
         flex
         items-center
-        gap-3
+        gap-2.5
         px-4
-        py-4
+        py-3.5
       "
     >
 
       <div
         className="
           flex
-          h-10
-          w-10
+          h-9
+          w-9
           shrink-0
           items-center
           justify-center
           bg-cyan-100
-          text-lg
+          text-base
         "
       >
         ❤️
       </div>
 
       <div>
-        <p className="text-sm font-black text-slate-900">
+        <p className="text-sm font-black leading-none text-slate-900">
           Fully
         </p>
 
-        <p className="text-[10px] font-semibold text-slate-600">
+        <p className="mt-1 text-[10px] font-semibold text-slate-600">
           Equipped ICU
         </p>
       </div>
@@ -989,26 +985,23 @@ export default function ServicesSect({
 
 
   {/* ==================================================
-      EMERGENCY HELPLINE
+      EMERGENCY PHONE
   ================================================== */}
 
   <a
     href="tel:7086803380"
     className="
       flex
-      min-h-[68px]
+      min-h-[64px]
       w-full
       items-center
-      justify-between
       gap-3
-      bg-gradient-to-r
-      from-emerald-700
-      to-emerald-600
+      bg-emerald-700
       px-4
       py-3
       text-white
       transition
-      active:scale-[.99]
+      active:bg-emerald-800
     "
   >
 
@@ -1023,44 +1016,30 @@ export default function ServicesSect({
         rounded-full
         bg-white/15
         text-lg
-        ring-1
-        ring-white/20
       "
     >
       📞
     </div>
 
+    <div className="flex-1">
 
-    <div className="min-w-0 flex-1">
-
-      <span
+      <p
         className="
-          block
           text-[8px]
           font-bold
           uppercase
-          tracking-[0.16em]
+          tracking-[0.15em]
           text-emerald-100
         "
       >
         Emergency Helpline
-      </span>
+      </p>
 
-      <span
-        className="
-          mt-0.5
-          block
-          text-lg
-          font-black
-          leading-none
-          tracking-wide
-        "
-      >
+      <p className="mt-0.5 text-xl font-black leading-none">
         7086803380
-      </span>
+      </p>
 
     </div>
-
 
     <div
       className="
@@ -1072,7 +1051,6 @@ export default function ServicesSect({
         justify-center
         rounded-full
         bg-white
-        text-base
         font-black
         text-emerald-700
       "
@@ -1083,6 +1061,8 @@ export default function ServicesSect({
   </a>
 
 </div>
+
+
 
 
 
