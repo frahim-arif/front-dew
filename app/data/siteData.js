@@ -3,7 +3,7 @@ export const siteInfo = {
   tagline: "Compassionate Care • Advanced Treatment • Trusted Healthcare",
 
   phone: [
-    "7086803380",
+    "7086803380--",
     "09101988910",
   ],
 
