@@ -1115,186 +1115,407 @@ lg:min-h-[650px]
 
 
       {/* Doctors Section */}
-{/* Doctors Section */}
+{/* =========================================================
+    DOCTORS SECTION
+========================================================= */}
 <section className="relative overflow-hidden bg-gradient-to-b from-emerald-50 via-white to-teal-50 py-16 sm:py-20 md:py-24">
-  {/* Premium Background */}
 
-{/* Premium Geometric Background */}
-<div className="absolute inset-0 overflow-hidden">
+  {/* =======================================================
+      PREMIUM GEOMETRIC BACKGROUND
+  ======================================================= */}
+  <div className="absolute inset-0 overflow-hidden">
 
-  {/* Base */}
-  <div className="absolute inset-0 bg-gradient-to-br from-[#0d4738] via-[#146b54] to-[#0f4f40]" />
+    {/* Base */}
+    <div className="absolute inset-0 bg-gradient-to-br from-[#0d4738] via-[#146b54] to-[#0f4f40]" />
 
-  {/* Small Geometric Blocks */}
-  {[...Array(18)].map((_, i) => (
-    <div
-      key={i}
-      className="absolute rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm"
-      style={{
-        width: `${30 + (i % 3) * 20}px`,
-        height: `${30 + (i % 3) * 20}px`,
-        left: `${(i * 17) % 100}%`,
-        top: `${(i * 23) % 100}%`,
-        transform: `rotate(${i * 18}deg)`,
-      }}
-    />
-  ))}
+    {/* Geometric Blocks */}
+    {[...Array(18)].map((_, i) => (
+      <div
+        key={i}
+        className="absolute rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm"
+        style={{
+          width: `${30 + (i % 3) * 20}px`,
+          height: `${30 + (i % 3) * 20}px`,
+          left: `${(i * 17) % 100}%`,
+          top: `${(i * 23) % 100}%`,
+          transform: `rotate(${i * 18}deg)`,
+        }}
+      />
+    ))}
 
-  {/* Thin Horizontal Lines */}
-  <div className="absolute top-16 left-0 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
-  <div className="absolute bottom-16 left-0 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+    {/* Horizontal Lines */}
+    <div className="absolute left-0 top-16 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
 
-  {/* Vertical Line */}
-  <div className="absolute left-1/2 top-0 h-full w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
+    <div className="absolute bottom-16 left-0 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
 
-</div>
+    {/* Vertical Line */}
+    <div className="absolute left-1/2 top-0 h-full w-px bg-gradient-to-b from-transparent via-white/10 to-transparent" />
 
+  </div>
+
+
+  {/* =======================================================
+      CONTENT
+  ======================================================= */}
   <div className="relative mx-auto max-w-7xl px-4">
-    {/* Heading */}
+
+    {/* =====================================================
+        HEADING
+    ===================================================== */}
     <div className="mx-auto mb-10 max-w-3xl text-center md:mb-14">
+
       <span className="inline-flex rounded-full border border-emerald-200 bg-white/80 px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-emerald-700 shadow-sm backdrop-blur md:text-xs">
         Our Doctors
       </span>
 
-      <h2 className="mt-4 text-3xl font-black leading-tight text-emerald-950 sm:text-4xl md:text-5xl">
+      <h2 className="mt-4 text-3xl font-black leading-tight text-white sm:text-4xl md:text-5xl">
         Meet Our Medical Specialists
       </h2>
 
-      <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-white md:text-lg">
+      <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-emerald-50 sm:text-base md:text-lg">
         Experienced doctors providing trusted consultation, diagnosis and
         patient-focused treatment.
       </p>
+
     </div>
 
+
+    {/* =====================================================
+        EMPTY
+    ===================================================== */}
     {doctors.length === 0 ? (
+
       <EmptyBox text="No doctors available." />
+
     ) : (
+
+      /* ===================================================
+         DOCTOR GRID
+      =================================================== */
       <div className="grid grid-cols-2 gap-4 sm:gap-5 md:gap-7 lg:grid-cols-4">
-        {doctors.map((doctor) => (
-          <article
-            key={doctor._id}
-            className="group relative flex min-h-full flex-col items-center overflow-hidden rounded-[1.8rem] border border-white/80 bg-white/90 p-3 text-center shadow-[0_16px_45px_rgba(6,78,59,.10)] backdrop-blur-xl transition-all duration-500 hover:-translate-y-3 hover:border-emerald-200 hover:shadow-[0_28px_70px_rgba(16,185,129,.22)] sm:p-4 md:rounded-[2.3rem] md:p-6"
-          >
-            {/* Card Background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-white via-white/95 to-emerald-50/70" />
 
-            <div className="absolute -right-14 -top-14 h-32 w-32 rounded-full bg-emerald-300/20 blur-3xl transition duration-500 group-hover:bg-emerald-300/35" />
+        {doctors.map((doctor) => {
 
-            <div className="absolute -bottom-14 -left-14 h-32 w-32 rounded-full bg-teal-300/15 blur-3xl transition duration-500 group-hover:bg-teal-300/30" />
+          const availableToday =
+            doctor.opdAvailable !== false &&
+            Array.isArray(doctor.opdDays) &&
+            doctor.opdDays.includes(
+              new Date().toLocaleDateString("en-US", {
+                weekday: "long",
+              })
+            );
 
-            {/* Doctor Image */}
-            <div className="relative mt-1">
-              <div className="absolute -inset-5 rounded-full bg-gradient-to-r from-emerald-300/30 via-green-200/20 to-teal-300/30 blur-2xl transition duration-700 group-hover:scale-110" />
+          return (
 
-              <div className="relative h-24 w-24 sm:h-28 sm:w-28 md:h-40 md:w-40">
-                {/* Rotating Ring */}
-                <div className="absolute inset-0 animate-[spin_12s_linear_infinite] rounded-full bg-[conic-gradient(from_0deg,#059669,#34d399,#facc15,#14b8a6,#059669)] p-[3px] shadow-[0_0_20px_rgba(16,185,129,.28)]">
-                  <div className="h-full w-full rounded-full bg-white" />
+            <article
+              key={doctor._id}
+              className="group relative flex min-h-full flex-col items-center overflow-hidden rounded-[1.8rem] border border-white/80 bg-white/90 p-3 text-center shadow-[0_16px_45px_rgba(6,78,59,.10)] backdrop-blur-xl transition-all duration-500 hover:-translate-y-3 hover:border-emerald-200 hover:shadow-[0_28px_70px_rgba(16,185,129,.22)] sm:p-4 md:rounded-[2.3rem] md:p-6"
+            >
+
+              {/* =================================================
+                  CARD BACKGROUND
+              ================================================= */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white via-white/95 to-emerald-50/70" />
+
+              <div className="absolute -right-14 -top-14 h-32 w-32 rounded-full bg-emerald-300/20 blur-3xl transition duration-500 group-hover:bg-emerald-300/35" />
+
+              <div className="absolute -bottom-14 -left-14 h-32 w-32 rounded-full bg-teal-300/15 blur-3xl transition duration-500 group-hover:bg-teal-300/30" />
+
+
+              {/* =================================================
+                  DOCTOR IMAGE
+              ================================================= */}
+              <div className="relative mt-1">
+
+                <div className="absolute -inset-5 rounded-full bg-gradient-to-r from-emerald-300/30 via-green-200/20 to-teal-300/30 blur-2xl transition duration-700 group-hover:scale-110" />
+
+                <div className="relative h-24 w-24 sm:h-28 sm:w-28 md:h-40 md:w-40">
+
+                  {/* Rotating Ring */}
+                  <div className="absolute inset-0 animate-[spin_12s_linear_infinite] rounded-full bg-[conic-gradient(from_0deg,#059669,#34d399,#facc15,#14b8a6,#059669)] p-[3px] shadow-[0_0_20px_rgba(16,185,129,.28)]">
+
+                    <div className="h-full w-full rounded-full bg-white" />
+
+                  </div>
+
+
+                  {/* Image */}
+                  <div className="absolute inset-[5px] overflow-hidden rounded-full bg-emerald-50 ring-4 ring-white shadow-xl">
+
+                    {doctor.image ? (
+
+                      <img
+                        src={fileUrl(doctor.image)}
+                        alt={doctor.name}
+                        className="h-full w-full rounded-full object-cover transition duration-500 group-hover:scale-110"
+                      />
+
+                    ) : (
+
+                      <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-emerald-100 to-teal-100 text-4xl md:text-6xl">
+                        👨‍⚕️
+                      </div>
+
+                    )}
+
+                  </div>
+
+
+                  {/* Active Status */}
+                  <span
+                    className={`absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white shadow-md md:h-6 md:w-6 ${
+                      availableToday
+                        ? "bg-emerald-500"
+                        : "bg-slate-400"
+                    }`}
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-white md:h-2 md:w-2" />
+                  </span>
+
                 </div>
 
-                {/* Image */}
-                <div className="absolute inset-[5px] overflow-hidden rounded-full bg-emerald-50 ring-4 ring-white shadow-xl">
-                  {doctor.image ? (
-                    <img
-                      src={fileUrl(doctor.image)}
-                      alt={doctor.name}
-                      className="h-full w-full rounded-full object-cover transition duration-500 group-hover:scale-110"
-                    />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-emerald-100 to-teal-100 text-4xl md:text-6xl">
-                      👨‍⚕️
-                    </div>
-                  )}
-                </div>
-
-                {/* Active Badge */}
-                <span className="absolute bottom-1 right-1 flex h-5 w-5 items-center justify-center rounded-full border-2 border-white bg-emerald-500 shadow-md md:h-6 md:w-6">
-                  <span className="h-1.5 w-1.5 rounded-full bg-white md:h-2 md:w-2" />
-                </span>
-              </div>
-            </div>
-
-            {/* Doctor Information */}
-            <div className="relative mt-4 flex w-full flex-1 flex-col items-center md:mt-6">
-              <h3 className="line-clamp-2 text-sm font-black leading-tight text-emerald-950 sm:text-base md:text-xl">
-                {doctor.name}
-              </h3>
-
-              <p className="mt-2 line-clamp-1 text-[10px] font-black uppercase tracking-[0.14em] text-emerald-600 sm:text-xs md:text-sm">
-                {doctor.specialist}
-              </p>
-
-              {/* Small Badges */}
-              <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
-                {doctor.department && (
-                  <span className="rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-[8px] font-bold text-emerald-700 sm:text-[9px] md:text-[10px]">
-                    {doctor.department}
-                  </span>
-                )}
-
-                {doctor.experience && (
-                  <span className="rounded-full border border-teal-100 bg-teal-50 px-2.5 py-1 text-[8px] font-bold text-teal-700 sm:text-[9px] md:text-[10px]">
-                    {doctor.experience}
-                  </span>
-                )}
               </div>
 
-              {doctor.qualification && (
-                <p className="mt-3 line-clamp-2 text-[10px] leading-5 text-slate-500 sm:text-xs">
-                  {doctor.qualification}
+
+              {/* =================================================
+                  DOCTOR INFORMATION
+              ================================================= */}
+              <div className="relative mt-4 flex w-full flex-1 flex-col items-center md:mt-6">
+
+                {/* Name */}
+                <h3 className="line-clamp-2 text-sm font-black leading-tight text-emerald-950 sm:text-base md:text-xl">
+                  {doctor.name}
+                </h3>
+
+
+                {/* Specialist */}
+                <p className="mt-2 line-clamp-1 text-[10px] font-black uppercase tracking-[0.14em] text-emerald-600 sm:text-xs md:text-sm">
+                  {doctor.specialist}
                 </p>
-              )}
 
-              {/* Appointment Button */}
-              <Link
-                href="/appointment"
-                className="group/btn relative mt-5 inline-flex w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-to-r from-emerald-600 via-green-500 to-teal-500 px-3 py-3 text-[10px] font-black text-white shadow-[0_6px_0_#065f46,0_12px_25px_rgba(16,185,129,.28)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_9px_0_#065f46,0_18px_35px_rgba(16,185,129,.42)] active:translate-y-[3px] active:shadow-[0_3px_0_#065f46] sm:text-xs md:rounded-2xl md:px-5 md:py-3.5 md:text-sm"
-              >
-                <span className="absolute inset-0 bg-gradient-to-b from-white/25 via-transparent to-black/10" />
 
-                <span className="absolute -left-20 top-0 h-full w-10 -skew-x-12 bg-white/35 blur-sm transition-all duration-700 group-hover/btn:left-[120%]" />
+                {/* Small Badges */}
+                <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
 
-                <span className="relative z-10 flex items-center gap-2">
-                  <span>📅</span>
-                  <span className="hidden sm:inline">Book Appointment</span>
-                  <span className="sm:hidden">Book</span>
-                  <span>→</span>
-                </span>
-              </Link>
-            </div>
-          </article>
-        ))}
+                  {doctor.department && (
+                    <span className="rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-[8px] font-bold text-emerald-700 sm:text-[9px] md:text-[10px]">
+                      {doctor.department}
+                    </span>
+                  )}
+
+                  {doctor.experience && (
+                    <span className="rounded-full border border-teal-100 bg-teal-50 px-2.5 py-1 text-[8px] font-bold text-teal-700 sm:text-[9px] md:text-[10px]">
+                      {doctor.experience}
+                    </span>
+                  )}
+
+                </div>
+
+
+                {/* Qualification */}
+                {doctor.qualification && (
+                  <p className="mt-3 line-clamp-2 text-[10px] leading-5 text-slate-500 sm:text-xs">
+                    {doctor.qualification}
+                  </p>
+                )}
+
+
+                {/* =================================================
+                    TODAY STATUS
+                ================================================= */}
+                <div
+                  className={`mt-4 w-full rounded-xl border px-3 py-2 ${
+                    availableToday
+                      ? "border-emerald-200 bg-emerald-50"
+                      : "border-slate-200 bg-slate-50"
+                  }`}
+                >
+
+                  <div className="flex items-center justify-center gap-2">
+
+                    <span
+                      className={`h-2 w-2 rounded-full ${
+                        availableToday
+                          ? "animate-pulse bg-emerald-500"
+                          : "bg-slate-400"
+                      }`}
+                    />
+
+                    <span
+                      className={`text-[9px] font-black uppercase tracking-wide sm:text-[10px] ${
+                        availableToday
+                          ? "text-emerald-700"
+                          : "text-slate-500"
+                      }`}
+                    >
+                      {availableToday
+                        ? "Available Today"
+                        : "Not Available Today"}
+                    </span>
+
+                  </div>
+
+                </div>
+
+
+                {/* =================================================
+                    FEES
+                ================================================= */}
+                <div className="mt-3 grid w-full grid-cols-2 gap-2">
+
+                  {/* OPD */}
+                  <div className="rounded-xl border border-amber-100 bg-amber-50 px-2 py-2.5">
+
+                    <p className="text-[8px] font-black uppercase tracking-wide text-amber-700 sm:text-[9px]">
+                      OPD Fee
+                    </p>
+
+                    <p className="mt-1 text-sm font-black text-amber-900 sm:text-base">
+                      ₹{Number(doctor.opdFee || 0).toLocaleString("en-IN")}
+                    </p>
+
+                  </div>
+
+
+                  {/* Indoor */}
+                  <div className="rounded-xl border border-blue-100 bg-blue-50 px-2 py-2.5">
+
+                    <p className="text-[8px] font-black uppercase tracking-wide text-blue-700 sm:text-[9px]">
+                      Indoor
+                    </p>
+
+                    {doctor.indoorDoctor ? (
+
+                      <p className="mt-1 text-sm font-black text-blue-900 sm:text-base">
+                        ₹
+                        {Number(
+                          doctor.indoorFee || 0
+                        ).toLocaleString("en-IN")}
+                      </p>
+
+                    ) : (
+
+                      <p className="mt-1 text-[10px] font-bold text-slate-500 sm:text-xs">
+                        Not Available
+                      </p>
+
+                    )}
+
+                  </div>
+
+                </div>
+
+
+                {/* =================================================
+                    OPD TIME
+                ================================================= */}
+                {doctor.opdStartTime &&
+                  doctor.opdEndTime && (
+
+                    <div className="mt-3 w-full rounded-xl bg-slate-50 px-3 py-2">
+
+                      <p className="text-[8px] font-black uppercase tracking-wide text-slate-400 sm:text-[9px]">
+                        OPD Time
+                      </p>
+
+                      <p className="mt-1 text-[10px] font-extrabold text-slate-700 sm:text-xs">
+                        🕒 {doctor.opdStartTime} - {doctor.opdEndTime}
+                      </p>
+
+                    </div>
+
+                  )}
+
+
+                {/* =================================================
+                    VIEW DETAILS BUTTON
+                ================================================= */}
+                <Link
+                  href={`/doctors/${doctor._id}`}
+                  className="group/btn relative mt-5 inline-flex w-full items-center justify-center overflow-hidden rounded-xl bg-gradient-to-r from-emerald-600 via-green-500 to-teal-500 px-3 py-3 text-[10px] font-black text-white shadow-[0_6px_0_#065f46,0_12px_25px_rgba(16,185,129,.28)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_9px_0_#065f46,0_18px_35px_rgba(16,185,129,.42)] active:translate-y-[3px] active:shadow-[0_3px_0_#065f46] sm:text-xs md:rounded-2xl md:px-5 md:py-3.5 md:text-sm"
+                >
+
+                  <span className="absolute inset-0 bg-gradient-to-b from-white/25 via-transparent to-black/10" />
+
+                  <span className="absolute -left-20 top-0 h-full w-10 -skew-x-12 bg-white/35 blur-sm transition-all duration-700 group-hover/btn:left-[120%]" />
+
+                  <span className="relative z-10 flex items-center gap-2">
+
+                    <span>👨‍⚕️</span>
+
+                    <span className="hidden sm:inline">
+                      View Doctor Details
+                    </span>
+
+                    <span className="sm:hidden">
+                      Details
+                    </span>
+
+                    <span>→</span>
+
+                  </span>
+
+                </Link>
+
+              </div>
+
+            </article>
+
+          );
+
+        })}
+
       </div>
+
     )}
 
-    {/* Bottom Actions */}
+
+    {/* =======================================================
+        BOTTOM ACTIONS
+    ======================================================= */}
     <div className="mt-10 flex flex-col items-center justify-center gap-4 sm:mt-12 sm:flex-row">
+
+      {/* View All Doctors */}
       <Link
         href="/doctors"
         className="group relative inline-flex w-full items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-800 via-green-600 to-teal-500 px-7 py-4 text-sm font-black text-white shadow-[0_8px_0_#064e3b,0_16px_32px_rgba(16,185,129,.32)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_11px_0_#064e3b,0_22px_42px_rgba(16,185,129,.48)] active:translate-y-[4px] active:shadow-[0_4px_0_#064e3b] sm:w-auto sm:min-w-[210px]"
       >
+
         <span className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-black/10" />
 
         <span className="absolute -left-20 top-0 h-full w-10 -skew-x-12 bg-white/35 blur-sm transition-all duration-700 group-hover:left-[120%]" />
 
-        <span className="relative z-10">View All Doctors</span>
+        <span className="relative z-10">
+          View All Doctors
+        </span>
+
       </Link>
 
+
+      {/* Prescription */}
       <Link
         href="/prescription-download"
         className="group relative inline-flex w-full items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-r from-teal-700 via-emerald-600 to-green-500 px-7 py-4 text-sm font-black text-white shadow-[0_8px_0_#115e59,0_16px_32px_rgba(20,184,166,.30)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_11px_0_#115e59,0_22px_42px_rgba(20,184,166,.45)] active:translate-y-[4px] active:shadow-[0_4px_0_#115e59] sm:w-auto sm:min-w-[230px]"
       >
+
         <span className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-black/10" />
 
         <span className="absolute -left-20 top-0 h-full w-10 -skew-x-12 bg-white/35 blur-sm transition-all duration-700 group-hover:left-[120%]" />
 
         <span className="relative z-10 flex items-center gap-2">
+
           <span>📄</span>
+
           Download Prescription
+
         </span>
+
       </Link>
+
     </div>
+
   </div>
+
 </section>
 
       {/* Final CTA */}
