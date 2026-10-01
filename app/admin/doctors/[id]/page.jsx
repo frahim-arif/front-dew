@@ -11,7 +11,7 @@ const SERVER_URL = API.replace("/api", "");
 // ==================================================
 async function getDoctor(id) {
   try {
-    const res = await fetch(`${API}/doctors`, {
+    const res = await fetch(`${API}/doctors/${id}`, {
       cache: "no-store",
     });
 
@@ -25,11 +25,7 @@ async function getDoctor(id) {
       return null;
     }
 
-    const doctor = (data.data || []).find(
-      (item) => item._id === id
-    );
-
-    return doctor || null;
+    return data.data || null;
   } catch (error) {
     console.error("GET DOCTOR ERROR:", error);
     return null;
