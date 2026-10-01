@@ -268,7 +268,7 @@ export default function HeroSection() {
                   <FileDown size={14} />
 
                   <span className="whitespace-nowrap">
-                    Prescription PDF
+                    Online Reports
                   </span>
                 </Link>
 
@@ -640,7 +640,7 @@ export default function HeroSection() {
               "
             >
               <FileDown size={17} />
-              Prescription PDF
+              Online Reports
             </Link>
 
           </div>
