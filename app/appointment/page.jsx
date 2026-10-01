@@ -2,46 +2,141 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import { siteInfo } from "../data/siteData";
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://backend-dew-c2to.onrender.com/api";
 
-const getTodayDate = () => {
-  const today = new Date();
+/* ==================================================
+   RAZORPAY SCRIPT LOADER
+================================================== */
 
-  const year = today.getFullYear();
-  const month = String(today.getMonth() + 1).padStart(2, "0");
-  const day = String(today.getDate()).padStart(2, "0");
+const loadRazorpayScript = () => {
+  return new Promise((resolve) => {
+    if (typeof window === "undefined") {
+      resolve(false);
+      return;
+    }
 
-  return `${year}-${month}-${day}`;
+    // Already loaded
+    if (window.Razorpay) {
+      resolve(true);
+      return;
+    }
+
+    // Script already exists
+    const existingScript = document.querySelector(
+      'script[src="https://checkout.razorpay.com/v1/checkout.js"]'
+    );
+
+    if (existingScript) {
+      const handleLoad = () => {
+        cleanup();
+        resolve(!!window.Razorpay);
+      };
+
+      const handleError = () => {
+        cleanup();
+        resolve(false);
+      };
+
+      const cleanup = () => {
+        existingScript.removeEventListener(
+          "load",
+          handleLoad
+        );
+
+        existingScript.removeEventListener(
+          "error",
+          handleError
+        );
+      };
+
+      existingScript.addEventListener(
+        "load",
+        handleLoad
+      );
+
+      existingScript.addEventListener(
+        "error",
+        handleError
+      );
+
+      return;
+    }
+
+    // Create new script
+    const script = document.createElement("script");
+
+    script.src =
+      "https://checkout.razorpay.com/v1/checkout.js";
+
+    script.async = true;
+
+    script.onload = () => {
+      resolve(!!window.Razorpay);
+    };
+
+    script.onerror = () => {
+      resolve(false);
+    };
+
+    document.body.appendChild(script);
+  });
 };
+
+/* ==================================================
+   INDIA TODAY DATE
+   YYYY-MM-DD
+================================================== */
+
+const getTodayDate = () => {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Kolkata",
+  }).format(new Date());
+};
+
+/* ==================================================
+   EMPTY FORM
+================================================== */
+
+const getEmptyForm = () => ({
+  name: "",
+  phone: "",
+  email: "",
+  age: "",
+  gender: "",
+  doctor: "",
+  department: "",
+  date: getTodayDate(),
+  time: "",
+  message: "",
+});
+
+/* ==================================================
+   APPOINTMENT PAGE
+================================================== */
 
 export default function AppointmentPage() {
   const router = useRouter();
 
   const [doctors, setDoctors] = useState([]);
-  const [loadingDoctors, setLoadingDoctors] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
+
+  const [loadingDoctors, setLoadingDoctors] =
+    useState(true);
+
+  const [submitting, setSubmitting] =
+    useState(false);
 
   const [message, setMessage] = useState({
     type: "",
     text: "",
   });
 
-  const [form, setForm] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    age: "",
-    gender: "",
-    doctor: "",
-    department: "",
-    date: getTodayDate(),
-    time: "",
-    message: "",
-  });
+  const [form, setForm] = useState(
+    getEmptyForm()
+  );
 
   /* ==================================================
      FETCH DOCTORS
@@ -52,35 +147,52 @@ export default function AppointmentPage() {
       try {
         setLoadingDoctors(true);
 
-        const res = await fetch(`${API_URL}/doctors`, {
-          cache: "no-store",
-        });
+        const response = await fetch(
+          `${API_URL}/doctors`,
+          {
+            cache: "no-store",
+          }
+        );
 
-        const data = await res.json();
+        const result = await response.json();
 
-        if (!res.ok || !data.success) {
+        if (
+          !response.ok ||
+          !result.success
+        ) {
           throw new Error(
-            data.message || "Unable to fetch doctors"
+            result.message ||
+              "Unable to fetch doctors."
           );
         }
 
-        const activeDoctors = Array.isArray(data.data)
-          ? data.data.filter(
-              (doctor) =>
-                String(doctor.status || "").toLowerCase() ===
-                "active"
+        const activeDoctors = (
+          Array.isArray(result.data)
+            ? result.data
+            : []
+        ).filter((doctor) => {
+          return (
+            String(
+              doctor?.status || ""
             )
-          : [];
+              .trim()
+              .toLowerCase() === "active"
+          );
+        });
 
         setDoctors(activeDoctors);
       } catch (error) {
-        console.error("FETCH DOCTORS ERROR:", error);
+        console.error(
+          "FETCH DOCTORS ERROR:",
+          error
+        );
 
         setDoctors([]);
 
         setMessage({
           type: "error",
-          text: "Doctors load nahi ho paaye. Please try again.",
+          text:
+            "Doctors load nahi ho paaye. Please try again.",
         });
       } finally {
         setLoadingDoctors(false);
@@ -96,15 +208,20 @@ export default function AppointmentPage() {
 
   const departments = useMemo(() => {
     const values = doctors
-      .map((doctor) => doctor.department)
-      .filter(Boolean)
-      .map((department) => department.trim());
+      .map((doctor) =>
+        String(
+          doctor?.department || ""
+        ).trim()
+      )
+      .filter(Boolean);
 
-    return [...new Set(values)];
+    return [...new Set(values)].sort(
+      (a, b) => a.localeCompare(b)
+    );
   }, [doctors]);
 
   /* ==================================================
-     FILTER DOCTORS BY DEPARTMENT
+     FILTER DOCTORS
   ================================================== */
 
   const filteredDoctors = useMemo(() => {
@@ -112,11 +229,20 @@ export default function AppointmentPage() {
       return doctors;
     }
 
-    return doctors.filter(
-      (doctor) =>
-        String(doctor.department || "").trim() ===
-        String(form.department).trim()
-    );
+    const department =
+      form.department
+        .trim()
+        .toLowerCase();
+
+    return doctors.filter((doctor) => {
+      return (
+        String(
+          doctor?.department || ""
+        )
+          .trim()
+          .toLowerCase() === department
+      );
+    });
   }, [doctors, form.department]);
 
   /* ==================================================
@@ -127,14 +253,15 @@ export default function AppointmentPage() {
     return (
       doctors.find(
         (doctor) =>
-          String(doctor._id) === String(form.doctor)
+          String(doctor?._id) ===
+          String(form.doctor)
       ) || null
     );
   }, [doctors, form.doctor]);
 
   /* ==================================================
      DYNAMIC DOCTOR FEE
-     DATABASE SOURCE: doctor.opdFee
+     DATABASE SOURCE
   ================================================== */
 
   const selectedDoctorFee = Number(
@@ -145,14 +272,16 @@ export default function AppointmentPage() {
      DOCTOR OPD DAYS
   ================================================== */
 
-  const doctorOpdDays = selectedDoctor?.opdDays || [];
+  const doctorOpdDays =
+    selectedDoctor?.opdDays || [];
 
   /* ==================================================
-     HANDLE FORM CHANGE
+     HANDLE CHANGE
   ================================================== */
 
   const handleChange = (event) => {
-    const { name, value } = event.target;
+    const { name, value } =
+      event.target;
 
     setMessage({
       type: "",
@@ -165,30 +294,56 @@ export default function AppointmentPage() {
         [name]: value,
       };
 
-      /* ----------------------------------------------
-         Department changed
-      ---------------------------------------------- */
-
+      // Department changed
       if (name === "department") {
         next.doctor = "";
         next.time = "";
       }
 
-      /* ----------------------------------------------
-         Doctor changed
-      ---------------------------------------------- */
-
+      // Doctor changed
       if (name === "doctor") {
-        const doctor = doctors.find(
-          (item) => String(item._id) === String(value)
-        );
-
-        next.department = doctor?.department || "";
         next.time = "";
       }
 
       return next;
     });
+  };
+
+  /* ==================================================
+     FAILED PAYMENT
+  ================================================== */
+
+  const markPaymentFailed = async ({
+    appointmentId,
+    razorpayOrderId,
+    errorCode = "",
+    errorDescription = "",
+  }) => {
+    try {
+      await fetch(
+        `${API_URL}/payments/failed`,
+        {
+          method: "POST",
+
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+
+          body: JSON.stringify({
+            appointmentId,
+            razorpayOrderId,
+            errorCode,
+            errorDescription,
+          }),
+        }
+      );
+    } catch (error) {
+      console.error(
+        "FAILED PAYMENT UPDATE ERROR:",
+        error
+      );
+    }
   };
 
   /* ==================================================
@@ -210,46 +365,70 @@ export default function AppointmentPage() {
     if (!form.name.trim()) {
       setMessage({
         type: "error",
-        text: "Please enter patient name.",
+        text:
+          "Please enter patient name.",
       });
+
       return;
     }
 
-    if (!/^[6-9]\d{9}$/.test(form.phone.trim())) {
+    if (
+      !/^[0-9]{10}$/.test(
+        form.phone.trim()
+      )
+    ) {
       setMessage({
         type: "error",
-        text: "Please enter a valid 10-digit mobile number.",
+        text:
+          "Please enter a valid 10-digit mobile number.",
       });
+
+      return;
+    }
+
+    if (!form.department) {
+      setMessage({
+        type: "error",
+        text:
+          "Please select a department.",
+      });
+
       return;
     }
 
     if (!form.doctor) {
       setMessage({
         type: "error",
-        text: "Please select a doctor.",
+        text:
+          "Please select a doctor.",
       });
+
       return;
     }
 
     if (!form.date) {
       setMessage({
         type: "error",
-        text: "Please select appointment date.",
+        text:
+          "Please select appointment date.",
       });
+
       return;
     }
 
     if (!form.time) {
       setMessage({
         type: "error",
-        text: "Please select appointment time.",
+        text:
+          "Please select appointment time.",
       });
+
       return;
     }
 
     /* ----------------------------------------------
-       PAST DATE VALIDATION
-       Same-day appointment IS allowed.
+       SAME DAY ALLOWED
+       ONLY PAST DATE BLOCKED
     ---------------------------------------------- */
 
     const todayDate = getTodayDate();
@@ -257,9 +436,34 @@ export default function AppointmentPage() {
     if (form.date < todayDate) {
       setMessage({
         type: "error",
-        text: "Past date appointment allowed nahi hai.",
+        text:
+          "Past date appointment allowed nahi hai.",
       });
+
       return;
+    }
+
+    /* ----------------------------------------------
+       AGE VALIDATION
+    ---------------------------------------------- */
+
+    if (form.age) {
+      const numericAge =
+        Number(form.age);
+
+      if (
+        Number.isNaN(numericAge) ||
+        numericAge < 1 ||
+        numericAge > 120
+      ) {
+        setMessage({
+          type: "error",
+          text:
+            "Please enter a valid age.",
+        });
+
+        return;
+      }
     }
 
     /* ----------------------------------------------
@@ -269,240 +473,400 @@ export default function AppointmentPage() {
     if (!selectedDoctor) {
       setMessage({
         type: "error",
-        text: "Selected doctor not found.",
+        text:
+          "Selected doctor not found.",
       });
+
       return;
     }
 
     if (
-      String(selectedDoctor.status || "").toLowerCase() !==
-      "active"
+      String(
+        selectedDoctor.status || ""
+      )
+        .trim()
+        .toLowerCase() !== "active"
     ) {
       setMessage({
         type: "error",
-        text: "Selected doctor is currently unavailable.",
+        text:
+          "Selected doctor is currently unavailable.",
       });
+
       return;
     }
 
-    if (selectedDoctor.opdAvailable === false) {
+    if (
+      selectedDoctor.opdAvailable ===
+      false
+    ) {
       setMessage({
         type: "error",
-        text: "OPD is currently unavailable for this doctor.",
+        text:
+          "OPD is currently unavailable for this doctor.",
       });
+
       return;
     }
 
     /* ----------------------------------------------
-       SUBMIT
+       START
     ---------------------------------------------- */
 
     try {
       setSubmitting(true);
 
+      setMessage({
+        type: "success",
+        text:
+          "Secure payment prepare ho raha hai...",
+      });
+
+      /* ==========================================
+         LOAD RAZORPAY
+      ========================================== */
+
+      const razorpayLoaded =
+        await loadRazorpayScript();
+
+      if (!razorpayLoaded) {
+        throw new Error(
+          "Razorpay load nahi ho saka. Internet connection check karein."
+        );
+      }
+
+      /* ==========================================
+         APPOINTMENT DATA
+      ========================================== */
+
       const appointmentData = {
         name: form.name.trim(),
-        phone: form.phone.trim(),
-        email: form.email.trim(),
-        age: form.age ? Number(form.age) : null,
-        gender: form.gender,
-        doctor: selectedDoctor.name,
 
-        doctorId: selectedDoctor._id,
+        phone: form.phone.trim(),
+
+        email: form.email.trim(),
+
+        age: form.age
+          ? Number(form.age)
+          : null,
+
+        gender: form.gender,
+
+        doctor:
+          selectedDoctor.name,
+
+        doctorId:
+          selectedDoctor._id,
 
         department:
-          form.department ||
-          selectedDoctor.department ||
-          "",
+          selectedDoctor.department,
 
         date: form.date,
-        time: form.time,
-        message: form.message.trim(),
 
-        /*
-         * This is only useful as frontend metadata/display.
-         * Backend MUST calculate actual payment amount
-         * from Doctor.opdFee using doctorId.
-         */
-        doctorFee: selectedDoctorFee,
+        time: form.time,
+
+        message:
+          form.message.trim(),
+
+        // Reference only.
+        // Backend should calculate actual fee.
+        doctorFee:
+          selectedDoctorFee,
       };
 
-      /* ----------------------------------------------
+      /* ==========================================
          CREATE APPOINTMENT
-      ---------------------------------------------- */
+      ========================================== */
 
-      const appointmentResponse = await fetch(
-        `${API_URL}/appointments`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(appointmentData),
-        }
-      );
+      const appointmentResponse =
+        await fetch(
+          `${API_URL}/appointments`,
+          {
+            method: "POST",
 
-      const appointmentDataResponse =
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body: JSON.stringify(
+              appointmentData
+            ),
+          }
+        );
+
+      const appointmentResult =
         await appointmentResponse.json();
 
       if (
         !appointmentResponse.ok ||
-        !appointmentDataResponse.success
+        !appointmentResult.success
       ) {
         throw new Error(
-          appointmentDataResponse.message ||
+          appointmentResult.message ||
             "Unable to create appointment."
         );
       }
 
       const appointment =
-        appointmentDataResponse.data ||
-        appointmentDataResponse.appointment ||
-        appointmentDataResponse;
+        appointmentResult.data ||
+        appointmentResult.appointment ||
+        appointmentResult;
 
-      /* ----------------------------------------------
+      const appointmentId =
+        appointment?._id ||
+        appointment?.id;
+
+      if (!appointmentId) {
+        throw new Error(
+          "Appointment ID receive nahi hua."
+        );
+      }
+
+      /* ==========================================
          CREATE RAZORPAY ORDER
-      ---------------------------------------------- */
+      ========================================== */
 
-      const paymentResponse = await fetch(
-        `${API_URL}/payments/create-order`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            appointmentId:
-              appointment?._id ||
-              appointment?.id,
+      setMessage({
+        type: "success",
+        text:
+          "Payment order create ho raha hai...",
+      });
 
-            doctorId: selectedDoctor._id,
+      const paymentResponse =
+        await fetch(
+          `${API_URL}/payments/create-order`,
+          {
+            method: "POST",
 
-            /*
-             * Send for reference only.
-             * Backend should NOT trust this value.
-             */
-            doctorFee: selectedDoctorFee,
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
 
-            name: form.name.trim(),
-            phone: form.phone.trim(),
-            email: form.email.trim(),
-          }),
-        }
-      );
+            body: JSON.stringify({
+              appointmentId,
 
-      const paymentData = await paymentResponse.json();
+              doctorId:
+                selectedDoctor._id,
+
+              // Reference only.
+              // Backend must calculate amount.
+              doctorFee:
+                selectedDoctorFee,
+
+              name:
+                form.name.trim(),
+
+              phone:
+                form.phone.trim(),
+
+              email:
+                form.email.trim(),
+            }),
+          }
+        );
+
+      const paymentResult =
+        await paymentResponse.json();
 
       if (
         !paymentResponse.ok ||
-        !paymentData.success
+        !paymentResult.success
       ) {
         throw new Error(
-          paymentData.message ||
+          paymentResult.message ||
             "Unable to create payment order."
         );
       }
 
-      /* ----------------------------------------------
-         RAZORPAY
-      ---------------------------------------------- */
+      /* ==========================================
+         NORMALIZE PAYMENT RESPONSE
+      ========================================== */
 
-      if (typeof window === "undefined") {
-        throw new Error("Payment system unavailable.");
-      }
+      const razorpayOrder =
+        paymentResult.order ||
+        paymentResult.data ||
+        paymentResult;
 
-      if (!window.Razorpay) {
+      const razorpayKey =
+        paymentResult.key ||
+        paymentResult.keyId ||
+        razorpayOrder.keyId ||
+        process.env
+          .NEXT_PUBLIC_RAZORPAY_KEY_ID;
+
+      const razorpayAmount =
+        razorpayOrder.amount;
+
+      const razorpayCurrency =
+        razorpayOrder.currency ||
+        "INR";
+
+      const razorpayOrderId =
+        razorpayOrder.id ||
+        razorpayOrder.order_id ||
+        razorpayOrder.orderId;
+
+      if (!razorpayKey) {
         throw new Error(
-          "Razorpay is not loaded. Please refresh the page and try again."
+          "Razorpay Key ID receive nahi hua."
         );
       }
 
-      const razorpayOrder =
-        paymentData.order ||
-        paymentData.data ||
-        paymentData;
+      if (!razorpayAmount) {
+        throw new Error(
+          "Razorpay amount receive nahi hua."
+        );
+      }
+
+      if (!razorpayOrderId) {
+        throw new Error(
+          "Razorpay Order ID receive nahi hua."
+        );
+      }
+
+      /* ==========================================
+         OPEN RAZORPAY
+      ========================================== */
+
+      setMessage({
+        type: "success",
+        text:
+          "Payment window open ho raha hai...",
+      });
+
+      if (
+        typeof window ===
+          "undefined" ||
+        !window.Razorpay
+      ) {
+        throw new Error(
+          "Razorpay checkout available nahi hai. Please refresh karke dobara try karein."
+        );
+      }
 
       const razorpayOptions = {
-        key:
-          paymentData.key ||
-          paymentData.keyId ||
-          process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        key: razorpayKey,
 
-        amount: razorpayOrder.amount,
+        amount:
+          razorpayAmount,
 
         currency:
-          razorpayOrder.currency || "INR",
+          razorpayCurrency,
 
-       name: "Dew Care Hospital",
+        name:
+          "Dew Care Hospital",
 
         description:
           `Appointment with ${selectedDoctor.name}`,
 
         order_id:
-          razorpayOrder.id ||
-          razorpayOrder.order_id,
+          razorpayOrderId,
 
         prefill: {
-          name: form.name.trim(),
-          email: form.email.trim(),
-          contact: form.phone.trim(),
+          name:
+            form.name.trim(),
+
+          email:
+            form.email.trim(),
+
+          contact:
+            form.phone.trim(),
         },
 
         notes: {
-          appointmentId:
-            appointment?._id ||
-            appointment?.id ||
-            "",
+          appointmentId,
 
           doctorId:
-            selectedDoctor._id,
+            String(
+              selectedDoctor._id
+            ),
 
           doctorName:
             selectedDoctor.name,
 
+          appointmentDate:
+            form.date,
+
+          appointmentTime:
+            form.time,
+
           doctorFee:
-            String(selectedDoctorFee),
+            String(
+              selectedDoctorFee
+            ),
         },
 
         theme: {
           color: "#047857",
         },
 
-        handler: async function (response) {
+        modal: {
+          confirm_close: true,
+
+          ondismiss: () => {
+            setSubmitting(false);
+
+            setMessage({
+              type: "error",
+              text:
+                "Payment cancelled. Appointment confirm nahi hui.",
+            });
+          },
+        },
+
+        /* ======================================
+           PAYMENT SUCCESS
+        ====================================== */
+
+        handler: async (
+          response
+        ) => {
           try {
-            const verifyResponse = await fetch(
-              `${API_URL}/payments/verify`,
-              {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  appointmentId:
-                    appointment?._id ||
-                    appointment?.id,
+            setSubmitting(true);
 
-                  razorpay_order_id:
-                    response.razorpay_order_id,
+            setMessage({
+              type: "success",
+              text:
+                "Payment receive ho gayi. Verification chal rahi hai...",
+            });
 
-                  razorpay_payment_id:
-                    response.razorpay_payment_id,
+            const verifyResponse =
+              await fetch(
+                `${API_URL}/payments/verify`,
+                {
+                  method: "POST",
 
-                  razorpay_signature:
-                    response.razorpay_signature,
-                }),
-              }
-            );
+                  headers: {
+                    "Content-Type":
+                      "application/json",
+                  },
 
-            const verifyData =
+                  body: JSON.stringify({
+                    appointmentId,
+
+                    razorpay_order_id:
+                      response.razorpay_order_id,
+
+                    razorpay_payment_id:
+                      response.razorpay_payment_id,
+
+                    razorpay_signature:
+                      response.razorpay_signature,
+                  }),
+                }
+              );
+
+            const verifyResult =
               await verifyResponse.json();
 
             if (
               !verifyResponse.ok ||
-              !verifyData.success
+              !verifyResult.success
             ) {
               throw new Error(
-                verifyData.message ||
+                verifyResult.message ||
                   "Payment verification failed."
               );
             }
@@ -513,12 +877,12 @@ export default function AppointmentPage() {
                 "Appointment booked successfully! Payment received.",
             });
 
+            setForm(
+              getEmptyForm()
+            );
+
             router.push(
-              `/appointment/success?id=${
-                appointment?._id ||
-                appointment?.id ||
-                ""
-              }`
+              `/appointment/success?id=${appointmentId}`
             );
           } catch (error) {
             console.error(
@@ -532,44 +896,70 @@ export default function AppointmentPage() {
                 error.message ||
                 "Payment verification failed.",
             });
+          } finally {
+            setSubmitting(false);
           }
-        },
-
-        modal: {
-          ondismiss: function () {
-            setMessage({
-              type: "error",
-              text:
-                "Payment cancelled. Your appointment is not confirmed yet.",
-            });
-          },
         },
       };
 
+      /* ==========================================
+         CREATE CHECKOUT
+      ========================================== */
+
       const razorpay =
-        new window.Razorpay(razorpayOptions);
+        new window.Razorpay(
+          razorpayOptions
+        );
+
+      /* ==========================================
+         PAYMENT FAILED
+      ========================================== */
 
       razorpay.on(
         "payment.failed",
-        function (response) {
+        async (response) => {
           console.error(
             "RAZORPAY PAYMENT FAILED:",
             response
           );
 
+          const errorCode =
+            response?.error?.code ||
+            "PAYMENT_FAILED";
+
+          const errorDescription =
+            response?.error
+              ?.description ||
+            "Razorpay payment failed.";
+
+          await markPaymentFailed({
+            appointmentId,
+
+            razorpayOrderId,
+
+            errorCode,
+
+            errorDescription,
+          });
+
+          setSubmitting(false);
+
           setMessage({
             type: "error",
             text:
-              response?.error?.description ||
-              "Payment failed. Please try again.",
+              errorDescription,
           });
         }
       );
 
+      /* ==========================================
+         OPEN CHECKOUT
+      ========================================== */
+
       razorpay.open();
     } catch (error) {
       console.error(
-        "APPOINTMENT SUBMIT ERROR:",
+        "APPOINTMENT PAYMENT ERROR:",
         error
       );
 
@@ -577,12 +967,19 @@ export default function AppointmentPage() {
         type: "error",
         text:
           error.message ||
-          "Something went wrong. Please try again.",
+          "Payment start karte waqt problem hui.",
       });
-    } finally {
+
       setSubmitting(false);
     }
   };
+
+  /* ==================================================
+     INPUT CLASS
+  ================================================== */
+
+  const inputClass =
+    "w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600 disabled:cursor-not-allowed disabled:bg-slate-100";
 
   /* ==================================================
      UI
@@ -608,11 +1005,11 @@ export default function AppointmentPage() {
             </h1>
 
             <p className="mt-5 max-w-2xl text-base leading-8 text-emerald-50/80 sm:text-lg">
-              Select your preferred doctor, date and time.
-              Same-day aur future appointments available.
+              Select your preferred doctor,
+              date and time. Same-day aur
+              future appointments available.
             </p>
 
-            {/* DYNAMIC FEE */}
             <div className="mt-7">
               <p className="inline-flex border border-emerald-300/30 bg-emerald-400/10 px-4 py-3 text-sm font-semibold text-emerald-100 backdrop-blur">
                 {selectedDoctor
@@ -641,14 +1038,16 @@ export default function AppointmentPage() {
               </h2>
 
               <p className="mt-2 text-sm text-slate-500">
-                Please enter correct patient information.
+                Please enter correct patient
+                information.
               </p>
             </div>
 
             {message.text && (
               <div
                 className={`mb-6 border px-4 py-3 text-sm font-semibold ${
-                  message.type === "success"
+                  message.type ===
+                  "success"
                     ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                     : "border-red-200 bg-red-50 text-red-700"
                 }`}
@@ -673,9 +1072,13 @@ export default function AppointmentPage() {
                     type="text"
                     name="name"
                     value={form.name}
-                    onChange={handleChange}
+                    onChange={
+                      handleChange
+                    }
                     placeholder="Enter patient name"
-                    className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+                    className={
+                      inputClass
+                    }
                     required
                   />
                 </div>
@@ -689,10 +1092,15 @@ export default function AppointmentPage() {
                     type="tel"
                     name="phone"
                     value={form.phone}
-                    onChange={handleChange}
+                    onChange={
+                      handleChange
+                    }
                     placeholder="10-digit mobile number"
                     maxLength={10}
-                    className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+                    inputMode="numeric"
+                    className={
+                      inputClass
+                    }
                     required
                   />
                 </div>
@@ -710,9 +1118,13 @@ export default function AppointmentPage() {
                     type="email"
                     name="email"
                     value={form.email}
-                    onChange={handleChange}
+                    onChange={
+                      handleChange
+                    }
                     placeholder="Enter email"
-                    className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+                    className={
+                      inputClass
+                    }
                   />
                 </div>
 
@@ -725,11 +1137,15 @@ export default function AppointmentPage() {
                     type="number"
                     name="age"
                     value={form.age}
-                    onChange={handleChange}
-                    min="0"
+                    onChange={
+                      handleChange
+                    }
+                    min="1"
                     max="120"
                     placeholder="Patient age"
-                    className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+                    className={
+                      inputClass
+                    }
                   />
                 </div>
               </div>
@@ -744,18 +1160,25 @@ export default function AppointmentPage() {
                 <select
                   name="gender"
                   value={form.gender}
-                  onChange={handleChange}
-                  className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+                  onChange={
+                    handleChange
+                  }
+                  className={
+                    inputClass
+                  }
                 >
                   <option value="">
                     Select gender
                   </option>
+
                   <option value="Male">
                     Male
                   </option>
+
                   <option value="Female">
                     Female
                   </option>
+
                   <option value="Other">
                     Other
                   </option>
@@ -772,21 +1195,43 @@ export default function AppointmentPage() {
 
                   <select
                     name="department"
-                    value={form.department}
-                    onChange={handleChange}
-                    className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+                    value={
+                      form.department
+                    }
+                    onChange={
+                      handleChange
+                    }
+                    disabled={
+                      loadingDoctors ||
+                      departments.length ===
+                        0
+                    }
+                    className={
+                      inputClass
+                    }
+                    required
                   >
                     <option value="">
-                      All Departments
+                      {loadingDoctors
+                        ? "Loading Departments..."
+                        : "Select Department"}
                     </option>
 
                     {departments.map(
-                      (department) => (
+                      (
+                        department
+                      ) => (
                         <option
-                          key={department}
-                          value={department}
+                          key={
+                            department
+                          }
+                          value={
+                            department
+                          }
                         >
-                          {department}
+                          {
+                            department
+                          }
                         </option>
                       )
                     )}
@@ -801,24 +1246,42 @@ export default function AppointmentPage() {
                   <select
                     name="doctor"
                     value={form.doctor}
-                    onChange={handleChange}
-                    disabled={loadingDoctors}
-                    className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600 disabled:bg-slate-100"
+                    onChange={
+                      handleChange
+                    }
+                    disabled={
+                      loadingDoctors ||
+                      !form.department ||
+                      filteredDoctors.length ===
+                        0
+                    }
+                    className={
+                      inputClass
+                    }
                     required
                   >
                     <option value="">
                       {loadingDoctors
-                        ? "Loading doctors..."
+                        ? "Loading Doctors..."
+                        : !form.department
+                        ? "First Select Department"
                         : "Select Doctor"}
                     </option>
 
                     {filteredDoctors.map(
                       (doctor) => (
                         <option
-                          key={doctor._id}
-                          value={doctor._id}
+                          key={
+                            doctor._id
+                          }
+                          value={
+                            doctor._id
+                          }
                         >
-                          {doctor.name}
+                          {
+                            doctor.name
+                          }
+
                           {doctor.specialist
                             ? ` — ${doctor.specialist}`
                             : ""}
@@ -829,7 +1292,7 @@ export default function AppointmentPage() {
                 </div>
               </div>
 
-              {/* SELECTED DOCTOR INFO */}
+              {/* SELECTED DOCTOR */}
 
               {selectedDoctor && (
                 <div className="border border-emerald-100 bg-emerald-50 p-5">
@@ -840,12 +1303,16 @@ export default function AppointmentPage() {
                       </p>
 
                       <h3 className="mt-1 text-xl font-black text-slate-900">
-                        {selectedDoctor.name}
+                        {
+                          selectedDoctor.name
+                        }
                       </h3>
 
                       {selectedDoctor.specialist && (
                         <p className="mt-1 text-sm text-slate-600">
-                          {selectedDoctor.specialist}
+                          {
+                            selectedDoctor.specialist
+                          }
                         </p>
                       )}
                     </div>
@@ -869,7 +1336,9 @@ export default function AppointmentPage() {
                       <span className="font-bold">
                         Qualification:
                       </span>{" "}
-                      {selectedDoctor.qualification}
+                      {
+                        selectedDoctor.qualification
+                      }
                     </p>
                   )}
 
@@ -878,7 +1347,9 @@ export default function AppointmentPage() {
                       <span className="font-bold">
                         Experience:
                       </span>{" "}
-                      {selectedDoctor.experience}
+                      {
+                        selectedDoctor.experience
+                      }
                     </p>
                   )}
                 </div>
@@ -896,14 +1367,19 @@ export default function AppointmentPage() {
                     type="date"
                     name="date"
                     value={form.date}
-                    onChange={handleChange}
+                    onChange={
+                      handleChange
+                    }
                     min={getTodayDate()}
-                    className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+                    className={
+                      inputClass
+                    }
                     required
                   />
 
                   <p className="mt-2 text-xs text-slate-500">
-                    Same-day appointment bhi available hai.
+                    Same-day appointment
+                    bhi available hai.
                   </p>
                 </div>
 
@@ -916,7 +1392,9 @@ export default function AppointmentPage() {
                     type="time"
                     name="time"
                     value={form.time}
-                    onChange={handleChange}
+                    onChange={
+                      handleChange
+                    }
                     min={
                       selectedDoctor?.opdStartTime ||
                       undefined
@@ -925,7 +1403,9 @@ export default function AppointmentPage() {
                       selectedDoctor?.opdEndTime ||
                       undefined
                     }
-                    className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+                    className={
+                      inputClass
+                    }
                     required
                   />
 
@@ -945,7 +1425,8 @@ export default function AppointmentPage() {
               {/* OPD DAYS */}
 
               {selectedDoctor &&
-                doctorOpdDays.length > 0 && (
+                doctorOpdDays.length >
+                  0 && (
                   <div className="border border-slate-200 bg-slate-50 p-4">
                     <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
                       OPD Days
@@ -975,11 +1456,15 @@ export default function AppointmentPage() {
 
                 <textarea
                   name="message"
-                  value={form.message}
-                  onChange={handleChange}
+                  value={
+                    form.message
+                  }
+                  onChange={
+                    handleChange
+                  }
                   rows={5}
                   placeholder="Briefly describe your concern..."
-                  className="w-full resize-none border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+                  className={`${inputClass} resize-none`}
                 />
               </div>
 
@@ -1001,8 +1486,9 @@ export default function AppointmentPage() {
                   </div>
 
                   <p className="mt-2 text-xs leading-5 text-slate-500">
-                    Payment Razorpay ke through secure
-                    checkout par process hoga.
+                    Payment Razorpay ke
+                    through secure checkout
+                    par process hoga.
                   </p>
                 </div>
               )}
@@ -1059,8 +1545,9 @@ export default function AppointmentPage() {
                 </p>
 
                 <p className="mt-1 text-sm leading-6 text-slate-600">
-                  Same-day and future appointments can
-                  be requested.
+                  Same-day and future
+                  appointments can be
+                  requested.
                 </p>
               </div>
 
@@ -1070,7 +1557,8 @@ export default function AppointmentPage() {
                 </p>
 
                 <p className="mt-1 text-sm leading-6 text-slate-600">
-                  Secure online payment through Razorpay.
+                  Secure online payment
+                  through Razorpay.
                 </p>
               </div>
 
@@ -1079,9 +1567,25 @@ export default function AppointmentPage() {
                   Hospital
                 </p>
 
-               <p className="mt-1 text-sm leading-6 text-slate-600">
-  Dew Care Hospital LLP
-</p>
+                <p className="mt-1 text-sm leading-6 text-slate-600">
+                  Dew Care Hospital LLP
+                </p>
+              </div>
+
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                  OPD
+                </p>
+
+                <p className="mt-1 text-sm leading-6 text-slate-600">
+                  {siteInfo.opdDays ||
+                    "Monday - Saturday"}
+                </p>
+
+                <p className="text-sm leading-6 text-slate-600">
+                  {siteInfo.opdTime ||
+                    "10:00 AM – 05:00 PM"}
+                </p>
               </div>
             </div>
           </aside>
@@ -1090,3 +1594,1105 @@ export default function AppointmentPage() {
     </main>
   );
 }
+
+
+
+
+
+
+
+
+
+
+// "use client";
+
+// import { useEffect, useMemo, useState } from "react";
+// import { useRouter } from "next/navigation";
+
+
+// const API_URL =
+//   process.env.NEXT_PUBLIC_API_URL ||
+//   "https://backend-dew-c2to.onrender.com/api";
+
+// const getTodayDate = () => {
+//   const today = new Date();
+
+//   const year = today.getFullYear();
+//   const month = String(today.getMonth() + 1).padStart(2, "0");
+//   const day = String(today.getDate()).padStart(2, "0");
+
+//   return `${year}-${month}-${day}`;
+// };
+
+// export default function AppointmentPage() {
+//   const router = useRouter();
+
+//   const [doctors, setDoctors] = useState([]);
+//   const [loadingDoctors, setLoadingDoctors] = useState(true);
+//   const [submitting, setSubmitting] = useState(false);
+
+//   const [message, setMessage] = useState({
+//     type: "",
+//     text: "",
+//   });
+
+//   const [form, setForm] = useState({
+//     name: "",
+//     phone: "",
+//     email: "",
+//     age: "",
+//     gender: "",
+//     doctor: "",
+//     department: "",
+//     date: getTodayDate(),
+//     time: "",
+//     message: "",
+//   });
+
+//   /* ==================================================
+//      FETCH DOCTORS
+//   ================================================== */
+
+//   useEffect(() => {
+//     const fetchDoctors = async () => {
+//       try {
+//         setLoadingDoctors(true);
+
+//         const res = await fetch(`${API_URL}/doctors`, {
+//           cache: "no-store",
+//         });
+
+//         const data = await res.json();
+
+//         if (!res.ok || !data.success) {
+//           throw new Error(
+//             data.message || "Unable to fetch doctors"
+//           );
+//         }
+
+//         const activeDoctors = Array.isArray(data.data)
+//           ? data.data.filter(
+//               (doctor) =>
+//                 String(doctor.status || "").toLowerCase() ===
+//                 "active"
+//             )
+//           : [];
+
+//         setDoctors(activeDoctors);
+//       } catch (error) {
+//         console.error("FETCH DOCTORS ERROR:", error);
+
+//         setDoctors([]);
+
+//         setMessage({
+//           type: "error",
+//           text: "Doctors load nahi ho paaye. Please try again.",
+//         });
+//       } finally {
+//         setLoadingDoctors(false);
+//       }
+//     };
+
+//     fetchDoctors();
+//   }, []);
+
+//   /* ==================================================
+//      DEPARTMENTS
+//   ================================================== */
+
+//   const departments = useMemo(() => {
+//     const values = doctors
+//       .map((doctor) => doctor.department)
+//       .filter(Boolean)
+//       .map((department) => department.trim());
+
+//     return [...new Set(values)];
+//   }, [doctors]);
+
+//   /* ==================================================
+//      FILTER DOCTORS BY DEPARTMENT
+//   ================================================== */
+
+//   const filteredDoctors = useMemo(() => {
+//     if (!form.department) {
+//       return doctors;
+//     }
+
+//     return doctors.filter(
+//       (doctor) =>
+//         String(doctor.department || "").trim() ===
+//         String(form.department).trim()
+//     );
+//   }, [doctors, form.department]);
+
+//   /* ==================================================
+//      SELECTED DOCTOR
+//   ================================================== */
+
+//   const selectedDoctor = useMemo(() => {
+//     return (
+//       doctors.find(
+//         (doctor) =>
+//           String(doctor._id) === String(form.doctor)
+//       ) || null
+//     );
+//   }, [doctors, form.doctor]);
+
+//   /* ==================================================
+//      DYNAMIC DOCTOR FEE
+//      DATABASE SOURCE: doctor.opdFee
+//   ================================================== */
+
+//   const selectedDoctorFee = Number(
+//     selectedDoctor?.opdFee || 0
+//   );
+
+//   /* ==================================================
+//      DOCTOR OPD DAYS
+//   ================================================== */
+
+//   const doctorOpdDays = selectedDoctor?.opdDays || [];
+
+//   /* ==================================================
+//      HANDLE FORM CHANGE
+//   ================================================== */
+
+//   const handleChange = (event) => {
+//     const { name, value } = event.target;
+
+//     setMessage({
+//       type: "",
+//       text: "",
+//     });
+
+//     setForm((previous) => {
+//       const next = {
+//         ...previous,
+//         [name]: value,
+//       };
+
+//       /* ----------------------------------------------
+//          Department changed
+//       ---------------------------------------------- */
+
+//       if (name === "department") {
+//         next.doctor = "";
+//         next.time = "";
+//       }
+
+//       /* ----------------------------------------------
+//          Doctor changed
+//       ---------------------------------------------- */
+
+//       if (name === "doctor") {
+//         const doctor = doctors.find(
+//           (item) => String(item._id) === String(value)
+//         );
+
+//         next.department = doctor?.department || "";
+//         next.time = "";
+//       }
+
+//       return next;
+//     });
+//   };
+
+//   /* ==================================================
+//      SUBMIT APPOINTMENT
+//   ================================================== */
+
+//   const handleSubmit = async (event) => {
+//     event.preventDefault();
+
+//     setMessage({
+//       type: "",
+//       text: "",
+//     });
+
+//     /* ----------------------------------------------
+//        BASIC VALIDATION
+//     ---------------------------------------------- */
+
+//     if (!form.name.trim()) {
+//       setMessage({
+//         type: "error",
+//         text: "Please enter patient name.",
+//       });
+//       return;
+//     }
+
+//     if (!/^[6-9]\d{9}$/.test(form.phone.trim())) {
+//       setMessage({
+//         type: "error",
+//         text: "Please enter a valid 10-digit mobile number.",
+//       });
+//       return;
+//     }
+
+//     if (!form.doctor) {
+//       setMessage({
+//         type: "error",
+//         text: "Please select a doctor.",
+//       });
+//       return;
+//     }
+
+//     if (!form.date) {
+//       setMessage({
+//         type: "error",
+//         text: "Please select appointment date.",
+//       });
+//       return;
+//     }
+
+//     if (!form.time) {
+//       setMessage({
+//         type: "error",
+//         text: "Please select appointment time.",
+//       });
+//       return;
+//     }
+
+//     /* ----------------------------------------------
+//        PAST DATE VALIDATION
+//        Same-day appointment IS allowed.
+//     ---------------------------------------------- */
+
+//     const todayDate = getTodayDate();
+
+//     if (form.date < todayDate) {
+//       setMessage({
+//         type: "error",
+//         text: "Past date appointment allowed nahi hai.",
+//       });
+//       return;
+//     }
+
+//     /* ----------------------------------------------
+//        DOCTOR VALIDATION
+//     ---------------------------------------------- */
+
+//     if (!selectedDoctor) {
+//       setMessage({
+//         type: "error",
+//         text: "Selected doctor not found.",
+//       });
+//       return;
+//     }
+
+//     if (
+//       String(selectedDoctor.status || "").toLowerCase() !==
+//       "active"
+//     ) {
+//       setMessage({
+//         type: "error",
+//         text: "Selected doctor is currently unavailable.",
+//       });
+//       return;
+//     }
+
+//     if (selectedDoctor.opdAvailable === false) {
+//       setMessage({
+//         type: "error",
+//         text: "OPD is currently unavailable for this doctor.",
+//       });
+//       return;
+//     }
+
+//     /* ----------------------------------------------
+//        SUBMIT
+//     ---------------------------------------------- */
+
+//     try {
+//       setSubmitting(true);
+
+//       const appointmentData = {
+//         name: form.name.trim(),
+//         phone: form.phone.trim(),
+//         email: form.email.trim(),
+//         age: form.age ? Number(form.age) : null,
+//         gender: form.gender,
+//         doctor: selectedDoctor.name,
+
+//         doctorId: selectedDoctor._id,
+
+//         department:
+//           form.department ||
+//           selectedDoctor.department ||
+//           "",
+
+//         date: form.date,
+//         time: form.time,
+//         message: form.message.trim(),
+
+//         /*
+//          * This is only useful as frontend metadata/display.
+//          * Backend MUST calculate actual payment amount
+//          * from Doctor.opdFee using doctorId.
+//          */
+//         doctorFee: selectedDoctorFee,
+//       };
+
+//       /* ----------------------------------------------
+//          CREATE APPOINTMENT
+//       ---------------------------------------------- */
+
+//       const appointmentResponse = await fetch(
+//         `${API_URL}/appointments`,
+//         {
+//           method: "POST",
+//           headers: {
+//             "Content-Type": "application/json",
+//           },
+//           body: JSON.stringify(appointmentData),
+//         }
+//       );
+
+//       const appointmentDataResponse =
+//         await appointmentResponse.json();
+
+//       if (
+//         !appointmentResponse.ok ||
+//         !appointmentDataResponse.success
+//       ) {
+//         throw new Error(
+//           appointmentDataResponse.message ||
+//             "Unable to create appointment."
+//         );
+//       }
+
+//       const appointment =
+//         appointmentDataResponse.data ||
+//         appointmentDataResponse.appointment ||
+//         appointmentDataResponse;
+
+//       /* ----------------------------------------------
+//          CREATE RAZORPAY ORDER
+//       ---------------------------------------------- */
+
+//       const paymentResponse = await fetch(
+//         `${API_URL}/payments/create-order`,
+//         {
+//           method: "POST",
+//           headers: {
+//             "Content-Type": "application/json",
+//           },
+//           body: JSON.stringify({
+//             appointmentId:
+//               appointment?._id ||
+//               appointment?.id,
+
+//             doctorId: selectedDoctor._id,
+
+//             /*
+//              * Send for reference only.
+//              * Backend should NOT trust this value.
+//              */
+//             doctorFee: selectedDoctorFee,
+
+//             name: form.name.trim(),
+//             phone: form.phone.trim(),
+//             email: form.email.trim(),
+//           }),
+//         }
+//       );
+
+//       const paymentData = await paymentResponse.json();
+
+//       if (
+//         !paymentResponse.ok ||
+//         !paymentData.success
+//       ) {
+//         throw new Error(
+//           paymentData.message ||
+//             "Unable to create payment order."
+//         );
+//       }
+
+//       /* ----------------------------------------------
+//          RAZORPAY
+//       ---------------------------------------------- */
+
+//       if (typeof window === "undefined") {
+//         throw new Error("Payment system unavailable.");
+//       }
+
+//       if (!window.Razorpay) {
+//         throw new Error(
+//           "Razorpay is not loaded. Please refresh the page and try again."
+//         );
+//       }
+
+//       const razorpayOrder =
+//         paymentData.order ||
+//         paymentData.data ||
+//         paymentData;
+
+//       const razorpayOptions = {
+//         key:
+//           paymentData.key ||
+//           paymentData.keyId ||
+//           process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+
+//         amount: razorpayOrder.amount,
+
+//         currency:
+//           razorpayOrder.currency || "INR",
+
+//        name: "Dew Care Hospital",
+
+//         description:
+//           `Appointment with ${selectedDoctor.name}`,
+
+//         order_id:
+//           razorpayOrder.id ||
+//           razorpayOrder.order_id,
+
+//         prefill: {
+//           name: form.name.trim(),
+//           email: form.email.trim(),
+//           contact: form.phone.trim(),
+//         },
+
+//         notes: {
+//           appointmentId:
+//             appointment?._id ||
+//             appointment?.id ||
+//             "",
+
+//           doctorId:
+//             selectedDoctor._id,
+
+//           doctorName:
+//             selectedDoctor.name,
+
+//           doctorFee:
+//             String(selectedDoctorFee),
+//         },
+
+//         theme: {
+//           color: "#047857",
+//         },
+
+//         handler: async function (response) {
+//           try {
+//             const verifyResponse = await fetch(
+//               `${API_URL}/payments/verify`,
+//               {
+//                 method: "POST",
+//                 headers: {
+//                   "Content-Type": "application/json",
+//                 },
+//                 body: JSON.stringify({
+//                   appointmentId:
+//                     appointment?._id ||
+//                     appointment?.id,
+
+//                   razorpay_order_id:
+//                     response.razorpay_order_id,
+
+//                   razorpay_payment_id:
+//                     response.razorpay_payment_id,
+
+//                   razorpay_signature:
+//                     response.razorpay_signature,
+//                 }),
+//               }
+//             );
+
+//             const verifyData =
+//               await verifyResponse.json();
+
+//             if (
+//               !verifyResponse.ok ||
+//               !verifyData.success
+//             ) {
+//               throw new Error(
+//                 verifyData.message ||
+//                   "Payment verification failed."
+//               );
+//             }
+
+//             setMessage({
+//               type: "success",
+//               text:
+//                 "Appointment booked successfully! Payment received.",
+//             });
+
+//             router.push(
+//               `/appointment/success?id=${
+//                 appointment?._id ||
+//                 appointment?.id ||
+//                 ""
+//               }`
+//             );
+//           } catch (error) {
+//             console.error(
+//               "PAYMENT VERIFY ERROR:",
+//               error
+//             );
+
+//             setMessage({
+//               type: "error",
+//               text:
+//                 error.message ||
+//                 "Payment verification failed.",
+//             });
+//           }
+//         },
+
+//         modal: {
+//           ondismiss: function () {
+//             setMessage({
+//               type: "error",
+//               text:
+//                 "Payment cancelled. Your appointment is not confirmed yet.",
+//             });
+//           },
+//         },
+//       };
+
+//       const razorpay =
+//         new window.Razorpay(razorpayOptions);
+
+//       razorpay.on(
+//         "payment.failed",
+//         function (response) {
+//           console.error(
+//             "RAZORPAY PAYMENT FAILED:",
+//             response
+//           );
+
+//           setMessage({
+//             type: "error",
+//             text:
+//               response?.error?.description ||
+//               "Payment failed. Please try again.",
+//           });
+//         }
+//       );
+
+//       razorpay.open();
+//     } catch (error) {
+//       console.error(
+//         "APPOINTMENT SUBMIT ERROR:",
+//         error
+//       );
+
+//       setMessage({
+//         type: "error",
+//         text:
+//           error.message ||
+//           "Something went wrong. Please try again.",
+//       });
+//     } finally {
+//       setSubmitting(false);
+//     }
+//   };
+
+//   /* ==================================================
+//      UI
+//   ================================================== */
+
+//   return (
+//     <main className="min-h-screen bg-[#f7faf9]">
+//       {/* ==================================================
+//           HERO
+//       ================================================== */}
+
+//       <section className="relative overflow-hidden bg-[#071c19]">
+//         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(200,174,106,0.18),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.16),transparent_35%)]" />
+
+//         <div className="relative mx-auto max-w-7xl px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
+//           <div className="max-w-3xl">
+//             <span className="mb-5 inline-flex border border-emerald-300/30 bg-emerald-400/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.2em] text-emerald-100">
+//               Online Appointment
+//             </span>
+
+//             <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl lg:text-6xl">
+//               Book Your Appointment
+//             </h1>
+
+//             <p className="mt-5 max-w-2xl text-base leading-8 text-emerald-50/80 sm:text-lg">
+//               Select your preferred doctor, date and time.
+//               Same-day aur future appointments available.
+//             </p>
+
+//             {/* DYNAMIC FEE */}
+//             <div className="mt-7">
+//               <p className="inline-flex border border-emerald-300/30 bg-emerald-400/10 px-4 py-3 text-sm font-semibold text-emerald-100 backdrop-blur">
+//                 {selectedDoctor
+//                   ? `Appointment Fee: ₹${selectedDoctorFee.toLocaleString(
+//                       "en-IN"
+//                     )}`
+//                   : "Select Doctor for Appointment Fee"}
+//               </p>
+//             </div>
+//           </div>
+//         </div>
+//       </section>
+
+//       {/* ==================================================
+//           FORM
+//       ================================================== */}
+
+//       <section className="mx-auto max-w-7xl px-5 py-12 sm:px-8 lg:px-10 lg:py-16">
+//         <div className="grid gap-8 lg:grid-cols-[1fr_360px]">
+//           {/* FORM CARD */}
+
+//           <div className="border border-slate-200 bg-white p-5 shadow-sm sm:p-8">
+//             <div className="mb-8">
+//               <h2 className="text-2xl font-black text-slate-900">
+//                 Patient Details
+//               </h2>
+
+//               <p className="mt-2 text-sm text-slate-500">
+//                 Please enter correct patient information.
+//               </p>
+//             </div>
+
+//             {message.text && (
+//               <div
+//                 className={`mb-6 border px-4 py-3 text-sm font-semibold ${
+//                   message.type === "success"
+//                     ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+//                     : "border-red-200 bg-red-50 text-red-700"
+//                 }`}
+//               >
+//                 {message.text}
+//               </div>
+//             )}
+
+//             <form
+//               onSubmit={handleSubmit}
+//               className="space-y-6"
+//             >
+//               {/* NAME / PHONE */}
+
+//               <div className="grid gap-5 md:grid-cols-2">
+//                 <div>
+//                   <label className="mb-2 block text-sm font-bold text-slate-700">
+//                     Patient Name *
+//                   </label>
+
+//                   <input
+//                     type="text"
+//                     name="name"
+//                     value={form.name}
+//                     onChange={handleChange}
+//                     placeholder="Enter patient name"
+//                     className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+//                     required
+//                   />
+//                 </div>
+
+//                 <div>
+//                   <label className="mb-2 block text-sm font-bold text-slate-700">
+//                     Mobile Number *
+//                   </label>
+
+//                   <input
+//                     type="tel"
+//                     name="phone"
+//                     value={form.phone}
+//                     onChange={handleChange}
+//                     placeholder="10-digit mobile number"
+//                     maxLength={10}
+//                     className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+//                     required
+//                   />
+//                 </div>
+//               </div>
+
+//               {/* EMAIL / AGE */}
+
+//               <div className="grid gap-5 md:grid-cols-2">
+//                 <div>
+//                   <label className="mb-2 block text-sm font-bold text-slate-700">
+//                     Email
+//                   </label>
+
+//                   <input
+//                     type="email"
+//                     name="email"
+//                     value={form.email}
+//                     onChange={handleChange}
+//                     placeholder="Enter email"
+//                     className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+//                   />
+//                 </div>
+
+//                 <div>
+//                   <label className="mb-2 block text-sm font-bold text-slate-700">
+//                     Age
+//                   </label>
+
+//                   <input
+//                     type="number"
+//                     name="age"
+//                     value={form.age}
+//                     onChange={handleChange}
+//                     min="0"
+//                     max="120"
+//                     placeholder="Patient age"
+//                     className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+//                   />
+//                 </div>
+//               </div>
+
+//               {/* GENDER */}
+
+//               <div>
+//                 <label className="mb-2 block text-sm font-bold text-slate-700">
+//                   Gender
+//                 </label>
+
+//                 <select
+//                   name="gender"
+//                   value={form.gender}
+//                   onChange={handleChange}
+//                   className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+//                 >
+//                   <option value="">
+//                     Select gender
+//                   </option>
+//                   <option value="Male">
+//                     Male
+//                   </option>
+//                   <option value="Female">
+//                     Female
+//                   </option>
+//                   <option value="Other">
+//                     Other
+//                   </option>
+//                 </select>
+//               </div>
+
+//               {/* DEPARTMENT / DOCTOR */}
+
+//               <div className="grid gap-5 md:grid-cols-2">
+//                 <div>
+//                   <label className="mb-2 block text-sm font-bold text-slate-700">
+//                     Department
+//                   </label>
+
+//                   <select
+//                     name="department"
+//                     value={form.department}
+//                     onChange={handleChange}
+//                     className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+//                   >
+//                     <option value="">
+//                       All Departments
+//                     </option>
+
+//                     {departments.map(
+//                       (department) => (
+//                         <option
+//                           key={department}
+//                           value={department}
+//                         >
+//                           {department}
+//                         </option>
+//                       )
+//                     )}
+//                   </select>
+//                 </div>
+
+//                 <div>
+//                   <label className="mb-2 block text-sm font-bold text-slate-700">
+//                     Doctor *
+//                   </label>
+
+//                   <select
+//                     name="doctor"
+//                     value={form.doctor}
+//                     onChange={handleChange}
+//                     disabled={loadingDoctors}
+//                     className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600 disabled:bg-slate-100"
+//                     required
+//                   >
+//                     <option value="">
+//                       {loadingDoctors
+//                         ? "Loading doctors..."
+//                         : "Select Doctor"}
+//                     </option>
+
+//                     {filteredDoctors.map(
+//                       (doctor) => (
+//                         <option
+//                           key={doctor._id}
+//                           value={doctor._id}
+//                         >
+//                           {doctor.name}
+//                           {doctor.specialist
+//                             ? ` — ${doctor.specialist}`
+//                             : ""}
+//                         </option>
+//                       )
+//                     )}
+//                   </select>
+//                 </div>
+//               </div>
+
+//               {/* SELECTED DOCTOR INFO */}
+
+//               {selectedDoctor && (
+//                 <div className="border border-emerald-100 bg-emerald-50 p-5">
+//                   <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+//                     <div>
+//                       <p className="text-xs font-bold uppercase tracking-wider text-emerald-700">
+//                         Selected Doctor
+//                       </p>
+
+//                       <h3 className="mt-1 text-xl font-black text-slate-900">
+//                         {selectedDoctor.name}
+//                       </h3>
+
+//                       {selectedDoctor.specialist && (
+//                         <p className="mt-1 text-sm text-slate-600">
+//                           {selectedDoctor.specialist}
+//                         </p>
+//                       )}
+//                     </div>
+
+//                     <div className="sm:text-right">
+//                       <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+//                         OPD Fee
+//                       </p>
+
+//                       <p className="mt-1 text-2xl font-black text-emerald-700">
+//                         ₹
+//                         {selectedDoctorFee.toLocaleString(
+//                           "en-IN"
+//                         )}
+//                       </p>
+//                     </div>
+//                   </div>
+
+//                   {selectedDoctor.qualification && (
+//                     <p className="mt-4 text-sm text-slate-600">
+//                       <span className="font-bold">
+//                         Qualification:
+//                       </span>{" "}
+//                       {selectedDoctor.qualification}
+//                     </p>
+//                   )}
+
+//                   {selectedDoctor.experience && (
+//                     <p className="mt-1 text-sm text-slate-600">
+//                       <span className="font-bold">
+//                         Experience:
+//                       </span>{" "}
+//                       {selectedDoctor.experience}
+//                     </p>
+//                   )}
+//                 </div>
+//               )}
+
+//               {/* DATE / TIME */}
+
+//               <div className="grid gap-5 md:grid-cols-2">
+//                 <div>
+//                   <label className="mb-2 block text-sm font-bold text-slate-700">
+//                     Appointment Date *
+//                   </label>
+
+//                   <input
+//                     type="date"
+//                     name="date"
+//                     value={form.date}
+//                     onChange={handleChange}
+//                     min={getTodayDate()}
+//                     className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+//                     required
+//                   />
+
+//                   <p className="mt-2 text-xs text-slate-500">
+//                     Same-day appointment bhi available hai.
+//                   </p>
+//                 </div>
+
+//                 <div>
+//                   <label className="mb-2 block text-sm font-bold text-slate-700">
+//                     Appointment Time *
+//                   </label>
+
+//                   <input
+//                     type="time"
+//                     name="time"
+//                     value={form.time}
+//                     onChange={handleChange}
+//                     min={
+//                       selectedDoctor?.opdStartTime ||
+//                       undefined
+//                     }
+//                     max={
+//                       selectedDoctor?.opdEndTime ||
+//                       undefined
+//                     }
+//                     className="w-full border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+//                     required
+//                   />
+
+//                   {selectedDoctor && (
+//                     <p className="mt-2 text-xs text-slate-500">
+//                       OPD:{" "}
+//                       {selectedDoctor.opdStartTime ||
+//                         "--"}{" "}
+//                       -{" "}
+//                       {selectedDoctor.opdEndTime ||
+//                         "--"}
+//                     </p>
+//                   )}
+//                 </div>
+//               </div>
+
+//               {/* OPD DAYS */}
+
+//               {selectedDoctor &&
+//                 doctorOpdDays.length > 0 && (
+//                   <div className="border border-slate-200 bg-slate-50 p-4">
+//                     <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+//                       OPD Days
+//                     </p>
+
+//                     <div className="mt-2 flex flex-wrap gap-2">
+//                       {doctorOpdDays.map(
+//                         (day) => (
+//                           <span
+//                             key={day}
+//                             className="border border-emerald-200 bg-white px-3 py-1 text-xs font-semibold text-emerald-700"
+//                           >
+//                             {day}
+//                           </span>
+//                         )
+//                       )}
+//                     </div>
+//                   </div>
+//                 )}
+
+//               {/* MESSAGE */}
+
+//               <div>
+//                 <label className="mb-2 block text-sm font-bold text-slate-700">
+//                   Message / Symptoms
+//                 </label>
+
+//                 <textarea
+//                   name="message"
+//                   value={form.message}
+//                   onChange={handleChange}
+//                   rows={5}
+//                   placeholder="Briefly describe your concern..."
+//                   className="w-full resize-none border border-slate-200 bg-white px-4 py-3 outline-none transition focus:border-emerald-600"
+//                 />
+//               </div>
+
+//               {/* PAYMENT INFO */}
+
+//               {selectedDoctor && (
+//                 <div className="border border-emerald-200 bg-emerald-50 p-5">
+//                   <div className="flex items-center justify-between gap-4">
+//                     <span className="text-sm font-semibold text-slate-700">
+//                       Appointment Fee
+//                     </span>
+
+//                     <span className="text-2xl font-black text-emerald-700">
+//                       ₹
+//                       {selectedDoctorFee.toLocaleString(
+//                         "en-IN"
+//                       )}
+//                     </span>
+//                   </div>
+
+//                   <p className="mt-2 text-xs leading-5 text-slate-500">
+//                     Payment Razorpay ke through secure
+//                     checkout par process hoga.
+//                   </p>
+//                 </div>
+//               )}
+
+//               {/* SUBMIT */}
+
+//               <button
+//                 type="submit"
+//                 disabled={
+//                   submitting ||
+//                   loadingDoctors ||
+//                   !selectedDoctor
+//                 }
+//                 className="w-full bg-emerald-700 px-6 py-4 text-sm font-black uppercase tracking-wider text-white transition hover:bg-emerald-800 disabled:cursor-not-allowed disabled:opacity-50"
+//               >
+//                 {submitting
+//                   ? "Processing..."
+//                   : selectedDoctor
+//                   ? `Pay ₹${selectedDoctorFee.toLocaleString(
+//                       "en-IN"
+//                     )} & Book Appointment`
+//                   : "Select Doctor"}
+//               </button>
+//             </form>
+//           </div>
+
+//           {/* ==================================================
+//               SIDE INFO
+//           ================================================== */}
+
+//           <aside className="h-fit border border-slate-200 bg-white p-6 shadow-sm">
+//             <h3 className="text-xl font-black text-slate-900">
+//               Appointment Information
+//             </h3>
+
+//             <div className="mt-6 space-y-5">
+//               <div>
+//                 <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+//                   Doctor Fee
+//                 </p>
+
+//                 <p className="mt-1 text-lg font-black text-emerald-700">
+//                   {selectedDoctor
+//                     ? `₹${selectedDoctorFee.toLocaleString(
+//                         "en-IN"
+//                       )}`
+//                     : "Select doctor"}
+//                 </p>
+//               </div>
+
+//               <div>
+//                 <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+//                   Appointment
+//                 </p>
+
+//                 <p className="mt-1 text-sm leading-6 text-slate-600">
+//                   Same-day and future appointments can
+//                   be requested.
+//                 </p>
+//               </div>
+
+//               <div>
+//                 <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+//                   Payment
+//                 </p>
+
+//                 <p className="mt-1 text-sm leading-6 text-slate-600">
+//                   Secure online payment through Razorpay.
+//                 </p>
+//               </div>
+
+//               <div className="border-t border-slate-100 pt-5">
+//                 <p className="text-xs font-bold uppercase tracking-wider text-slate-400">
+//                   Hospital
+//                 </p>
+
+//                <p className="mt-1 text-sm leading-6 text-slate-600">
+//   Dew Care Hospital LLP
+// </p>
+//               </div>
+//             </div>
+//           </aside>
+//         </div>
+//       </section>
+//     </main>
+//   );
+// }
