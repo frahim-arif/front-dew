@@ -9,7 +9,7 @@ export const siteInfo = {
 
   whatsapp: "9101988910",
 
-  email: "Drforidulhussaindchr@gmail.com",
+  // email: "Drforidulhussaindchr@gmail.com",
 
   address: "Dhing Road, Haibargaon, Nagaon, Assam - 782002",
 
