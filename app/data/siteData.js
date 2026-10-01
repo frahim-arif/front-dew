@@ -4,7 +4,7 @@ export const siteInfo = {
   phone: "09101988910",
   whatsapp: "9101988910",
   email: "Drforidulhussaindchr@gmail.com",
-  address: "Dhing Road, Haibargaon, Nagaon, Assam - 782003",
+  address: "Dhing Road, Haibargaon, Nagaon, Assam - 782002",
 
   emergency: "+91 9101988910",
 
