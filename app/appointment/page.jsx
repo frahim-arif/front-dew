@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import siteInfo from "../siteInfo";
+
 
 const API_URL =
   process.env.NEXT_PUBLIC_API_URL ||
@@ -433,9 +433,7 @@ export default function AppointmentPage() {
         currency:
           razorpayOrder.currency || "INR",
 
-        name:
-          siteInfo?.name ||
-          "Dew Care Hospital",
+       name: "Dew Care Hospital",
 
         description:
           `Appointment with ${selectedDoctor.name}`,
@@ -1081,10 +1079,9 @@ export default function AppointmentPage() {
                   Hospital
                 </p>
 
-                <p className="mt-1 text-sm leading-6 text-slate-600">
-                  {siteInfo?.name ||
-                    "Dew Care Hospital"}
-                </p>
+               <p className="mt-1 text-sm leading-6 text-slate-600">
+  Dew Care Hospital LLP
+</p>
               </div>
             </div>
           </aside>
