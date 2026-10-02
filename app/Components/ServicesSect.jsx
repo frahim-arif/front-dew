@@ -581,38 +581,43 @@ export default function ServicesSect({
                           </div>
 
 
-                          {/* APPOINTMENT */}
+                          
+{/* VIEW DETAILS */}
 
-                          <Link
-                            href="/appointment"
-                            className="
-                              inline-flex
-                              w-full
-                              items-center
-                              justify-center
-                              rounded-lg
-                              bg-gradient-to-r
-                              from-[#0E7686]
-                              via-[#178C96]
-                              to-[#2FA6A7]
-                              px-3
-                              py-2.5
-                              text-[11px]
-                              font-bold
-                              text-white
-                              shadow-lg
-                              transition-all
-                              duration-300
-                              hover:scale-[1.02]
-                              hover:brightness-110
-                              md:rounded-xl
-                              md:px-5
-                              md:py-3
-                              md:text-sm
-                            "
-                          >
-                            Book Appointment →
-                          </Link>
+<Link
+  href={`/services/${service._id}`}
+  className="
+    inline-flex
+    w-full
+    items-center
+    justify-center
+    gap-2
+    rounded-lg
+    border
+    border-emerald-200
+    bg-emerald-50
+    px-3
+    py-2.5
+    text-[11px]
+    font-bold
+    text-emerald-800
+    shadow-sm
+    transition-all
+    duration-300
+    hover:-translate-y-0.5
+    hover:bg-emerald-100
+    hover:shadow-md
+    md:rounded-xl
+    md:px-5
+    md:py-3
+    md:text-sm
+  "
+>
+  View Details
+  <span className="text-base">→</span>
+</Link>
+
+
 
                         </div>
 
