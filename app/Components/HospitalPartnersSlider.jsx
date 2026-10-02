@@ -32,7 +32,7 @@ const partners = [
 
 export default function HospitalPartnersSlider() {
   return (
-    <section className="relative w-full -mt-4 overflow-hidden bg-white py-6">
+    <section className="relative w-full -mt-12 overflow-hidden bg-white py-6">
       {/* Background Glow */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-32 -left-32 h-72 w-72 rounded-full bg-yellow-300/20 blur-[120px]" />
