@@ -5,18 +5,23 @@ const API =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://backend-dew-c2to.onrender.com/api";
 
-const SERVER_URL = API.replace("/api", "");
+const SERVER_URL = API.replace(/\/api\/?$/, "");
 
 // ==================================================
-// GET SERVICE
+// GET SINGLE SERVICE
 // ==================================================
 async function getService(id) {
   try {
+    if (!id) return null;
+
     const res = await fetch(`${API}/services/${id}`, {
       cache: "no-store",
     });
 
-    if (!res.ok) return null;
+    if (!res.ok) {
+      console.error("GET SERVICE STATUS:", res.status);
+      return null;
+    }
 
     const data = await res.json();
 
@@ -35,10 +40,12 @@ async function getService(id) {
 function getImageUrl(image) {
   if (!image) return "";
 
+  // Old/local upload support
   if (image.startsWith("/uploads")) {
     return `${SERVER_URL}${image}`;
   }
 
+  // Cloudinary URL
   return image;
 }
 
@@ -53,14 +60,16 @@ export async function generateMetadata({ params }) {
   if (!service) {
     return {
       title: "Service Not Found | Dew Care Hospital",
+      description:
+        "The requested healthcare service could not be found at Dew Care Hospital.",
     };
   }
 
   return {
-    title: `${service.name} | Dew Care Hospital`,
+    title: `${service.title} | Dew Care Hospital`,
     description:
-      service.description ||
-      `Learn more about ${service.name} at Dew Care Hospital.`,
+      service.desc ||
+      `Learn more about ${service.title} at Dew Care Hospital.`,
   };
 }
 
@@ -105,20 +114,15 @@ export default async function ServiceDetailsPage({ params }) {
     );
   }
 
-  const imageUrl = getImageUrl(
-    service.image || service.imageUrl || service.photo
-  );
+  const imageUrl = getImageUrl(service.image);
+
+  const title = service.title || "Healthcare Service";
 
   const description =
-    service.description ||
-    service.shortDescription ||
+    service.desc ||
     "Dew Care Hospital provides quality healthcare services with compassionate care and modern medical facilities.";
 
-  const fullDescription =
-    service.longDescription ||
-    service.details ||
-    service.content ||
-    description;
+  const isActive = service.status === "Active";
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-emerald-50 via-white to-cyan-50">
@@ -142,15 +146,27 @@ export default async function ServiceDetailsPage({ params }) {
             Hospital Service
           </p>
 
-          <h1 className="mt-3 max-w-4xl text-4xl font-black leading-tight md:text-6xl">
-            {service.name}
-          </h1>
+          <div className="mt-3 flex flex-wrap items-center gap-4">
+            <h1 className="text-4xl font-black leading-tight md:text-6xl">
+              {title}
+            </h1>
 
-          {service.category && (
-            <p className="mt-3 text-lg font-bold text-cyan-200 md:text-xl">
-              {service.category}
-            </p>
-          )}
+            <span
+              className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-black ${
+                isActive
+                  ? "bg-emerald-400/20 text-emerald-100 ring-1 ring-emerald-300/30"
+                  : "bg-red-400/20 text-red-100 ring-1 ring-red-300/30"
+              }`}
+            >
+              <span
+                className={`h-2.5 w-2.5 rounded-full ${
+                  isActive ? "bg-emerald-300" : "bg-red-300"
+                }`}
+              />
+
+              {isActive ? "Available" : "Currently Unavailable"}
+            </span>
+          </div>
         </div>
       </section>
 
@@ -168,68 +184,78 @@ export default async function ServiceDetailsPage({ params }) {
               {imageUrl ? (
                 <img
                   src={imageUrl}
-                  alt={service.name}
+                  alt={title}
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <div className="flex h-full items-center justify-center text-9xl">
-                  🏥
+                <div className="flex h-full flex-col items-center justify-center bg-gradient-to-br from-emerald-100 to-cyan-100">
+                  <div className="text-8xl">
+                    {service.icon || "🏥"}
+                  </div>
+
+                  <p className="mt-4 font-bold text-emerald-800">
+                    Dew Care Hospital
+                  </p>
                 </div>
               )}
 
               <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-emerald-950/80 to-transparent" />
 
               <div className="absolute bottom-5 left-5">
-                <span className="inline-flex items-center gap-2 rounded-full bg-emerald-600 px-4 py-2 text-sm font-black text-white shadow-lg">
-                  <span className="h-2.5 w-2.5 animate-pulse rounded-full bg-white" />
-                  Healthcare Service
+                <span
+                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-black text-white shadow-lg ${
+                    isActive ? "bg-emerald-600" : "bg-red-600"
+                  }`}
+                >
+                  <span
+                    className={`h-2.5 w-2.5 rounded-full ${
+                      isActive ? "animate-pulse bg-white" : "bg-white"
+                    }`}
+                  />
+
+                  {isActive ? "Healthcare Service" : "Service Unavailable"}
                 </span>
               </div>
             </div>
 
             {/* BASIC INFO */}
             <div className="p-6 md:p-7">
-              <h2 className="text-2xl font-black text-emerald-950">
-                {service.name}
-              </h2>
-
-              {service.category && (
-                <p className="mt-2 font-bold text-cyan-700">
-                  {service.category}
-                </p>
-              )}
-
-              {service.department && (
-                <div className="mt-5 flex gap-3">
-                  <span className="text-xl">🏥</span>
-
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
-                      Department
-                    </p>
-
-                    <p className="mt-1 font-semibold text-slate-700">
-                      {service.department}
-                    </p>
-                  </div>
+              <div className="flex items-start gap-4">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-2xl">
+                  {service.icon || "🏥"}
                 </div>
-              )}
 
-              {service.available !== false && (
-                <div className="mt-5 flex gap-3">
-                  <span className="text-xl">✓</span>
+                <div>
+                  <h2 className="text-2xl font-black text-emerald-950">
+                    {title}
+                  </h2>
 
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
-                      Service Status
-                    </p>
-
-                    <p className="mt-1 font-bold text-emerald-600">
-                      Service Available
-                    </p>
-                  </div>
+                  <p className="mt-1 text-sm font-semibold text-slate-500">
+                    Dew Care Hospital & Research Centre
+                  </p>
                 </div>
-              )}
+              </div>
+
+              {/* STATUS */}
+              <div className="mt-6 flex gap-3 border-t border-slate-100 pt-5">
+                <span className="text-xl">{isActive ? "✓" : "!"}</span>
+
+                <div>
+                  <p className="text-xs font-bold uppercase tracking-wide text-slate-400">
+                    Service Status
+                  </p>
+
+                  <p
+                    className={`mt-1 font-bold ${
+                      isActive ? "text-emerald-600" : "text-red-600"
+                    }`}
+                  >
+                    {isActive
+                      ? "Service Available"
+                      : "Currently Unavailable"}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -246,100 +272,87 @@ export default async function ServiceDetailsPage({ params }) {
                   </p>
 
                   <h2 className="mt-2 text-2xl font-black text-emerald-950 md:text-3xl">
-                    {service.name}
+                    {title}
                   </h2>
                 </div>
 
                 <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-3xl">
-                  🏥
+                  {service.icon || "🏥"}
                 </div>
               </div>
 
-              <p className="mt-6 text-base leading-8 text-slate-600">
+              <p className="mt-6 whitespace-pre-line text-base leading-8 text-slate-600">
                 {description}
               </p>
             </div>
 
-            {/* KEY INFORMATION */}
+            {/* SERVICE INFORMATION */}
             <div>
               <h2 className="mb-4 text-2xl font-black text-emerald-950">
                 Service Information
               </h2>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                {/* AVAILABILITY */}
-                <div className="rounded-[1.5rem] border border-emerald-200 bg-emerald-50 p-6">
-                  <div className="flex h-12 w-12 items-center justify-center bg-emerald-100 text-xl">
-                    🕒
+                {/* STATUS */}
+                <div
+                  className={`rounded-[1.5rem] border p-6 ${
+                    isActive
+                      ? "border-emerald-200 bg-emerald-50"
+                      : "border-red-200 bg-red-50"
+                  }`}
+                >
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center text-xl ${
+                      isActive ? "bg-emerald-100" : "bg-red-100"
+                    }`}
+                  >
+                    {isActive ? "✓" : "!"}
                   </div>
 
-                  <p className="mt-4 text-xs font-black uppercase tracking-wide text-emerald-700">
-                    Availability
+                  <p
+                    className={`mt-4 text-xs font-black uppercase tracking-wide ${
+                      isActive ? "text-emerald-700" : "text-red-700"
+                    }`}
+                  >
+                    Service Status
                   </p>
 
-                  <p className="mt-2 text-xl font-black text-emerald-950">
-                    {service.available === false
-                      ? "Currently Unavailable"
-                      : "Available"}
+                  <p
+                    className={`mt-2 text-xl font-black ${
+                      isActive ? "text-emerald-950" : "text-red-950"
+                    }`}
+                  >
+                    {isActive ? "Available" : "Unavailable"}
                   </p>
                 </div>
 
-                {/* DEPARTMENT */}
+                {/* SERVICE TYPE */}
                 <div className="rounded-[1.5rem] border border-cyan-200 bg-cyan-50 p-6">
                   <div className="flex h-12 w-12 items-center justify-center bg-cyan-100 text-xl">
-                    🏥
+                    {service.icon || "🏥"}
                   </div>
 
                   <p className="mt-4 text-xs font-black uppercase tracking-wide text-cyan-700">
-                    Department
+                    Service Type
                   </p>
 
                   <p className="mt-2 text-xl font-black text-cyan-950">
-                    {service.department || service.category || "Hospital Care"}
+                    Hospital Care
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* FULL DESCRIPTION */}
+            {/* ABOUT SERVICE */}
             <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-xl md:p-8">
               <h2 className="text-2xl font-black text-emerald-950">
                 About This Service
               </h2>
 
               <div className="mt-5 whitespace-pre-line text-base leading-8 text-slate-600">
-                {fullDescription}
+                {description}
               </div>
             </div>
-
-            {/* FEATURES */}
-            {Array.isArray(service.features) &&
-              service.features.length > 0 && (
-                <div className="rounded-[2rem] border border-teal-100 bg-teal-50 p-6 md:p-8">
-                  <h2 className="text-2xl font-black text-teal-950">
-                    Service Features
-                  </h2>
-
-                  <div className="mt-6 grid gap-3 sm:grid-cols-2">
-                    {service.features.map((feature, index) => (
-                      <div
-                        key={index}
-                        className="flex items-start gap-3 border border-teal-100 bg-white p-4"
-                      >
-                        <span className="flex h-7 w-7 shrink-0 items-center justify-center bg-emerald-100 text-sm font-black text-emerald-700">
-                          ✓
-                        </span>
-
-                        <span className="font-semibold text-slate-700">
-                          {typeof feature === "string"
-                            ? feature
-                            : feature.name || feature.title || ""}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
 
             {/* IMPORTANT INFORMATION */}
             <div className="rounded-[2rem] border border-amber-200 bg-amber-50 p-6 md:p-8">
@@ -362,7 +375,7 @@ export default async function ServiceDetailsPage({ params }) {
               </div>
             </div>
 
-            {/* ACTIONS */}
+            {/* ACTION */}
             <div className="flex">
               <Link
                 href="/services"
@@ -377,3 +390,4 @@ export default async function ServiceDetailsPage({ params }) {
     </main>
   );
 }
+
