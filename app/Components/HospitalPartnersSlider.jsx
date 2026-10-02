@@ -68,44 +68,35 @@ export default function HospitalPartnersSlider() {
         <div className="partner-track flex w-max">
           {[...partners, ...partners].map((partner, index) => (
             <div
-              key={`${partner.id}-${index}`}
-              className="flex min-h-16 min-w-[220px] shrink-0 items-center gap-3 border-r border-white/20 px-4 transition-all duration-300 hover:bg-white/10 md:min-h-24 md:min-w-[300px] md:gap-5 md:px-8"
-            >
-              {/* ==================================================
-                  LOGO
-              ================================================== */}
-              <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border-2 border-white bg-white md:h-14 md:w-14">
-                <Image
-                  src={partner.image}
-                  alt={partner.name}
-                  fill
-                  sizes="56px"
-                  className="object-cover"
-                />
-              </div>
+  key={`${partner.id}-${index}`}
+  className="flex h-16 min-w-[220px] shrink-0 items-center gap-3 border-r border-white/20 px-4 transition-all duration-300 hover:bg-white/10 md:h-24 md:min-w-[300px] md:gap-5 md:px-8"
+>
+  <div className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border-2 border-white bg-white md:h-14 md:w-14">
+    <Image
+      src={partner.image}
+      alt={partner.name}
+      fill
+      sizes="56px"
+      className="object-cover"
+    />
+  </div>
 
-              {/* ==================================================
-                  TEXT
-              ================================================== */}
-              <div className="min-w-0">
-                {/* MAIN NAME */}
-                <h3 className="text-sm font-bold leading-tight text-white md:text-lg">
-                  {partner.name}
-                </h3>
+  <div className="min-w-0">
+    <h3 className="text-sm font-bold leading-tight text-white md:text-lg">
+      {partner.name}
+    </h3>
 
-                {/* PARTNER #4 SUBTITLE */}
-                {partner.subtitle && (
-                  <p className="mt-0.5 text-[8px] font-medium leading-tight text-white/75 md:text-[11px]">
-                    {partner.subtitle}
-                  </p>
-                )}
+    {partner.subtitle && (
+      <p className="mt-0.5 text-[7px] font-medium leading-tight text-white/75 md:text-[10px]">
+        {partner.subtitle}
+      </p>
+    )}
 
-                {/* TYPE */}
-                <p className="mt-1 text-[10px] font-semibold text-white/80 md:text-sm">
-                  {partner.type}
-                </p>
-              </div>
-            </div>
+    <p className="mt-1 text-[10px] font-semibold leading-tight text-white/80 md:text-sm">
+      {partner.type}
+    </p>
+  </div>
+</div>
           ))}
         </div>
       </div>
