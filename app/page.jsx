@@ -1361,10 +1361,10 @@ lg:min-h-[650px]
                 {/* =================================================
                     FEES
                 ================================================= */}
-                <div className="mt-3 grid w-full grid-cols-2 gap-2">
+                {/* <div className="mt-3 grid w-full grid-cols-2 gap-2"> */}
 
                   {/* OPD */}
-                  <div className="rounded-xl border border-amber-100 bg-amber-50 px-2 py-2.5">
+                  {/* <div className="rounded-xl border border-amber-100 bg-amber-50 px-2 py-2.5">
 
                     <p className="text-[8px] font-black uppercase tracking-wide text-amber-700 sm:text-[9px]">
                       OPD Fee
@@ -1374,11 +1374,11 @@ lg:min-h-[650px]
                       ₹{Number(doctor.opdFee || 0).toLocaleString("en-IN")}
                     </p>
 
-                  </div>
+                  </div> */}
 
 
                   {/* Indoor */}
-                  <div className="rounded-xl border border-blue-100 bg-blue-50 px-2 py-2.5">
+                  {/* <div className="rounded-xl border border-blue-100 bg-blue-50 px-2 py-2.5">
 
                     <p className="text-[8px] font-black uppercase tracking-wide text-blue-700 sm:text-[9px]">
                       Indoor
@@ -1403,13 +1403,13 @@ lg:min-h-[650px]
 
                   </div>
 
-                </div>
+                </div> */}
 
 
                 {/* =================================================
                     OPD TIME
                 ================================================= */}
-                {doctor.opdStartTime &&
+                {/* {doctor.opdStartTime &&
                   doctor.opdEndTime && (
 
                     <div className="mt-3 w-full rounded-xl bg-slate-50 px-3 py-2">
@@ -1424,7 +1424,7 @@ lg:min-h-[650px]
 
                     </div>
 
-                  )}
+                  )} */}
 
 
                 {/* =================================================
