@@ -52,7 +52,7 @@ export default function PrescriptionDownloadPage() {
           </span>
 
           <h1 className="mt-5 text-4xl font-extrabold md:text-6xl">
-            Download Prescription
+            Download Reports
           </h1>
 
           <p className="mx-auto mt-5 max-w-2xl text-sky-100">
