@@ -13,6 +13,9 @@ const menuItems = [
   { name: "Gallery", href: "/admin/gallery", icon: "🖼️" },
   { name: "Services", href: "/admin/services", icon: "🩺" },
 
+  // Doctor Reports
+  { name: "Doctor Reports", href: "/admin/reports", icon: "📈" },
+
   {
     name: "Training",
     icon: "🎓",
