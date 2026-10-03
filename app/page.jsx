@@ -825,6 +825,7 @@ lg:min-h-[650px]
             grid
             grid-cols-2
             gap-4
+            md:grid-cols-2
             md:gap-7
             lg:grid-cols-4
           "
@@ -870,17 +871,26 @@ lg:min-h-[650px]
                 "
               />
 
-              {/* Card */}
+              {/* ==================================================
+                  CARD
+              ================================================== */}
+
               <div
                 className="
                   relative
+                  flex
+                  h-full
+                  flex-col
                   overflow-hidden
                   rounded-[2rem]
-                  bg-[#022c22]/80
+                  bg-[#022c22]/90
                 "
               >
 
-                {/* Image */}
+                {/* ==================================================
+                    IMAGE
+                ================================================== */}
+
                 <div
                   className="
                     relative
@@ -939,8 +949,11 @@ lg:min-h-[650px]
                 </div>
 
 
-                {/* Text */}
-                <div className="p-4 md:p-6">
+                {/* ==================================================
+                    TEXT
+                ================================================== */}
+
+                <div className="flex flex-1 flex-col p-4 md:p-6">
 
                   <h3
                     className="
@@ -969,13 +982,17 @@ lg:min-h-[650px]
                   </p>
 
 
-                  {/* Category */}
+                  {/* ==================================================
+                      CATEGORY
+                  ================================================== */}
+
                   {item.category && (
 
                     <span
                       className="
                         mt-4
                         inline-flex
+                        w-fit
                         rounded-full
                         border
                         border-cyan-300/30
@@ -992,6 +1009,61 @@ lg:min-h-[650px]
                     </span>
 
                   )}
+
+
+                  {/* ==================================================
+                      VIEW DETAILS BUTTON
+                  ================================================== */}
+
+                  <div className="mt-auto pt-5">
+
+                    <Link
+                      href={`/facilities/${item._id}`}
+                      className="
+                        group/button
+                        flex
+                        w-full
+                        items-center
+                        justify-center
+                        gap-2
+                        rounded-xl
+                        border
+                        border-cyan-300/30
+                        bg-cyan-400/10
+                        px-4
+                        py-3
+                        text-xs
+                        font-black
+                        text-cyan-100
+                        transition-all
+                        duration-300
+                        hover:border-cyan-300
+                        hover:bg-cyan-400
+                        hover:text-slate-950
+                        hover:shadow-lg
+                        hover:shadow-cyan-400/20
+                        md:text-sm
+                      "
+                    >
+
+                      <span>
+                        View Details
+                      </span>
+
+                      <span
+                        className="
+                          text-base
+                          transition-transform
+                          duration-300
+                          group-hover/button:translate-x-1
+                        "
+                      >
+                        →
+                      </span>
+
+                    </Link>
+
+                  </div>
 
                 </div>
 
@@ -1080,6 +1152,7 @@ lg:min-h-[650px]
                 gap-2
               "
             >
+
               <span className="text-lg">
                 🏥
               </span>
@@ -1098,6 +1171,7 @@ lg:min-h-[650px]
               >
                 →
               </span>
+
             </span>
 
           </Link>
