@@ -522,43 +522,50 @@ export default function AdminDashboard() {
      QUICK ACTIONS
   ========================================================= */
 
-  const quickActions = [
-    {
-      title: "Manage Appointments",
-      href: "/admin/appointments",
-      desc: "View and update bookings",
-      className:
-        "from-sky-700 to-cyan-500",
-    },
-    {
-      title: "Add Doctor",
-      href: "/admin/doctors",
-      desc: "Manage hospital doctors",
-      className:
-        "from-emerald-700 to-green-500",
-    },
-    {
-      title: "Manage Services",
-      href: "/admin/services",
-      desc: "Add and update services",
-      className:
-        "from-violet-700 to-purple-500",
-    },
-    {
-      title: "Prescriptions",
-      href: "/admin/appointments",
-      desc: "Upload patient prescriptions",
-      className:
-        "from-pink-700 to-rose-500",
-    },
-    {
-      title: "Hospital Settings",
-      href: "/admin/settings",
-      desc: "Update hospital details",
-      className:
-        "from-slate-800 to-slate-600",
-    },
-  ];
+const quickActions = [
+  {
+    title: "Manage Appointments",
+    href: "/admin/appointments",
+    desc: "View and update bookings",
+    className:
+      "from-sky-700 to-cyan-500",
+  },
+  {
+    title: "Add Doctor",
+    href: "/admin/doctors",
+    desc: "Manage hospital doctors",
+    className:
+      "from-emerald-700 to-green-500",
+  },
+  {
+    title: "Manage Services",
+    href: "/admin/services",
+    desc: "Add and update services",
+    className:
+      "from-violet-700 to-purple-500",
+  },
+  {
+    title: "Doctor Reports",
+    href: "/admin/reports",
+    desc: "Doctor-wise patients & collection",
+    className:
+      "from-indigo-700 to-blue-500",
+  },
+  {
+    title: "Prescriptions",
+    href: "/admin/appointments",
+    desc: "Upload patient prescriptions",
+    className:
+      "from-pink-700 to-rose-500",
+  },
+  {
+    title: "Hospital Settings",
+    href: "/admin/settings",
+    desc: "Update hospital details",
+    className:
+      "from-slate-800 to-slate-600",
+  },
+];
 
   /* =========================================================
      LOADING
