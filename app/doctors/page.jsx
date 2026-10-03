@@ -318,10 +318,10 @@ export default async function DoctorsPage() {
                     {/* ==================================================
                         FEES
                     ================================================== */}
-                    <div className="mt-4 grid grid-cols-2 gap-3">
+                    {/* <div className="mt-4 grid grid-cols-2 gap-3"> */}
 
                       {/* OPD FEE */}
-                      <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                      {/* <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
 
                         <p className="text-xs font-bold uppercase tracking-wide text-amber-700">
                           OPD Fee
@@ -331,10 +331,10 @@ export default async function DoctorsPage() {
                           {formatFee(doctor.opdFee)}
                         </p>
 
-                      </div>
+                      </div> */}
 
                       {/* INDOOR */}
-                      <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4">
+                      {/* <div className="rounded-2xl border border-blue-200 bg-blue-50 p-4">
 
                         <p className="text-xs font-bold uppercase tracking-wide text-blue-700">
                           Indoor
@@ -356,14 +356,14 @@ export default async function DoctorsPage() {
 
                         )}
 
-                      </div>
-
-                    </div>
+                      </div> */}
+{/* 
+                    </div> */}
 
                     {/* ==================================================
                         OPD TIMING
                     ================================================== */}
-                    {doctor.opdStartTime &&
+                    {/* {doctor.opdStartTime &&
                       doctor.opdEndTime && (
 
                         <div className="mt-4 rounded-2xl border border-slate-100 bg-slate-50 p-4">
@@ -379,12 +379,12 @@ export default async function DoctorsPage() {
 
                         </div>
 
-                      )}
+                      )} */}
 
                     {/* ==================================================
                         OPD DAYS
                     ================================================== */}
-                    {doctor.opdDays?.length > 0 && (
+                    {/* {doctor.opdDays?.length > 0 && (
 
                       <div className="mt-4 rounded-2xl border border-sky-100 bg-sky-50 p-4">
 
@@ -398,12 +398,12 @@ export default async function DoctorsPage() {
 
                       </div>
 
-                    )}
+                    )} */}
 
                     {/* ==================================================
                         SLOT + DAILY LIMIT
                     ================================================== */}
-                    <div className="mt-4 grid grid-cols-2 gap-3">
+                    {/* <div className="mt-4 grid grid-cols-2 gap-3">
 
                       <div className="rounded-2xl border border-purple-100 bg-purple-50 p-4">
 
@@ -430,7 +430,7 @@ export default async function DoctorsPage() {
 
                       </div>
 
-                    </div>
+                    </div> */}
 
                     {/* ==================================================
                         DETAILS BUTTON
