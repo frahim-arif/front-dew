@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -10,8 +11,6 @@ export default function AdminReportUploadPage() {
   const [patientName, setPatientName] = useState("");
   const [ipOpNo, setIpOpNo] = useState("");
   const [phone, setPhone] = useState("");
-  const [doctor, setDoctor] = useState("");
-  const [appointmentId, setAppointmentId] = useState("");
   const [file, setFile] = useState(null);
 
   const [uploading, setUploading] = useState(false);
@@ -27,8 +26,6 @@ export default function AdminReportUploadPage() {
     const cleanPatientName = patientName.trim();
     const cleanIpOpNo = ipOpNo.trim();
     const cleanPhone = phone.trim();
-    const cleanDoctor = doctor.trim();
-    const cleanAppointmentId = appointmentId.trim();
 
     if (!cleanPatientName) {
       setErrorMessage("Please enter patient name.");
@@ -65,17 +62,6 @@ export default function AdminReportUploadPage() {
       formData.append("patientName", cleanPatientName);
       formData.append("ipOpNo", cleanIpOpNo);
       formData.append("phone", cleanPhone);
-      formData.append("doctor", cleanDoctor);
-
-      // Optional for online appointment.
-      // Offline patient ke liye empty rahega.
-      if (cleanAppointmentId) {
-        formData.append(
-          "appointmentId",
-          cleanAppointmentId
-        );
-      }
-
       formData.append("file", file);
 
       const res = await fetch(`${API}/reports`, {
@@ -99,8 +85,6 @@ export default function AdminReportUploadPage() {
       setPatientName("");
       setIpOpNo("");
       setPhone("");
-      setDoctor("");
-      setAppointmentId("");
       setFile(null);
 
       // Reset file input
@@ -111,7 +95,10 @@ export default function AdminReportUploadPage() {
         fileInput.value = "";
       }
     } catch (error) {
-      console.error("Admin report upload error:", error);
+      console.error(
+        "Admin report upload error:",
+        error
+      );
 
       setErrorMessage(
         error.message ||
@@ -149,17 +136,13 @@ export default function AdminReportUploadPage() {
 
         <ul className="mt-3 space-y-2 text-sm text-gray-600">
           <li>
-            • IP/OP No aur mobile number required hai.
+            • Patient Name, IP/OP No aur mobile number
+            required hai.
           </li>
 
           <li>
-            • Online appointment ho to Appointment ID
-              optional hai.
-          </li>
-
-          <li>
-            • Offline patient ke liye Appointment ID blank
-              chhod sakte hain.
+            • Online aur offline dono patients ka report
+            upload kar sakte hain.
           </li>
 
           <li>
@@ -242,56 +225,6 @@ export default function AdminReportUploadPage() {
             </div>
           </div>
 
-          {/* Doctor */}
-          <div>
-            <label
-              htmlFor="doctor"
-              className="mb-2 block font-bold text-sky-950"
-            >
-              Doctor
-            </label>
-
-            <input
-              id="doctor"
-              type="text"
-              value={doctor}
-              onChange={(e) =>
-                setDoctor(e.target.value)
-              }
-              placeholder="Enter doctor name"
-              className="w-full rounded-2xl border border-sky-100 bg-white px-5 py-4 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-100"
-            />
-          </div>
-
-          {/* Appointment ID */}
-          <div>
-            <label
-              htmlFor="appointment-id"
-              className="mb-2 block font-bold text-sky-950"
-            >
-              Appointment ID
-              <span className="ml-2 text-sm font-normal text-gray-400">
-                (Optional)
-              </span>
-            </label>
-
-            <input
-              id="appointment-id"
-              type="text"
-              value={appointmentId}
-              onChange={(e) =>
-                setAppointmentId(e.target.value)
-              }
-              placeholder="Online appointment ho to Appointment ID enter karein"
-              className="w-full rounded-2xl border border-sky-100 bg-white px-5 py-4 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-100"
-            />
-
-            <p className="mt-2 text-xs text-gray-500">
-              Offline patient ke liye is field ko blank
-              chhod sakte hain.
-            </p>
-          </div>
-
           {/* File */}
           <div>
             <label
@@ -351,3 +284,4 @@ export default function AdminReportUploadPage() {
     </div>
   );
 }
+
