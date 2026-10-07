@@ -2,9 +2,11 @@
 
 import { useEffect, useMemo, useState } from "react";
 import PrescriptionModal from "../../Components/PrescriptionModal";
+import ReportModal from "../../Components/ReportModal";
 
 const API =
-  process.env.NEXT_PUBLIC_API_URL || "https://backend-dew-c2to.onrender.com/api";
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://backend-dew-c2to.onrender.com/api";
 
 const STATUS_OPTIONS = [
   "All",
@@ -20,9 +22,15 @@ export default function AdminAppointmentsPage() {
   const [actionLoading, setActionLoading] = useState("");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+
   const [selected, setSelected] = useState(null);
+
+  // Existing Prescription modal
   const [prescriptionAppointment, setPrescriptionAppointment] =
     useState(null);
+
+  // New Report modal
+  const [reportAppointment, setReportAppointment] = useState(null);
 
   const fetchAppointments = async () => {
     try {
@@ -43,6 +51,7 @@ export default function AdminAppointmentsPage() {
       setAppointments(data.data || []);
     } catch (error) {
       console.error("Fetch appointments error:", error);
+
       alert(
         error.message || "Unable to fetch appointments"
       );
@@ -113,15 +122,19 @@ export default function AdminAppointmentsPage() {
   const appointmentStats = useMemo(() => {
     return {
       total: appointments.length,
+
       pending: appointments.filter(
         (item) => item.status === "Pending"
       ).length,
+
       confirmed: appointments.filter(
         (item) => item.status === "Confirmed"
       ).length,
+
       completed: appointments.filter(
         (item) => item.status === "Completed"
       ).length,
+
       cancelled: appointments.filter(
         (item) => item.status === "Cancelled"
       ).length,
@@ -174,6 +187,7 @@ export default function AdminAppointmentsPage() {
       );
     } catch (error) {
       console.error("Update status error:", error);
+
       alert(
         error.message ||
           "Server error while updating status"
@@ -222,9 +236,14 @@ export default function AdminAppointmentsPage() {
         setPrescriptionAppointment(null);
       }
 
+      if (reportAppointment?._id === id) {
+        setReportAppointment(null);
+      }
+
       alert("✅ Appointment deleted successfully.");
     } catch (error) {
       console.error("Delete appointment error:", error);
+
       alert(
         error.message ||
           "Server error while deleting appointment"
@@ -313,7 +332,8 @@ export default function AdminAppointmentsPage() {
 
           <p className="mt-2 text-gray-500">
             Patient appointments manage karein, status
-            update karein aur prescription upload karein.
+            update karein, prescription aur report upload
+            karein.
           </p>
         </div>
 
@@ -405,7 +425,7 @@ export default function AdminAppointmentsPage() {
           <>
             {/* Desktop Table */}
             <div className="hidden overflow-x-auto lg:block">
-              <table className="w-full min-w-[1100px] text-left">
+              <table className="w-full min-w-[1250px] text-left">
                 <thead className="bg-sky-50 text-sky-950">
                   <tr>
                     <th className="p-4">Patient</th>
@@ -489,6 +509,7 @@ export default function AdminAppointmentsPage() {
 
                         <td className="p-4">
                           <div className="flex flex-wrap gap-2">
+                            {/* View */}
                             <button
                               type="button"
                               onClick={() =>
@@ -501,6 +522,7 @@ export default function AdminAppointmentsPage() {
                               View
                             </button>
 
+                            {/* Prescription */}
                             <button
                               type="button"
                               onClick={() =>
@@ -513,6 +535,20 @@ export default function AdminAppointmentsPage() {
                               Prescription
                             </button>
 
+                            {/* Report */}
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setReportAppointment(
+                                  appointment
+                                )
+                              }
+                              className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-bold text-white transition hover:bg-emerald-700"
+                            >
+                              Report
+                            </button>
+
+                            {/* Confirm */}
                             <ActionButton
                               item={appointment}
                               status="Confirmed"
@@ -520,6 +556,7 @@ export default function AdminAppointmentsPage() {
                               className="bg-green-600"
                             />
 
+                            {/* Complete */}
                             <ActionButton
                               item={appointment}
                               status="Completed"
@@ -527,6 +564,7 @@ export default function AdminAppointmentsPage() {
                               className="bg-blue-600"
                             />
 
+                            {/* Cancel */}
                             <ActionButton
                               item={appointment}
                               status="Cancelled"
@@ -534,6 +572,7 @@ export default function AdminAppointmentsPage() {
                               className="bg-orange-500"
                             />
 
+                            {/* Delete */}
                             <button
                               type="button"
                               onClick={() =>
@@ -611,7 +650,9 @@ export default function AdminAppointmentsPage() {
                         )}
                       </p>
 
-                      <p>📅 {appointment.date}</p>
+                      <p>
+                        📅 {appointment.date}
+                      </p>
 
                       <p>
                         👨‍⚕️{" "}
@@ -633,6 +674,7 @@ export default function AdminAppointmentsPage() {
                     </div>
 
                     <div className="mt-4 flex flex-wrap gap-2">
+                      {/* View */}
                       <button
                         type="button"
                         onClick={() =>
@@ -643,6 +685,7 @@ export default function AdminAppointmentsPage() {
                         View
                       </button>
 
+                      {/* Prescription */}
                       <button
                         type="button"
                         onClick={() =>
@@ -655,6 +698,20 @@ export default function AdminAppointmentsPage() {
                         Prescription
                       </button>
 
+                      {/* Report */}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setReportAppointment(
+                            appointment
+                          )
+                        }
+                        className="rounded-lg bg-emerald-600 px-3 py-2 text-sm font-bold text-white"
+                      >
+                        Report
+                      </button>
+
+                      {/* Confirm */}
                       <ActionButton
                         item={appointment}
                         status="Confirmed"
@@ -662,6 +719,7 @@ export default function AdminAppointmentsPage() {
                         className="bg-green-600"
                       />
 
+                      {/* Complete */}
                       <ActionButton
                         item={appointment}
                         status="Completed"
@@ -669,6 +727,7 @@ export default function AdminAppointmentsPage() {
                         className="bg-blue-600"
                       />
 
+                      {/* Cancel */}
                       <ActionButton
                         item={appointment}
                         status="Cancelled"
@@ -676,6 +735,7 @@ export default function AdminAppointmentsPage() {
                         className="bg-orange-500"
                       />
 
+                      {/* Delete */}
                       <button
                         type="button"
                         onClick={() =>
@@ -814,11 +874,19 @@ export default function AdminAppointmentsPage() {
       {/* Prescription Modal */}
       {prescriptionAppointment && (
         <PrescriptionModal
-          appointment={
-            prescriptionAppointment
-          }
+          appointment={prescriptionAppointment}
           onClose={() =>
             setPrescriptionAppointment(null)
+          }
+        />
+      )}
+
+      {/* Report Modal */}
+      {reportAppointment && (
+        <ReportModal
+          appointment={reportAppointment}
+          onClose={() =>
+            setReportAppointment(null)
           }
         />
       )}
