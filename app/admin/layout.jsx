@@ -14,7 +14,10 @@ const menuItems = [
   { name: "Services", href: "/admin/services", icon: "🩺" },
 
   // Doctor Reports
-  { name: "Doctor Reports", href: "/admin/reports", icon: "📈" },
+{ name: "Doctor Reports", href: "/admin/reports", icon: "📈" },
+
+// Patient Report Upload
+{ name: "Upload Report", href: "/admin/report-upload", icon: "📄" },
 
   {
     name: "Training",
