@@ -11,6 +11,7 @@ export default function AdminReportUploadPage() {
   const [patientName, setPatientName] = useState("");
   const [ipOpNo, setIpOpNo] = useState("");
   const [phone, setPhone] = useState("");
+  const [doctor, setDoctor] = useState("");
   const [file, setFile] = useState(null);
 
   const [uploading, setUploading] = useState(false);
@@ -26,6 +27,7 @@ export default function AdminReportUploadPage() {
     const cleanPatientName = patientName.trim();
     const cleanIpOpNo = ipOpNo.trim();
     const cleanPhone = phone.trim();
+    const cleanDoctor = doctor.trim();
 
     if (!cleanPatientName) {
       setErrorMessage("Please enter patient name.");
@@ -62,6 +64,7 @@ export default function AdminReportUploadPage() {
       formData.append("patientName", cleanPatientName);
       formData.append("ipOpNo", cleanIpOpNo);
       formData.append("phone", cleanPhone);
+      formData.append("doctor", cleanDoctor);
       formData.append("file", file);
 
       const res = await fetch(`${API}/reports`, {
@@ -85,6 +88,7 @@ export default function AdminReportUploadPage() {
       setPatientName("");
       setIpOpNo("");
       setPhone("");
+      setDoctor("");
       setFile(null);
 
       // Reset file input
@@ -108,7 +112,6 @@ export default function AdminReportUploadPage() {
       setUploading(false);
     }
   };
-
   return (
     <div className="mx-auto max-w-4xl">
       {/* Page Header */}
@@ -138,6 +141,10 @@ export default function AdminReportUploadPage() {
           <li>
             • Patient Name, IP/OP No aur mobile number
             required hai.
+          </li>
+
+          <li>
+            • Doctor name optional hai.
           </li>
 
           <li>
@@ -223,6 +230,27 @@ export default function AdminReportUploadPage() {
                 className="w-full rounded-2xl border border-sky-100 bg-white px-5 py-4 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-100"
               />
             </div>
+          </div>
+
+          {/* Doctor */}
+          <div>
+            <label
+              htmlFor="doctor"
+              className="mb-2 block font-bold text-sky-950"
+            >
+              Doctor
+            </label>
+
+            <input
+              id="doctor"
+              type="text"
+              value={doctor}
+              onChange={(e) =>
+                setDoctor(e.target.value)
+              }
+              placeholder="Enter doctor name"
+              className="w-full rounded-2xl border border-sky-100 bg-white px-5 py-4 outline-none transition focus:border-cyan-400 focus:ring-4 focus:ring-cyan-100"
+            />
           </div>
 
           {/* File */}
