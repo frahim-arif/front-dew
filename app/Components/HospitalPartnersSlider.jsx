@@ -10,7 +10,7 @@ const partners = [
   },
   {
     id: 2,
-    name: "Dew Care Research Centre",
+    name: "Dew Care Hospital & Research Centre",
     image: "/images/partners/2.jpg",
   },
   {
