@@ -236,553 +236,212 @@ export default function ServicesSect({
 
       <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
-        <div className="grid items-start gap-10 lg:grid-cols-12">
+       <div className="grid items-start gap-10 lg:grid-cols-12">
+
+  {/* ==================================================
+      LEFT CONTENT
+  ================================================== */}
+
+  <div className="lg:sticky lg:top-24 lg:col-span-4">
+
+    {/* Badge */}
+    <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-white/90 px-5 py-2 text-[11px] font-bold uppercase tracking-[0.25em] text-emerald-700 shadow-md backdrop-blur">
+      <span className="relative flex h-2 w-2">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+        <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+      </span>
+      Our Services
+    </span>
+
+    {/* Heading */}
+    <h2 className="mt-5 text-3xl font-black leading-[1.1] tracking-tight text-slate-900 sm:text-4xl md:text-5xl">
+      Healthcare Services
+      <span className="block bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-600 bg-clip-text text-transparent">
+        You Can Trust
+      </span>
+    </h2>
+
+    {/* Divider */}
+    <div className="mt-5 flex items-center gap-2">
+      <div className="h-1 w-20 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500" />
+      <div className="h-1 w-3 rounded-full bg-emerald-300" />
+      <div className="h-1 w-1.5 rounded-full bg-emerald-200" />
+    </div>
+
+    <p className="mt-6 max-w-md text-sm leading-7 text-slate-600 md:text-base">
+      Experience compassionate healthcare with modern technology,
+      experienced specialists and personalized treatment plans designed
+      for every patient.
+    </p>
+
+    {/* Trust points */}
+    <ul className="mt-6 space-y-3">
+      {[
+        "Experienced & caring specialists",
+        "Modern diagnostic equipment",
+        "Personalized treatment plans",
+      ].map((point) => (
+        <li key={point} className="flex items-center gap-3 text-sm font-semibold text-slate-700">
+          <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 text-[11px] text-white shadow-md shadow-emerald-500/30">
+            ✓
+          </span>
+          {point}
+        </li>
+      ))}
+    </ul>
+
+    {/* CTA */}
+    <Link
+      href="/services"
+      className="group relative mt-8 inline-flex items-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-emerald-600 to-cyan-600 px-7 py-3.5 font-bold text-white shadow-[0_10px_30px_-8px_rgba(16,185,129,.6)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_36px_-8px_rgba(16,185,129,.8)] active:scale-95"
+    >
+      <span className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/3 -skew-x-12 bg-white/30 blur-sm transition-all duration-700 group-hover:left-[130%]" />
+      <span className="relative">Explore Services</span>
+      <span className="relative transition-transform duration-300 group-hover:translate-x-1">→</span>
+    </Link>
+
+  </div>
 
 
-          {/* ==================================================
-              LEFT CONTENT
-          ================================================== */}
+  {/* ==================================================
+      RIGHT SERVICES GRID
+  ================================================== */}
 
-          <div className="lg:col-span-4">
+  <div className="lg:col-span-8">
 
-            <span
-              className="
-                inline-flex
-                items-center
-                rounded-full
-                border
-                border-emerald-200
-                bg-white
-                px-5
-                py-2
-                text-[11px]
-                font-bold
-                uppercase
-                tracking-[0.25em]
-                text-emerald-700
-                shadow-md
-              "
-            >
-              OUR SERVICES
-            </span>
+    {services.length === 0 ? (
+      <EmptyBox text="No services available." />
+    ) : (
+      <>
+        <div className="grid grid-cols-2 gap-3 md:gap-6 xl:grid-cols-3">
 
+          {services.map((service, index) => (
 
-            <h2
-              className="
-                mt-5
-                text-3xl
-                font-black
-                leading-tight
-                text-slate-900
-                sm:text-4xl
-                md:text-5xl
-              "
-            >
-              Healthcare Services
-
-              <span
-                className="
-                  block
-                  bg-gradient-to-r
-                  from-emerald-600
-                  to-cyan-600
-                  bg-clip-text
-                  text-transparent
-                "
-              >
-                You Can Trust
-              </span>
-            </h2>
-
-
+            /* Gradient border wrapper */
             <div
+              key={service._id}
               className="
-                mt-5
-                h-1
-                w-24
-                rounded-full
-                bg-gradient-to-r
-                from-emerald-500
-                to-cyan-500
-              "
-            />
-
-
-            <p
-              className="
-                mt-6
-                max-w-md
-                text-sm
-                leading-7
-                text-slate-600
-                md:text-base
+                group relative rounded-xl p-[1.5px] md:rounded-2xl
+                bg-gradient-to-br from-emerald-200 via-white to-cyan-200
+                shadow-md transition-all duration-500
+                hover:-translate-y-2 hover:from-emerald-400 hover:via-teal-300 hover:to-cyan-400
+                hover:shadow-[0_25px_50px_-12px_rgba(16,185,129,.45)]
               "
             >
-              Experience compassionate healthcare with
-              modern technology, experienced specialists
-              and personalized treatment plans designed
-              for every patient.
-            </p>
 
+              <div className="flex h-full flex-col overflow-hidden rounded-[10px] bg-white md:rounded-[14px]">
 
-            <Link
-              href="/services"
-              className="
-                mt-8
-                inline-flex
-                items-center
-                rounded-xl
-                bg-gradient-to-r
-                from-emerald-600
-                to-cyan-600
-                px-7
-                py-3
-                font-semibold
-                text-white
-                shadow-lg
-                transition
-                hover:scale-105
-              "
-            >
-              Explore Services →
-            </Link>
+                {/* IMAGE */}
+                <div className="relative h-28 overflow-hidden md:h-52">
 
-          </div>
-
-
-          {/* ==================================================
-              RIGHT SERVICES GRID
-          ================================================== */}
-
-          <div className="lg:col-span-8">
-
-            {services.length === 0 ? (
-
-              <EmptyBox text="No services available." />
-
-            ) : (
-
-              <>
-
-                {/* SERVICES GRID */}
-
-                <div
-                  className="
-                    grid
-                    grid-cols-2
-                    gap-3
-                    md:gap-6
-                    xl:grid-cols-3
-                  "
-                >
-
-                  {services.map(
-                    (service, index) => (
-
-                      <div
-                        key={service._id}
-                        className="
-                          group
-                          overflow-hidden
-                          rounded-xl
-                          border
-                          border-emerald-100
-                          bg-white
-                          shadow-md
-                          transition-all
-                          duration-500
-                          hover:-translate-y-2
-                          hover:shadow-2xl
-                          md:rounded-2xl
-                        "
-                      >
-
-                        {/* IMAGE */}
-
-                        <div
-                          className="
-                            relative
-                            h-28
-                            overflow-hidden
-                            md:h-52
-                          "
-                        >
-
-                          {service.image ? (
-
-                            <img
-                              src={fileUrl(
-                                service.image
-                              )}
-                              alt={
-                                service.title ||
-                                "Healthcare Service"
-                              }
-                              className="
-                                h-full
-                                w-full
-                                object-cover
-                                transition
-                                duration-700
-                                group-hover:scale-110
-                              "
-                            />
-
-                          ) : (
-
-                            <div
-                              className="
-                                flex
-                                h-full
-                                items-center
-                                justify-center
-                                bg-gradient-to-br
-                                from-emerald-100
-                                to-cyan-100
-                                text-5xl
-                                md:text-7xl
-                              "
-                            >
-                              {service.icon || "🏥"}
-                            </div>
-
-                          )}
-
-
-                          {/* Overlay */}
-
-                          <div
-                            className="
-                              absolute
-                              inset-0
-                              bg-gradient-to-t
-                              from-slate-950/70
-                              via-black/10
-                              to-transparent
-                            "
-                          />
-
-
-                          {/* Number */}
-
-                          <div
-                            className="
-                              absolute
-                              right-3
-                              top-3
-                              md:right-5
-                              md:top-5
-                            "
-                          >
-                            <span
-                              className="
-                                text-2xl
-                                font-black
-                                text-white/25
-                                md:text-4xl
-                              "
-                            >
-                              {String(
-                                index + 1
-                              ).padStart(2, "0")}
-                            </span>
-                          </div>
-
-
-                          {/* Badge */}
-
-                          <div
-                            className="
-                              absolute
-                              left-3
-                              top-3
-                              md:left-5
-                              md:top-5
-                            "
-                          >
-                            <span
-                              className="
-                                rounded-full
-                                bg-white
-                                px-2
-                                py-1
-                                text-[8px]
-                                font-bold
-                                text-emerald-700
-                                shadow
-                                md:px-4
-                                md:text-[11px]
-                              "
-                            >
-                              Premium Care
-                            </span>
-                          </div>
-
-                        </div>
-
-
-                        {/* CONTENT */}
-
-                        <div className="p-3 md:p-6">
-
-                          <h3
-                            className="
-                              text-sm
-                              font-black
-                              leading-tight
-                              text-slate-900
-                              transition
-                              duration-300
-                              group-hover:text-emerald-700
-                              md:text-xl
-                            "
-                          >
-                            {service.title}
-                          </h3>
-
-
-                          <p
-                            className="
-                              mt-2
-                              line-clamp-2
-                              text-[11px]
-                              leading-5
-                              text-slate-600
-                              md:line-clamp-3
-                              md:text-sm
-                              md:leading-7
-                            "
-                          >
-                            {service.desc}
-                          </p>
-
-
-                          {/* Divider */}
-
-                          <div
-                            className="
-                              my-4
-                              h-px
-                              bg-slate-200
-                              md:my-5
-                            "
-                          />
-
-
-                          {/* FEATURES */}
-
-                          <div
-                            className="
-                              mb-3
-                              flex
-                              flex-wrap
-                              gap-1
-                              md:mb-6
-                              md:gap-2
-                            "
-                          >
-
-                            <span
-                              className="
-                                rounded-full
-                                bg-emerald-50
-                                px-2
-                                py-1
-                                text-[9px]
-                                font-semibold
-                                text-emerald-700
-                                md:px-3
-                                md:text-[11px]
-                              "
-                            >
-                              Expert Doctors
-                            </span>
-
-
-                            <span
-                              className="
-                                rounded-full
-                                bg-cyan-50
-                                px-2
-                                py-1
-                                text-[9px]
-                                font-semibold
-                                text-cyan-700
-                                md:px-3
-                                md:text-[11px]
-                              "
-                            >
-                              Modern Equipment
-                            </span>
-
-                          </div>
-
-
-                          
-{/* VIEW DETAILS */}
-
-<Link
-  href={`/services/${service._id}`}
-  className="
-    inline-flex
-    w-full
-    items-center
-    justify-center
-    gap-2
-    rounded-lg
-    border
-    border-emerald-200
-    bg-emerald-50
-    px-3
-    py-2.5
-    text-[11px]
-    font-bold
-    text-emerald-800
-    shadow-sm
-    transition-all
-    duration-300
-    hover:-translate-y-0.5
-    hover:bg-emerald-100
-    hover:shadow-md
-    md:rounded-xl
-    md:px-5
-    md:py-3
-    md:text-sm
-  "
->
-  View Details
-  <span className="text-base">→</span>
-</Link>
-
-
-
-                        </div>
-
-                      </div>
-
-                    )
+                  {service.image ? (
+                    <img
+                      src={fileUrl(service.image)}
+                      alt={service.title || "Healthcare Service"}
+                      className="h-full w-full object-cover transition duration-700 group-hover:scale-110 group-hover:rotate-1"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center bg-gradient-to-br from-emerald-100 to-cyan-100 text-5xl md:text-7xl">
+                      {service.icon || "🏥"}
+                    </div>
                   )}
+
+                  {/* Overlays */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/10 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/0 to-cyan-500/0 transition duration-500 group-hover:from-emerald-500/20 group-hover:to-cyan-500/20" />
+
+                  {/* Number */}
+                  <span className="absolute right-3 top-2 text-3xl font-black leading-none text-white/30 transition duration-500 group-hover:text-white/60 md:right-5 md:top-3 md:text-5xl">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+
+                  {/* Badge */}
+                  <span className="absolute left-3 top-3 flex items-center gap-1 rounded-full bg-white/95 px-2 py-1 text-[8px] font-bold text-emerald-700 shadow-lg backdrop-blur md:left-5 md:top-5 md:px-3 md:text-[11px]">
+                    <span className="text-amber-500">★</span> Premium Care
+                  </span>
 
                 </div>
 
+                {/* CONTENT */}
+                <div className="flex flex-1 flex-col p-3 md:p-6">
 
-                {/* MORE SERVICES */}
+                  <h3 className="text-sm font-black leading-tight text-slate-900 transition duration-300 group-hover:text-emerald-700 md:text-xl">
+                    {service.title}
+                  </h3>
 
-                <div
-                  className="
-                    mt-8
-                    flex
-                    justify-center
-                    md:mt-10
-                  "
-                >
+                  {/* Animated underline */}
+                  <div className="mt-2 h-0.5 w-8 rounded-full bg-gradient-to-r from-emerald-500 to-cyan-500 transition-all duration-500 group-hover:w-16" />
 
+                  <p className="mt-3 line-clamp-2 text-[11px] leading-5 text-slate-600 md:line-clamp-3 md:text-sm md:leading-7">
+                    {service.desc}
+                  </p>
+
+                  {/* Feature chips */}
+                  <div className="mt-4 flex flex-wrap gap-1 md:gap-2">
+                    <span className="rounded-full border border-emerald-100 bg-emerald-50 px-2 py-1 text-[9px] font-semibold text-emerald-700 md:px-3 md:text-[11px]">
+                      ✔ Expert Doctors
+                    </span>
+                    <span className="rounded-full border border-cyan-100 bg-cyan-50 px-2 py-1 text-[9px] font-semibold text-cyan-700 md:px-3 md:text-[11px]">
+                      ✔ Modern Equipment
+                    </span>
+                  </div>
+
+                  {/* VIEW DETAILS — sticks to bottom so all cards align */}
                   <Link
-                    href="/services"
+                    href={`/services/${service._id}`}
                     className="
-                      group
-                      relative
-                      inline-flex
-                      items-center
-                      justify-center
-                      overflow-hidden
-                      rounded-xl
-                      border
-                      border-emerald-300/40
-                      bg-gradient-to-r
-                      from-emerald-700
-                      via-emerald-600
-                      to-cyan-600
-                      px-6
-                      py-3
-                      text-xs
-                      font-black
-                      text-white
-                      shadow-[0_6px_0_#065f46,0_12px_25px_rgba(16,185,129,.25)]
-                      transition-all
-                      duration-300
-                      hover:-translate-y-1
-                      hover:shadow-[0_9px_0_#065f46,0_18px_35px_rgba(16,185,129,.35)]
-                      active:translate-y-[2px]
-                      active:shadow-[0_3px_0_#065f46]
-                      md:px-8
-                      md:py-4
-                      md:text-sm
+                      group/btn relative mt-4 inline-flex w-full items-center justify-center gap-2
+                      overflow-hidden rounded-lg px-3 py-2.5 text-[11px] font-bold md:mt-auto md:rounded-xl md:px-5 md:py-3 md:text-sm
+                      border border-emerald-200 bg-emerald-50 text-emerald-800
+                      transition-all duration-300
+                      hover:border-transparent hover:bg-gradient-to-r hover:from-emerald-600 hover:to-cyan-600 hover:text-white hover:shadow-lg hover:shadow-emerald-500/30
                     "
                   >
-
-                    {/* Shine */}
-
-                    <span
-                      className="
-                        absolute
-                        inset-0
-                        bg-gradient-to-b
-                        from-white/20
-                        via-transparent
-                        to-black/10
-                      "
-                    />
-
-
-                    {/* Moving Shine */}
-
-                    <span
-                      className="
-                        absolute
-                        -left-20
-                        top-0
-                        h-full
-                        w-10
-                        -skew-x-12
-                        bg-white/30
-                        blur-sm
-                        transition-all
-                        duration-700
-                        group-hover:left-[120%]
-                      "
-                    />
-
-
-                    <span
-                      className="
-                        relative
-                        z-10
-                        flex
-                        items-center
-                        gap-2
-                      "
-                    >
-
-                      <span>🏥</span>
-
-                      <span>
-                        More Services
-                      </span>
-
-                      <span
-                        className="
-                          transition-transform
-                          duration-300
-                          group-hover:translate-x-1
-                        "
-                      >
-                        →
-                      </span>
-
+                    View Details
+                    <span className="text-base transition-transform duration-300 group-hover/btn:translate-x-1">
+                      →
                     </span>
-
                   </Link>
 
                 </div>
+              </div>
+            </div>
 
-              </>
-
-            )}
-
-          </div>
+          ))}
 
         </div>
+
+
+        {/* MORE SERVICES */}
+        <div className="mt-8 flex justify-center md:mt-12">
+          <Link
+            href="/services"
+            className="
+              group relative inline-flex items-center justify-center overflow-hidden rounded-xl
+              border border-emerald-300/40
+              bg-gradient-to-r from-emerald-700 via-emerald-600 to-cyan-600
+              px-6 py-3 text-xs font-black text-white md:px-8 md:py-4 md:text-sm
+              shadow-[0_6px_0_#065f46,0_12px_25px_rgba(16,185,129,.25)]
+              transition-all duration-300
+              hover:-translate-y-1 hover:shadow-[0_9px_0_#065f46,0_18px_35px_rgba(16,185,129,.35)]
+              active:translate-y-[2px] active:shadow-[0_3px_0_#065f46]
+            "
+          >
+            <span className="absolute inset-0 bg-gradient-to-b from-white/20 via-transparent to-black/10" />
+            <span className="absolute -left-20 top-0 h-full w-10 -skew-x-12 bg-white/30 blur-sm transition-all duration-700 group-hover:left-[120%]" />
+            <span className="relative z-10 flex items-center gap-2">
+              <span>🏥</span>
+              <span>More Services</span>
+              <span className="transition-transform duration-300 group-hover:translate-x-1">→</span>
+            </span>
+          </Link>
+        </div>
+      </>
+    )}
+
+  </div>
+
+</div>
 
 
 
