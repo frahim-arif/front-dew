@@ -99,6 +99,43 @@ function AnimatedCounter({
   );
 }
 
+const STATS = [
+  {
+    icon: "🏥",
+    end: 20,
+    suffix: "+",
+    label: "Medical Services",
+    iconBg: "from-emerald-400 to-emerald-600",
+    glow: "bg-emerald-400/40",
+    bar: "from-emerald-400 to-emerald-200",
+  },
+  {
+    icon: "👨‍⚕️",
+    end: 25,
+    suffix: "+",
+    label: "Expert Doctors",
+    iconBg: "from-cyan-400 to-cyan-600",
+    glow: "bg-cyan-400/40",
+    bar: "from-cyan-400 to-cyan-200",
+  },
+  {
+    icon: "❤️",
+    end: 10,
+    suffix: "K+",
+    label: "Happy Patients",
+    iconBg: "from-teal-400 to-emerald-600",
+    glow: "bg-teal-400/40",
+    bar: "from-teal-400 to-teal-200",
+  },
+  {
+    icon: "🚑",
+    text: "24×7",
+    label: "Emergency Care",
+    iconBg: "from-sky-400 to-cyan-600",
+    glow: "bg-sky-400/40",
+    bar: "from-sky-400 to-sky-200",
+  },
+];
 // ==================================================
 // SERVICES SECTION
 // ==================================================
@@ -1481,385 +1518,87 @@ export default function ServicesSect({
         <div className="mt-14 md:mt-20">
 
           {/* ==================================================
-              STATS
-          ================================================== */}
+    STATS
+================================================== */}
 
+<div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-950 via-emerald-900 to-teal-900 p-4 shadow-[0_25px_70px_-15px_rgba(6,78,59,.6)] ring-1 ring-white/10 sm:p-6 md:rounded-3xl md:p-8">
+
+  {/* Background glows */}
+  <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-emerald-400/20 blur-3xl" />
+  <div className="pointer-events-none absolute -bottom-24 -right-24 h-64 w-64 rounded-full bg-cyan-400/20 blur-3xl" />
+
+  {/* Subtle grid */}
+  <div
+    className="pointer-events-none absolute inset-0 opacity-[0.07]"
+    style={{
+      backgroundImage:
+        "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
+      backgroundSize: "40px 40px",
+    }}
+  />
+
+  {/* Top shine line */}
+  <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+
+  {/* Stats grid */}
+  <div className="relative grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
+    {STATS.map((stat) => (
+      <div
+        key={stat.label}
+        className="
+          group relative overflow-hidden rounded-xl
+          border border-white/10 bg-white/[0.06]
+          p-4 text-center backdrop-blur-md
+          transition-all duration-500
+          hover:-translate-y-2 hover:border-white/25 hover:bg-white/[0.1]
+          hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,.5)]
+          sm:p-6 md:rounded-2xl
+        "
+      >
+        {/* Hover glow */}
+        <div
+          className={`pointer-events-none absolute -top-10 left-1/2 h-24 w-24 -translate-x-1/2 rounded-full ${stat.glow} opacity-0 blur-2xl transition-opacity duration-500 group-hover:opacity-100`}
+        />
+
+        {/* Icon */}
+        <div className="relative mx-auto h-12 w-12 sm:h-16 sm:w-16">
+          <div className={`absolute inset-0 rounded-2xl ${stat.glow} blur-lg`} />
           <div
-            className="
-              relative
-              overflow-hidden
-              rounded-2xl
-              border
-              border-emerald-100
-              bg-white/95
-              p-4
-              shadow-[0_15px_50px_rgba(15,23,42,.10)]
-              backdrop-blur
-              sm:p-6
-              md:rounded-3xl
-              md:p-8
-            "
+            className={`
+              relative flex h-full w-full items-center justify-center
+              rounded-2xl bg-gradient-to-br ${stat.iconBg}
+              text-xl shadow-lg ring-1 ring-white/30
+              transition-transform duration-500
+              group-hover:rotate-6 group-hover:scale-110
+              sm:text-3xl
+            `}
           >
-
-            {/* Glow */}
-
-            <div
-              className="
-                pointer-events-none
-                absolute
-                -left-20
-                -top-20
-                h-48
-                w-48
-                rounded-full
-                bg-emerald-200/30
-                blur-3xl
-              "
-            />
-
-            <div
-              className="
-                pointer-events-none
-                absolute
-                -bottom-20
-                -right-20
-                h-48
-                w-48
-                rounded-full
-                bg-cyan-200/30
-                blur-3xl
-              "
-            />
-
-
-            {/* STATS GRID */}
-
-            <div
-              className="
-                relative
-                grid
-                grid-cols-2
-                gap-3
-                sm:gap-5
-                lg:grid-cols-4
-              "
-            >
-
-              {/* ==================================================
-                  MEDICAL SERVICES
-              ================================================== */}
-
-              <div
-                className="
-                  group
-                  relative
-                  overflow-hidden
-                  rounded-xl
-                  border
-                  border-emerald-100
-                  bg-gradient-to-br
-                  from-emerald-50
-                  to-white
-                  p-4
-                  text-center
-                  transition-all
-                  duration-300
-                  hover:-translate-y-1
-                  hover:shadow-xl
-                  sm:p-6
-                  md:rounded-2xl
-                "
-              >
-
-                <div
-                  className="
-                    mx-auto
-                    flex
-                    h-11
-                    w-11
-                    items-center
-                    justify-center
-                    rounded-full
-                    bg-emerald-100
-                    text-xl
-                    shadow-sm
-                    sm:h-14
-                    sm:w-14
-                    sm:text-2xl
-                  "
-                >
-                  🏥
-                </div>
-
-
-                <h3
-                  className="
-                    mt-3
-                    text-2xl
-                    font-black
-                    text-emerald-600
-                    sm:text-3xl
-                    md:text-4xl
-                  "
-                >
-                  <AnimatedCounter
-                    end={20}
-                    suffix="+"
-                  />
-                </h3>
-
-
-                <p
-                  className="
-                    mt-1
-                    text-[11px]
-                    font-semibold
-                    text-slate-600
-                    sm:text-sm
-                  "
-                >
-                  Medical Services
-                </p>
-
-              </div>
-
-
-              {/* ==================================================
-                  DOCTORS
-              ================================================== */}
-
-              <div
-                className="
-                  group
-                  relative
-                  overflow-hidden
-                  rounded-xl
-                  border
-                  border-cyan-100
-                  bg-gradient-to-br
-                  from-cyan-50
-                  to-white
-                  p-4
-                  text-center
-                  transition-all
-                  duration-300
-                  hover:-translate-y-1
-                  hover:shadow-xl
-                  sm:p-6
-                  md:rounded-2xl
-                "
-              >
-
-                <div
-                  className="
-                    mx-auto
-                    flex
-                    h-11
-                    w-11
-                    items-center
-                    justify-center
-                    rounded-full
-                    bg-cyan-100
-                    text-xl
-                    shadow-sm
-                    sm:h-14
-                    sm:w-14
-                    sm:text-2xl
-                  "
-                >
-                  👨‍⚕️
-                </div>
-
-
-                <h3
-                  className="
-                    mt-3
-                    text-2xl
-                    font-black
-                    text-cyan-600
-                    sm:text-3xl
-                    md:text-4xl
-                  "
-                >
-                  <AnimatedCounter
-                    end={25}
-                    suffix="+"
-                  />
-                </h3>
-
-
-                <p
-                  className="
-                    mt-1
-                    text-[11px]
-                    font-semibold
-                    text-slate-600
-                    sm:text-sm
-                  "
-                >
-                  Expert Doctors
-                </p>
-
-              </div>
-
-
-              {/* ==================================================
-                  PATIENTS
-              ================================================== */}
-
-              <div
-                className="
-                  group
-                  relative
-                  overflow-hidden
-                  rounded-xl
-                  border
-                  border-emerald-100
-                  bg-gradient-to-br
-                  from-emerald-50
-                  to-white
-                  p-4
-                  text-center
-                  transition-all
-                  duration-300
-                  hover:-translate-y-1
-                  hover:shadow-xl
-                  sm:p-6
-                  md:rounded-2xl
-                "
-              >
-
-                <div
-                  className="
-                    mx-auto
-                    flex
-                    h-11
-                    w-11
-                    items-center
-                    justify-center
-                    rounded-full
-                    bg-emerald-100
-                    text-xl
-                    shadow-sm
-                    sm:h-14
-                    sm:w-14
-                    sm:text-2xl
-                  "
-                >
-                  ❤️
-                </div>
-
-
-                <h3
-                  className="
-                    mt-3
-                    text-2xl
-                    font-black
-                    text-emerald-600
-                    sm:text-3xl
-                    md:text-4xl
-                  "
-                >
-                  <AnimatedCounter
-                    end={10}
-                    suffix="K+"
-                  />
-                </h3>
-
-
-                <p
-                  className="
-                    mt-1
-                    text-[11px]
-                    font-semibold
-                    text-slate-600
-                    sm:text-sm
-                  "
-                >
-                  Happy Patients
-                </p>
-
-              </div>
-
-
-              {/* ==================================================
-                  EMERGENCY
-              ================================================== */}
-
-              <div
-                className="
-                  group
-                  relative
-                  overflow-hidden
-                  rounded-xl
-                  border
-                  border-cyan-100
-                  bg-gradient-to-br
-                  from-cyan-50
-                  to-white
-                  p-4
-                  text-center
-                  transition-all
-                  duration-300
-                  hover:-translate-y-1
-                  hover:shadow-xl
-                  sm:p-6
-                  md:rounded-2xl
-                "
-              >
-
-                <div
-                  className="
-                    mx-auto
-                    flex
-                    h-11
-                    w-11
-                    items-center
-                    justify-center
-                    rounded-full
-                    bg-cyan-100
-                    text-xl
-                    shadow-sm
-                    sm:h-14
-                    sm:w-14
-                    sm:text-2xl
-                  "
-                >
-                  🚑
-                </div>
-
-
-                <h3
-                  className="
-                    mt-3
-                    text-2xl
-                    font-black
-                    text-cyan-600
-                    sm:text-3xl
-                    md:text-4xl
-                  "
-                >
-                  24×7
-                </h3>
-
-
-                <p
-                  className="
-                    mt-1
-                    text-[11px]
-                    font-semibold
-                    text-slate-600
-                    sm:text-sm
-                  "
-                >
-                  Emergency Care
-                </p>
-
-              </div>
-
-            </div>
-
+            {stat.icon}
           </div>
+        </div>
+
+        {/* Number */}
+        <h3 className="relative mt-4 bg-gradient-to-b from-white to-emerald-200 bg-clip-text text-3xl font-black tracking-tight text-transparent sm:text-4xl md:text-5xl">
+          {stat.text ? (
+            stat.text
+          ) : (
+            <AnimatedCounter end={stat.end} suffix={stat.suffix} />
+          )}
+        </h3>
+
+        {/* Label */}
+        <p className="relative mt-1.5 text-[10px] font-bold uppercase tracking-[0.15em] text-emerald-100/80 sm:text-xs">
+          {stat.label}
+        </p>
+
+        {/* Bottom accent bar */}
+        <div
+          className={`mx-auto mt-4 h-1 w-8 rounded-full bg-gradient-to-r ${stat.bar} transition-all duration-500 group-hover:w-16`}
+        />
+      </div>
+    ))}
+  </div>
+</div>
 
 
           {/* ==================================================
