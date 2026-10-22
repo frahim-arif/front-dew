@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -6,108 +7,79 @@ import {
   PhoneCall,
   X,
   MessageCircle,
-  Menu,
-  Mail,
 } from "lucide-react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { siteInfo } from "../data/siteData";
 
-// ==================================================
-// NAV DATA (desktop + mobile dono yahi use karte hain)
-// ==================================================
-
-const NAV = [
-  { name: "Home", href: "/" },
-  {
-    name: "About",
-    href: "/about",
-    children: [
-      { name: "About Hospital", href: "/about" },
-      { name: "Gallery", href: "/gallery" },
-      { name: "Contact Us", href: "/contact" },
-    ],
-  },
-  { name: "Services", href: "/services" },
-  { name: "Doctors", href: "/doctors" },
-  { name: "Facilities", href: "/facilities" },
-  {
-    name: "Training",
-    href: "/training",
-    children: [
-      { name: "Training Application Form", href: "/training/application-form" },
-      { name: "Training Courses", href: "/training/courses" },
-      { name: "Courses Files", href: "/training/course-files" },
-      { name: "Courses Videos", href: "/training/course-videos" },
-    ],
-  },
-];
-
 export default function Header() {
-  const pathname = usePathname();
-
   const [open, setOpen] = useState(false);
-  const [openSub, setOpenSub] = useState(null);
   const [locationOpen, setLocationOpen] = useState(false);
   const [callbackOpen, setCallbackOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
 
-  // ---------- Phone helpers ----------
+  const locations = [
+    {
+      id: 1,
+      name: "Dew Care Hospital LLP",
+      address: "Burigaon, Kharupetia, Darrang, Assam",
+      active: true,
+    },
+  ];
+
+  const links = [
+    { name: "Home", href: "/" },
+    { name: "About", href: "/about" },
+    { name: "Services", href: "/services" },
+    { name: "Doctors", href: "/doctors" },
+    { name: "Facilities", href: "/facilities" },
+    { name: "Training", href: "/training" },
+  ];
+
+  /*
+   * Hospital phone number
+   * Used for Call and WhatsApp actions.
+   */
   const hospitalPhone = String(siteInfo.phone || "");
   const cleanHospitalPhone = hospitalPhone.replace(/\D/g, "");
+
+  /*
+   * Make Indian WhatsApp number safe.
+   * If siteInfo.phone is 10 digit, add 91.
+   * If already contains country code, keep it.
+   */
   const whatsappPhone =
     cleanHospitalPhone.length === 10
       ? `91${cleanHospitalPhone}`
       : cleanHospitalPhone;
-  const telHref = whatsappPhone ? `tel:+${whatsappPhone}` : "#";
 
-  // ---------- Effects ----------
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 24);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  // Modal open ho to page scroll lock + Esc se band
-  useEffect(() => {
-    if (!callbackOpen) return;
-    const onKey = (e) => e.key === "Escape" && setCallbackOpen(false);
-    document.body.style.overflow = "hidden";
-    window.addEventListener("keydown", onKey);
-    return () => {
-      document.body.style.overflow = "";
-      window.removeEventListener("keydown", onKey);
-    };
-  }, [callbackOpen]);
-
-  // Page badalne par menu band
-  useEffect(() => {
-    setOpen(false);
-    setOpenSub(null);
-    setLocationOpen(false);
-  }, [pathname]);
-
-  // ---------- Handlers ----------
   const openCallback = () => {
     setCallbackOpen(true);
     setOpen(false);
     setLocationOpen(false);
   };
-  const closeCallback = () => setCallbackOpen(false);
+
+  const closeCallback = () => {
+    setCallbackOpen(false);
+  };
 
   const handleCallbackSubmit = (e) => {
     e.preventDefault();
+
     const form = e.currentTarget;
 
     const name = form.name.value.trim();
     const phone = form.phone.value.trim();
     const message = form.message.value.trim();
 
-    if (!name) return alert("Please enter your name.");
-    if (!/^\d{10}$/.test(phone))
-      return alert("Please enter a valid 10-digit mobile number.");
+    if (!name) {
+      alert("Please enter your name.");
+      return;
+    }
+
+    if (!/^\d{10}$/.test(phone)) {
+      alert("Please enter a valid 10-digit mobile number.");
+      return;
+    }
 
     const whatsappMessage = encodeURIComponent(
       `Callback Request - Dew Care Hospital LLP
@@ -131,58 +103,84 @@ Message: ${message || "Please call me back."}`
     setCallbackOpen(false);
   };
 
-  const isActive = (item) =>
-    item.href === "/"
-      ? pathname === "/"
-      : pathname?.startsWith(item.href) ||
-        item.children?.some((c) => pathname === c.href);
-
   return (
     <>
-      <header
-        className={`sticky top-0 z-50 overflow-x-clip transition-all duration-300 ${
-          scrolled
-            ? "bg-white/85 shadow-[0_10px_40px_-10px_rgba(6,78,59,.25)] backdrop-blur-2xl"
-            : "bg-white shadow-md"
-        }`}
-      >
+    <style>{`
+      @keyframes callBlink {
+        0%, 100% { background-color: #e30613; box-shadow: 0 0 0 0 rgba(227,6,19,.7); }
+        50%      { background-color: #ff4b57; box-shadow: 0 0 18px 6px rgba(255,75,87,.55); }
+      }
+      .call-blink { animation: callBlink 1s ease-in-out infinite; }
+      .call-blink:hover { animation-play-state: paused; }
+      @media (prefers-reduced-motion: reduce) {
+        .call-blink { animation: none; }
+      }
+    `}</style>
+      <header className="sticky top-0 z-50 border-b border-emerald-100 bg-white/95 shadow-xl backdrop-blur-xl">
         {/* ==================================================
-            TOP BAR
+            TOP HELPLINE BAR
         ================================================== */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-[#0b2d68] via-[#123f87] to-[#0b2d68] text-white">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(255,255,255,.12),transparent_40%)]" />
-
-          <div className="relative mx-auto flex max-w-7xl items-center justify-between">
+        <div className="bg-[#0b2d68] text-white">
+          <div className="mx-auto flex max-w-7xl items-center justify-between">
+            {/* Left Information */}
             <div className="hidden min-w-0 items-center gap-4 px-4 py-2 text-xs font-semibold sm:flex md:text-sm">
-              <span className="flex min-w-0 items-center gap-1.5">
-                <MapPin size={14} className="shrink-0 text-emerald-300" />
-                <span className="truncate">{siteInfo.address}</span>
+              <span className="truncate">
+                📍 {siteInfo.address}
               </span>
 
-              <span className="hidden h-4 w-px shrink-0 bg-white/30 lg:block" />
+              <span className="hidden h-4 w-px bg-white/30 lg:block" />
 
-              <span className="hidden min-w-0 items-center gap-1.5 lg:flex">
-                <Mail size={14} className="shrink-0 text-emerald-300" />
-                <span className="truncate">{siteInfo.email}</span>
+              <span className="hidden truncate lg:block">
+                ✉️ {siteInfo.email}
               </span>
             </div>
 
+            {/* Mobile / Desktop Phone CTA */}
             <button
-              type="button"
-              onClick={openCallback}
-              aria-label="Request a callback"
-              className="group relative ml-auto flex shrink-0 items-center gap-2.5 overflow-hidden bg-gradient-to-r from-[#e30613] to-[#ff2d3a] px-4 py-2 text-sm font-black text-white transition-all duration-300 hover:brightness-110 sm:px-5 md:px-6"
-            >
-              <span className="pointer-events-none absolute inset-y-0 -left-10 w-8 -skew-x-12 bg-white/30 blur-sm transition-all duration-700 group-hover:left-[120%]" />
-
-              <span className="relative flex h-7 w-7 shrink-0 items-center justify-center">
-                <span className="absolute inset-0 animate-ping rounded-full bg-white/60" />
-                <span className="relative flex h-7 w-7 items-center justify-center rounded-full bg-white text-[#e30613]">
-                  <PhoneCall size={15} strokeWidth={3} />
-                </span>
+  type="button"
+  onClick={openCallback}
+  className="
+    call-blink
+    group
+    ml-auto
+    flex
+    shrink-0
+    items-center
+    gap-2
+    bg-[#e30613]
+    px-4
+    py-2
+    text-sm
+    font-black
+    text-white
+    transition-all
+    duration-300
+    hover:bg-[#c9000b]
+    sm:px-5
+    md:px-6
+  "
+  aria-label="Request a callback"
+>
+              <span
+                className="
+                  flex
+                  h-7
+                  w-7
+                  shrink-0
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-white
+                  text-[#e30613]
+                  transition-transform
+                  duration-300
+                  group-hover:scale-110
+                "
+              >
+                <PhoneCall size={16} strokeWidth={3} />
               </span>
 
-              <span className="relative whitespace-nowrap tracking-wide">
+              <span className="whitespace-nowrap">
                 {siteInfo.phone}
               </span>
             </button>
@@ -192,34 +190,48 @@ Message: ${message || "Please call me back."}`
         {/* ==================================================
             MAIN NAVBAR
         ================================================== */}
-        <nav
-          className={`mx-auto flex max-w-7xl items-center justify-between gap-2 px-3 transition-all duration-300 sm:px-4 xl:gap-3 ${
-            scrolled ? "py-2" : "py-3 md:py-4"
-          }`}
-        >
-          {/* LOGO */}
+        <nav className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-3 py-3 sm:px-4 md:py-4">
+          {/* ==================================================
+              LOGO
+          ================================================== */}
           <Link
             href="/"
-            className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3 lg:max-w-[230px] lg:flex-none xl:max-w-[280px]"
+            onClick={() => {
+              setOpen(false);
+              setLocationOpen(false);
+            }}
+            className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3 lg:flex-none"
           >
-            <div className="group relative shrink-0">
-              <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-emerald-400 via-green-500 to-teal-500 opacity-40 blur transition duration-500 group-hover:opacity-80" />
+            <div className="relative shrink-0">
+              <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-emerald-400 via-green-500 to-teal-500 opacity-30 blur" />
+
               <img
                 src="/images/logo.jpg"
                 alt={siteInfo.name}
-                className={`relative rounded-xl border border-emerald-100 bg-white object-contain p-1 shadow-md transition-all duration-300 sm:rounded-2xl ${
-                  scrolled
-                    ? "h-10 w-10 sm:h-12 sm:w-12"
-                    : "h-11 w-11 sm:h-14 sm:w-14"
-                }`}
+                className="
+                  relative
+                  h-11
+                  w-11
+                  rounded-xl
+                  border
+                  border-emerald-100
+                  bg-white
+                  object-contain
+                  p-1
+                  shadow-md
+                  sm:h-14
+                  sm:w-14
+                  sm:rounded-2xl
+                "
               />
             </div>
 
             <div className="min-w-0">
-              <h1 className="truncate bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-500 bg-clip-text text-base font-black leading-tight text-transparent sm:text-xl md:text-2xl">
+              <h1 className="truncate text-base font-black leading-tight text-green-600 sm:text-xl md:text-2xl">
                 {siteInfo.name}
               </h1>
-              <p className="truncate text-[10px] font-bold text-slate-500 sm:text-xs md:text-sm">
+
+              <p className="truncate text-[10px] font-bold text-emerald-600 sm:text-xs md:text-sm">
                 {siteInfo.tagline}
               </p>
             </div>
@@ -228,74 +240,283 @@ Message: ${message || "Please call me back."}`
           {/* ==================================================
               DESKTOP LINKS
           ================================================== */}
-          <div className="hidden shrink-0 items-center gap-0.5 xl:flex">
-            {NAV.map((item, i) => {
-              const active = isActive(item);
-              const isLast = i === NAV.length - 1;
-              const base = `relative flex items-center gap-1 whitespace-nowrap rounded-full px-3 py-2 text-[13px] font-bold transition-all duration-300 2xl:px-4 2xl:text-sm ${
-                active
-                  ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-lg shadow-emerald-500/30"
-                  : "text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
-              }`;
+          <div className="hidden items-center gap-6 xl:flex">
+            {links.map((link) =>
+              link.name === "About" ? (
+                /* ==================================================
+                   ABOUT DROPDOWN
+                ================================================== */
+                <div key={link.href} className="group relative">
+                  <button
+                    type="button"
+                    className="
+                      flex
+                      items-center
+                      gap-1
+                      text-sm
+                      font-bold
+                      text-slate-700
+                      transition
+                      hover:text-emerald-700
+                    "
+                  >
+                    About
 
-              if (!item.children) {
-                return (
-                  <Link key={item.href} href={item.href} className={base}>
-                    {item.name}
-                  </Link>
-                );
-              }
-
-              return (
-                <div key={item.name} className="group relative">
-                  <button type="button" className={base}>
-                    {item.name}
                     <ChevronDown
-                      size={15}
-                      className="transition-transform duration-300 group-hover:rotate-180"
+                      size={16}
+                      className="transition group-hover:rotate-180"
                     />
                   </button>
 
-                  {/* pt-3 wrapper: hover gap nahi tootega. Last dropdown right se khulta hai */}
                   <div
-                    className={`invisible absolute top-full z-50 w-64 translate-y-2 pt-3 opacity-0 transition-all duration-300 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 ${
-                      isLast ? "right-0" : "left-0"
-                    }`}
+                    className="
+                      invisible
+                      absolute
+                      left-0
+                      top-full
+                      mt-3
+                      w-56
+                      rounded-2xl
+                      border
+                      border-emerald-100
+                      bg-white
+                      py-2
+                      opacity-0
+                      shadow-2xl
+                      transition-all
+                      duration-300
+                      group-hover:visible
+                      group-hover:opacity-100
+                    "
                   >
-                    <div className="overflow-hidden rounded-2xl border border-emerald-100 bg-white/95 p-2 shadow-[0_25px_60px_-15px_rgba(6,78,59,.35)] backdrop-blur-xl">
-                      {item.children.map((child) => (
-                        <Link
-                          key={child.href}
-                          href={child.href}
-                          className="group/item flex items-center justify-between rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 transition-all hover:bg-gradient-to-r hover:from-emerald-50 hover:to-teal-50 hover:text-emerald-700"
-                        >
-                          {child.name}
-                          <span className="-translate-x-2 text-emerald-500 opacity-0 transition-all group-hover/item:translate-x-0 group-hover/item:opacity-100">
-                            →
-                          </span>
-                        </Link>
-                      ))}
-                    </div>
+                    <Link
+                      href="/about"
+                      className="
+                        block
+                        px-5
+                        py-3
+                        text-sm
+                        font-semibold
+                        text-slate-700
+                        hover:bg-emerald-50
+                        hover:text-emerald-700
+                      "
+                    >
+                      About Hospital
+                    </Link>
+
+                    <Link
+                      href="/gallery"
+                      className="
+                        block
+                        px-5
+                        py-3
+                        text-sm
+                        font-semibold
+                        text-slate-700
+                        hover:bg-emerald-50
+                        hover:text-emerald-700
+                      "
+                    >
+                      Gallery
+                    </Link>
+
+                    <Link
+                      href="/contact"
+                      className="
+                        block
+                        px-5
+                        py-3
+                        text-sm
+                        font-semibold
+                        text-slate-700
+                        hover:bg-emerald-50
+                        hover:text-emerald-700
+                      "
+                    >
+                      Contact Us
+                    </Link>
                   </div>
                 </div>
-              );
-            })}
+              ) : link.name === "Training" ? (
+                /* ==================================================
+                   TRAINING DROPDOWN
+                ================================================== */
+                <div key={link.href} className="group relative">
+                  <button
+                    type="button"
+                    className="
+                      flex
+                      items-center
+                      gap-1
+                      text-sm
+                      font-bold
+                      text-slate-700
+                      transition
+                      hover:text-emerald-700
+                    "
+                  >
+                    Training
+
+                    <ChevronDown
+                      size={16}
+                      className="transition group-hover:rotate-180"
+                    />
+                  </button>
+
+                  <div
+                    className="
+                      invisible
+                      absolute
+                      left-0
+                      top-full
+                      mt-3
+                      w-72
+                      rounded-2xl
+                      border
+                      border-emerald-100
+                      bg-white
+                      py-2
+                      opacity-0
+                      shadow-2xl
+                      transition-all
+                      duration-300
+                      group-hover:visible
+                      group-hover:opacity-100
+                    "
+                  >
+                    <Link
+                      href="/training/application-form"
+                      className="
+                        block
+                        px-5
+                        py-3
+                        text-sm
+                        font-semibold
+                        text-slate-700
+                        hover:bg-emerald-50
+                        hover:text-emerald-700
+                      "
+                    >
+                      Training Application Form
+                    </Link>
+
+                    <Link
+                      href="/training/courses"
+                      className="
+                        block
+                        px-5
+                        py-3
+                        text-sm
+                        font-semibold
+                        text-slate-700
+                        hover:bg-emerald-50
+                        hover:text-emerald-700
+                      "
+                    >
+                      Training Courses
+                    </Link>
+
+                    <Link
+                      href="/training/course-files"
+                      className="
+                        block
+                        px-5
+                        py-3
+                        text-sm
+                        font-semibold
+                        text-slate-700
+                        hover:bg-emerald-50
+                        hover:text-emerald-700
+                      "
+                    >
+                      Courses Files
+                    </Link>
+
+                    <Link
+                      href="/training/course-videos"
+                      className="
+                        block
+                        px-5
+                        py-3
+                        text-sm
+                        font-semibold
+                        text-slate-700
+                        hover:bg-emerald-50
+                        hover:text-emerald-700
+                      "
+                    >
+                      Courses Videos
+                    </Link>
+                  </div>
+                </div>
+              ) : (
+                /* ==================================================
+                   NORMAL LINK
+                ================================================== */
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="
+                    relative
+                    text-sm
+                    font-bold
+                    text-yellow-500
+                    transition-all
+                    duration-300
+                    hover:text-emerald-700
+                    after:absolute
+                    after:-bottom-1
+                    after:left-0
+                    after:h-[2px]
+                    after:w-0
+                    after:bg-emerald-600
+                    after:transition-all
+                    hover:after:w-full
+                  "
+                >
+                  {link.name}
+                </Link>
+              )
+            )}
           </div>
 
           {/* ==================================================
-              LOCATION DROPDOWN (sirf 2xl screen par)
+              LOCATION DROPDOWN
           ================================================== */}
-          <div className="relative hidden 2xl:block">
+          <div className="relative hidden lg:block">
             <button
               type="button"
               onClick={() => setLocationOpen(!locationOpen)}
+              className="
+                group
+                flex
+                items-center
+                gap-2
+                rounded-xl
+                bg-[#2d2e2b]
+                px-4
+                py-2.5
+                text-sm
+                font-bold
+                text-white
+                shadow-[0_5px_0_#45493B]
+                transition-all
+                duration-300
+                hover:-translate-y-1
+                hover:bg-[#6B705B]
+                hover:shadow-[0_10px_18px_rgba(92,96,79,.35)]
+                active:translate-y-[2px]
+                active:shadow-[0_3px_0_#45493B]
+              "
               aria-expanded={locationOpen}
-              className="group flex items-center gap-2 whitespace-nowrap rounded-xl bg-gradient-to-br from-slate-800 to-slate-950 px-4 py-2.5 text-sm font-bold text-white shadow-[0_5px_0_#0f172a] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_10px_18px_rgba(15,23,42,.35)] active:translate-y-[2px] active:shadow-[0_3px_0_#0f172a]"
             >
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-white/15">
-                <MapPin size={15} />
-              </span>
-              <span>Darrang</span>
+              <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/15">
+                <MapPin size={15} className="text-white" />
+              </div>
+
+              <span>Nagaon</span>
+
               <ChevronDown
                 size={16}
                 className={`transition-transform duration-300 ${
@@ -305,78 +526,203 @@ Message: ${message || "Please call me back."}`
             </button>
 
             {locationOpen && (
-              <div className="absolute right-0 z-50 mt-3 w-80 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_25px_60px_rgba(0,0,0,.2)]">
-                <div className="bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-600 px-6 py-4">
+              <div
+                className="
+                  absolute
+                  right-0
+                  mt-3
+                  w-80
+                  overflow-hidden
+                  rounded-3xl
+                  border
+                  border-[#D6D1BF]
+                  bg-white
+                  shadow-[0_20px_50px_rgba(0,0,0,.18)]
+                "
+              >
+                {/* Header */}
+                <div className="bg-gradient-to-r from-[#5C604F] via-[#72755F] to-[#8A8F79] px-6 py-4">
                   <h3 className="text-lg font-bold text-white">
                     Our Locations
                   </h3>
+
                   <p className="mt-1 text-xs text-white/80">
                     Choose your preferred hospital branch
                   </p>
                 </div>
 
-                {/* Active */}
-                <div className="flex items-start gap-4 border-b border-slate-100 px-6 py-5 transition hover:bg-emerald-50/50">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-md shadow-emerald-500/30">
+                {/* Active Location */}
+                <button
+                  type="button"
+                  className="
+                    group
+                    flex
+                    w-full
+                    items-start
+                    gap-4
+                    border-b
+                    border-[#ECE8DC]
+                    px-6
+                    py-5
+                    text-left
+                    transition-all
+                    duration-300
+                    hover:bg-[#F8F7F3]
+                  "
+                >
+                  <div
+                    className="
+                      flex
+                      h-12
+                      w-12
+                      shrink-0
+                      items-center
+                      justify-center
+                      rounded-2xl
+                      bg-[#5C604F]
+                      shadow-md
+                      transition
+                      group-hover:scale-110
+                    "
+                  >
                     <MapPin size={20} className="text-white" />
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="text-[15px] font-bold text-slate-800">
+
+                  <div className="flex-1">
+                    <h4 className="text-[15px] font-bold text-[#2F3A2F]">
                       Dew Care Hospital LLP
                     </h4>
-                    <p className="mt-1 text-sm text-slate-500">
+
+                    <p className="mt-1 text-sm text-[#6B705B]">
                       Burigaon, Kharupetia, Darrang, Assam
                     </p>
                   </div>
-                  <span className="shrink-0 rounded-full bg-green-100 px-3 py-1 text-[11px] font-bold text-green-700">
+
+                  <span className="rounded-full bg-green-100 px-3 py-1 text-[11px] font-bold text-green-700">
                     Active
                   </span>
-                </div>
+                </button>
 
-                {/* Opening soon */}
-                <div className="flex items-start gap-4 px-6 py-5 transition hover:bg-amber-50/50">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#C89B3C] to-[#B8860B] shadow-md shadow-amber-500/30">
+                {/* Opening Soon */}
+                <button
+                  type="button"
+                  className="
+                    group
+                    flex
+                    w-full
+                    items-start
+                    gap-4
+                    px-6
+                    py-5
+                    text-left
+                    transition-all
+                    duration-300
+                    hover:bg-[#F8F7F3]
+                  "
+                >
+                  <div
+                    className="
+                      flex
+                      h-12
+                      w-12
+                      shrink-0
+                      items-center
+                      justify-center
+                      rounded-2xl
+                      bg-gradient-to-r
+                      from-[#C89B3C]
+                      to-[#B8860B]
+                      shadow-md
+                      transition
+                      group-hover:scale-110
+                    "
+                  >
                     <MapPin size={20} className="text-white" />
                   </div>
-                  <div className="min-w-0 flex-1">
-                    <h4 className="text-[15px] font-bold text-slate-800">
+
+                  <div className="flex-1">
+                    <h4 className="text-[15px] font-bold text-[#2F3A2F]">
                       Dew Care Hospital & Research Centre
                     </h4>
-                    <p className="mt-1 text-sm text-slate-500">
+
+                    <p className="mt-1 text-sm text-[#6B705B]">
                       Tezpur, Assam
                     </p>
                   </div>
-                  <span className="shrink-0 rounded-full bg-yellow-100 px-3 py-1 text-[11px] font-bold text-yellow-700">
+
+                  <span className="rounded-full bg-yellow-100 px-3 py-1 text-[11px] font-bold text-yellow-700">
                     Opening Soon
                   </span>
-                </div>
+                </button>
               </div>
             )}
           </div>
 
-          {/* APPOINTMENT BUTTON */}
+          {/* ==================================================
+              APPOINTMENT BUTTON
+          ================================================== */}
           <Link
             href="/appointment"
-            className="group relative hidden shrink-0 items-center overflow-hidden whitespace-nowrap rounded-xl bg-gradient-to-r from-[#C89B3C] via-[#E6C76A] to-[#B8860B] px-4 py-2.5 text-[13px] font-bold text-[#3A2A00] shadow-[0_5px_0_#8B6A18] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_20px_rgba(200,155,60,.45)] active:translate-y-[2px] active:shadow-[0_3px_0_#8B6A18] md:flex 2xl:px-5 2xl:text-sm"
+            className="
+              hidden
+              shrink-0
+              items-center
+              rounded-xl
+              bg-gradient-to-r
+              from-[#C89B3C]
+              via-[#E6C76A]
+              to-[#B8860B]
+              px-5
+              py-3
+              text-sm
+              font-bold
+              text-[#3A2A00]
+              shadow-[0_6px_0_#8B6A18]
+              transition-all
+              duration-300
+              hover:-translate-y-1
+              hover:shadow-[0_12px_20px_rgba(200,155,60,.45)]
+              active:translate-y-[2px]
+              active:shadow-[0_3px_0_#8B6A18]
+              md:flex
+            "
           >
-            <span className="pointer-events-none absolute inset-y-0 -left-10 w-8 -skew-x-12 bg-white/50 blur-sm transition-all duration-700 group-hover:left-[120%]" />
-            <span className="relative">
-              📅 Book<span className="hidden xl:inline">&nbsp;Appointment</span>
-            </span>
+            Book
+            <span className="hidden lg:inline">&nbsp;Appointment</span>
           </Link>
 
-          {/* MOBILE MENU BUTTON */}
+          {/* ==================================================
+              MOBILE MENU BUTTON
+          ================================================== */}
           <button
             type="button"
             onClick={() => {
               setOpen(!open);
               setLocationOpen(false);
             }}
+            className="
+              flex
+              h-11
+              w-11
+              shrink-0
+              items-center
+              justify-center
+              rounded-xl
+              border
+              border-emerald-200
+              bg-emerald-50
+              text-2xl
+              font-black
+              text-emerald-800
+              shadow-sm
+              transition
+              hover:bg-emerald-100
+              xl:hidden
+            "
             aria-label="Toggle Menu"
             aria-expanded={open}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-500/30 transition active:scale-90 xl:hidden"
           >
-            {open ? <X size={22} /> : <Menu size={22} />}
+            {open ? "×" : "☰"}
           </button>
         </nav>
 
@@ -384,104 +730,247 @@ Message: ${message || "Please call me back."}`
             MOBILE MENU
         ================================================== */}
         {open && (
-          <div className="max-h-[calc(100vh-110px)] overflow-y-auto border-t border-emerald-100 bg-white/95 px-4 py-5 shadow-2xl backdrop-blur-xl xl:hidden">
+          <div className="border-t border-emerald-100 bg-white px-4 py-5 shadow-2xl xl:hidden">
             <div className="grid gap-2">
-              {NAV.map((item) => {
-                const active = isActive(item);
-
-                if (!item.children) {
-                  return (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={() => setOpen(false)}
-                      className={`rounded-xl px-4 py-3 text-sm font-bold transition ${
-                        active
-                          ? "bg-gradient-to-r from-emerald-600 to-teal-600 text-white shadow-md"
-                          : "text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
-                      }`}
-                    >
-                      {item.name}
-                    </Link>
-                  );
-                }
-
-                const isOpen = openSub === item.name;
-                return (
+              {links.map((link) =>
+                link.name === "Training" ? (
                   <div
-                    key={item.name}
-                    className="overflow-hidden rounded-xl border border-emerald-100"
+                    key={link.href}
+                    className="rounded-xl border border-emerald-100"
                   >
-                    <button
-                      type="button"
-                      onClick={() => setOpenSub(isOpen ? null : item.name)}
-                      aria-expanded={isOpen}
-                      className={`flex w-full items-center justify-between px-4 py-3 text-sm font-bold transition ${
-                        isOpen || active
-                          ? "bg-emerald-50 text-emerald-700"
-                          : "text-slate-700"
-                      }`}
-                    >
-                      {item.name}
-                      <ChevronDown
-                        size={16}
-                        className={`transition-transform duration-300 ${
-                          isOpen ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
+                    <div className="px-4 py-3 text-sm font-bold text-slate-700">
+                      Training
+                    </div>
 
-                    {isOpen && (
-                      <div className="space-y-1 bg-white px-3 pb-3 pt-1">
-                        {item.children.map((child) => (
-                          <Link
-                            key={child.href}
-                            href={child.href}
-                            onClick={() => setOpen(false)}
-                            className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
-                          >
-                            {child.name}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
+                    <div className="space-y-1 px-3 pb-3">
+                      <Link
+                        href="/training/application-form"
+                        onClick={() => setOpen(false)}
+                        className="
+                          block
+                          rounded-lg
+                          px-3
+                          py-2
+                          text-sm
+                          text-slate-700
+                          hover:bg-emerald-50
+                          hover:text-emerald-700
+                        "
+                      >
+                        Training Application Form
+                      </Link>
+
+                      <Link
+                        href="/training/courses"
+                        onClick={() => setOpen(false)}
+                        className="
+                          block
+                          rounded-lg
+                          px-3
+                          py-2
+                          text-sm
+                          text-slate-700
+                          hover:bg-emerald-50
+                          hover:text-emerald-700
+                        "
+                      >
+                        Training Courses
+                      </Link>
+
+                      <Link
+                        href="/training/course-files"
+                        onClick={() => setOpen(false)}
+                        className="
+                          block
+                          rounded-lg
+                          px-3
+                          py-2
+                          text-sm
+                          text-slate-700
+                          hover:bg-emerald-50
+                          hover:text-emerald-700
+                        "
+                      >
+                        Courses Files
+                      </Link>
+
+                      <Link
+                        href="/training/course-videos"
+                        onClick={() => setOpen(false)}
+                        className="
+                          block
+                          rounded-lg
+                          px-3
+                          py-2
+                          text-sm
+                          text-slate-700
+                          hover:bg-emerald-50
+                          hover:text-emerald-700
+                        "
+                      >
+                        Courses Videos
+                      </Link>
+                    </div>
                   </div>
-                );
-              })}
+                ) : link.name === "About" ? (
+                  <div
+                    key={link.href}
+                    className="rounded-xl border border-emerald-100"
+                  >
+                    <div className="px-4 py-3 text-sm font-bold text-slate-700">
+                      About
+                    </div>
+
+                    <div className="space-y-1 px-3 pb-3">
+                      <Link
+                        href="/about"
+                        onClick={() => setOpen(false)}
+                        className="
+                          block
+                          rounded-lg
+                          px-3
+                          py-2
+                          text-sm
+                          text-slate-700
+                          hover:bg-emerald-50
+                          hover:text-emerald-700
+                        "
+                      >
+                        About Hospital
+                      </Link>
+
+                      <Link
+                        href="/gallery"
+                        onClick={() => setOpen(false)}
+                        className="
+                          block
+                          rounded-lg
+                          px-3
+                          py-2
+                          text-sm
+                          text-slate-700
+                          hover:bg-emerald-50
+                          hover:text-emerald-700
+                        "
+                      >
+                        Gallery
+                      </Link>
+
+                      <Link
+                        href="/contact"
+                        onClick={() => setOpen(false)}
+                        className="
+                          block
+                          rounded-lg
+                          px-3
+                          py-2
+                          text-sm
+                          text-slate-700
+                          hover:bg-emerald-50
+                          hover:text-emerald-700
+                        "
+                      >
+                        Contact Us
+                      </Link>
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    onClick={() => setOpen(false)}
+                    className="
+                      rounded-2xl
+                      px-4
+                      py-3
+                      text-sm
+                      font-bold
+                      text-slate-700
+                      transition
+                      hover:bg-emerald-50
+                      hover:text-emerald-700
+                    "
+                  >
+                    {link.name}
+                  </Link>
+                )
+              )}
             </div>
 
+            {/* Mobile Callback */}
             <button
               type="button"
               onClick={openCallback}
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#e30613] to-[#ff2d3a] px-5 py-3 text-sm font-black text-white shadow-[0_5px_0_#a9000a] transition active:translate-y-[2px] active:shadow-[0_2px_0_#a9000a]"
+              className="
+                mt-4
+                flex
+                w-full
+                items-center
+                justify-center
+                gap-2
+                rounded-xl
+                bg-[#e30613]
+                px-5
+                py-3
+                text-center
+                text-sm
+                font-black
+                text-white
+                shadow-[0_5px_0_#a9000a]
+                transition-all
+                duration-300
+                hover:-translate-y-0.5
+                hover:bg-[#c9000b]
+              "
             >
               <PhoneCall size={18} />
               Request a Callback
             </button>
 
+            {/* Mobile Appointment */}
             <Link
               href="/appointment"
               onClick={() => setOpen(false)}
-              className="mt-4 block rounded-xl bg-gradient-to-r from-[#C89B3C] via-[#E6C76A] to-[#B8860B] px-5 py-3 text-center text-sm font-bold text-[#3A2A00] shadow-[0_6px_0_#8B6A18] transition active:translate-y-[2px] active:shadow-[0_3px_0_#8B6A18]"
+              className="
+                mt-4
+                block
+                rounded-xl
+                bg-gradient-to-r
+                from-[#C89B3C]
+                via-[#E6C76A]
+                to-[#B8860B]
+                px-5
+                py-3
+                text-center
+                text-sm
+                font-bold
+                text-[#3A2A00]
+                shadow-[0_6px_0_#8B6A18]
+                transition-all
+                duration-300
+                hover:-translate-y-1
+                hover:shadow-[0_10px_18px_rgba(200,155,60,.45)]
+              "
             >
-              📅 Book Appointment
+              Book Appointment
             </Link>
 
-            <div className="mt-4 rounded-2xl border border-emerald-100 bg-gradient-to-br from-emerald-50 to-teal-50 p-4 text-sm text-emerald-900">
+            {/* Mobile Contact Info */}
+            <div className="mt-4 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900">
               <a
-                href={telHref}
+                href={`tel:${hospitalPhone}`}
                 className="flex items-center gap-2 font-semibold"
               >
                 <PhoneCall size={16} />
                 {siteInfo.phone}
               </a>
-              <p className="mt-2 flex items-center gap-2 break-all font-semibold">
-                <Mail size={16} className="shrink-0" />
-                {siteInfo.email}
+
+              <p className="mt-2 break-all font-semibold">
+                ✉️ {siteInfo.email}
               </p>
-              <p className="mt-2 flex items-start gap-2 text-xs text-emerald-700">
-                <MapPin size={14} className="mt-0.5 shrink-0" />
-                {siteInfo.address}
+
+              <p className="mt-2 text-xs text-emerald-700">
+                📍 {siteInfo.address}
               </p>
             </div>
           </div>
@@ -493,40 +982,86 @@ Message: ${message || "Please call me back."}`
       ================================================== */}
       {callbackOpen && (
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/70 px-4 py-6 backdrop-blur-md"
+          className="
+            fixed
+            inset-0
+            z-[9999]
+            flex
+            items-center
+            justify-center
+            bg-black/60
+            px-4
+            py-6
+            backdrop-blur-sm
+          "
           onClick={closeCallback}
           role="dialog"
           aria-modal="true"
           aria-label="Request a Callback"
         >
           <div
-            className="relative max-h-[90vh] w-full max-w-md overflow-y-auto rounded-3xl bg-white shadow-[0_30px_90px_rgba(0,0,0,.45)] ring-1 ring-white/20"
+            className="
+              relative
+              max-h-[90vh]
+              w-full
+              max-w-md
+              overflow-y-auto
+              overflow-hidden
+              rounded-3xl
+              bg-white
+              shadow-[0_25px_80px_rgba(0,0,0,.30)]
+            "
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Header */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-[#0b2d68] via-[#123f87] to-[#0b2d68] px-6 py-6 text-white">
-              <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-cyan-400/25 blur-3xl" />
-              <div className="pointer-events-none absolute -bottom-12 -left-10 h-36 w-36 rounded-full bg-red-500/25 blur-3xl" />
-
+            {/* ==================================================
+                MODAL HEADER
+            ================================================== */}
+            <div className="bg-gradient-to-r from-[#0b2d68] to-[#123f87] px-6 py-6 text-white">
               <button
                 type="button"
                 onClick={closeCallback}
+                className="
+                  absolute
+                  right-4
+                  top-4
+                  flex
+                  h-9
+                  w-9
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-white/10
+                  text-white
+                  transition
+                  hover:bg-white/20
+                "
                 aria-label="Close callback form"
-                className="absolute right-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition hover:rotate-90 hover:bg-white/25"
               >
                 <X size={20} />
               </button>
 
-              <div className="relative flex items-center gap-4">
-                <span className="relative flex h-14 w-14 shrink-0">
-                  <span className="absolute inset-0 animate-ping rounded-full bg-[#e30613]/50" />
-                  <span className="relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-[#e30613] to-[#ff2d3a] shadow-lg ring-2 ring-white/30">
-                    <PhoneCall size={25} />
-                  </span>
-                </span>
+              <div className="flex items-center gap-4">
+                <div
+                  className="
+                    flex
+                    h-14
+                    w-14
+                    shrink-0
+                    items-center
+                    justify-center
+                    rounded-full
+                    bg-[#e30613]
+                    shadow-lg
+                  "
+                >
+                  <PhoneCall size={25} />
+                </div>
 
                 <div className="pr-8">
-                  <h3 className="text-xl font-black">Request a Callback</h3>
+                  <h3 className="text-xl font-black">
+                    Request a Callback
+                  </h3>
+
                   <p className="mt-1 text-sm text-white/80">
                     Our hospital team will contact you shortly.
                   </p>
@@ -534,8 +1069,14 @@ Message: ${message || "Please call me back."}`
               </div>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleCallbackSubmit} className="space-y-4 p-6">
+            {/* ==================================================
+                CALLBACK FORM
+            ================================================== */}
+            <form
+              onSubmit={handleCallbackSubmit}
+              className="space-y-4 p-6"
+            >
+              {/* Name */}
               <div>
                 <label
                   htmlFor="callback-name"
@@ -543,6 +1084,7 @@ Message: ${message || "Please call me back."}`
                 >
                   Your Name *
                 </label>
+
                 <input
                   id="callback-name"
                   name="name"
@@ -550,10 +1092,26 @@ Message: ${message || "Please call me back."}`
                   placeholder="Enter your name"
                   autoComplete="name"
                   required
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10"
+                  className="
+                    w-full
+                    rounded-xl
+                    border
+                    border-slate-200
+                    bg-slate-50
+                    px-4
+                    py-3
+                    text-sm
+                    outline-none
+                    transition
+                    focus:border-[#0b2d68]
+                    focus:bg-white
+                    focus:ring-2
+                    focus:ring-[#0b2d68]/10
+                  "
                 />
               </div>
 
+              {/* Mobile */}
               <div>
                 <label
                   htmlFor="callback-phone"
@@ -561,10 +1119,26 @@ Message: ${message || "Please call me back."}`
                 >
                   Mobile Number *
                 </label>
+
                 <div className="flex">
-                  <span className="flex items-center rounded-l-xl border border-r-0 border-slate-200 bg-slate-100 px-3 text-sm font-bold text-slate-600">
+                  <span
+                    className="
+                      flex
+                      items-center
+                      rounded-l-xl
+                      border
+                      border-r-0
+                      border-slate-200
+                      bg-slate-100
+                      px-3
+                      text-sm
+                      font-bold
+                      text-slate-600
+                    "
+                  >
                     +91
                   </span>
+
                   <input
                     id="callback-phone"
                     name="phone"
@@ -575,11 +1149,28 @@ Message: ${message || "Please call me back."}`
                     placeholder="10 digit mobile number"
                     autoComplete="tel"
                     required
-                    className="min-w-0 flex-1 rounded-r-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10"
+                    className="
+                      min-w-0
+                      flex-1
+                      rounded-r-xl
+                      border
+                      border-slate-200
+                      bg-slate-50
+                      px-4
+                      py-3
+                      text-sm
+                      outline-none
+                      transition
+                      focus:border-[#0b2d68]
+                      focus:bg-white
+                      focus:ring-2
+                      focus:ring-[#0b2d68]/10
+                    "
                   />
                 </div>
               </div>
 
+              {/* Message */}
               <div>
                 <label
                   htmlFor="callback-message"
@@ -587,34 +1178,90 @@ Message: ${message || "Please call me back."}`
                 >
                   Message
                 </label>
+
                 <textarea
                   id="callback-message"
                   name="message"
                   rows={3}
                   placeholder="How can we help you?"
-                  className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10"
+                  className="
+                    w-full
+                    resize-none
+                    rounded-xl
+                    border
+                    border-slate-200
+                    bg-slate-50
+                    px-4
+                    py-3
+                    text-sm
+                    outline-none
+                    transition
+                    focus:border-[#0b2d68]
+                    focus:bg-white
+                    focus:ring-2
+                    focus:ring-[#0b2d68]/10
+                  "
                 />
               </div>
 
+              {/* WhatsApp Request */}
               <button
                 type="submit"
-                className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-xl bg-gradient-to-r from-[#e30613] to-[#ff2d3a] px-5 py-3.5 text-sm font-black text-white shadow-[0_5px_0_#a9000a] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_8px_18px_rgba(227,6,19,.30)] active:translate-y-[2px] active:shadow-[0_2px_0_#a9000a]"
+                className="
+                  flex
+                  w-full
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-xl
+                  bg-[#e30613]
+                  px-5
+                  py-3.5
+                  text-sm
+                  font-black
+                  text-white
+                  shadow-[0_5px_0_#a9000a]
+                  transition-all
+                  duration-300
+                  hover:-translate-y-0.5
+                  hover:bg-[#c9000b]
+                  hover:shadow-[0_8px_18px_rgba(227,6,19,.30)]
+                  active:translate-y-[2px]
+                  active:shadow-[0_2px_0_#a9000a]
+                "
               >
-                <span className="pointer-events-none absolute inset-y-0 -left-10 w-8 -skew-x-12 bg-white/30 blur-sm transition-all duration-700 group-hover:left-[120%]" />
-                <MessageCircle size={18} className="relative" />
-                <span className="relative">Request Callback</span>
+                <MessageCircle size={18} />
+                Request Callback
               </button>
 
+              {/* Direct Call */}
               <a
-                href={telHref}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[#0b2d68] px-5 py-3 text-sm font-bold text-[#0b2d68] transition hover:bg-[#0b2d68] hover:text-white"
+                href={`tel:${hospitalPhone}`}
+                className="
+                  flex
+                  w-full
+                  items-center
+                  justify-center
+                  gap-2
+                  rounded-xl
+                  border
+                  border-[#0b2d68]
+                  px-5
+                  py-3
+                  text-sm
+                  font-bold
+                  text-[#0b2d68]
+                  transition
+                  hover:bg-[#0b2d68]
+                  hover:text-white
+                "
               >
                 <PhoneCall size={17} />
                 Call Now — {siteInfo.phone}
               </a>
 
               <p className="text-center text-[11px] text-slate-400">
-                🔒 Your information is safe with us.
+                Your information is safe with us.
               </p>
             </form>
           </div>
@@ -623,3 +1270,4 @@ Message: ${message || "Please call me back."}`
     </>
   );
 }
+
