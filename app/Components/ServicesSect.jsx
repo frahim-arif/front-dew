@@ -991,81 +991,83 @@ export default function ServicesSect({
 
   {/* ==================================================
       EMERGENCY PHONE
-  ================================================== */}
+================================================== */}
 
-  <a
-    href="tel:7086803380"
+<a
+  href="tel:7086803380"
+  aria-label="Call Emergency Helpline 7086803380"
+  className="
+    group relative flex min-h-[76px] w-full items-center gap-4
+    overflow-hidden
+    bg-gradient-to-br from-emerald-500 via-emerald-600 to-teal-800
+    px-5 py-4 text-white
+    shadow-[0_10px_30px_-8px_rgba(5,150,105,0.65)]
+    ring-1 ring-inset ring-white/20
+    transition-all duration-300
+    hover:shadow-[0_14px_36px_-8px_rgba(5,150,105,0.85)]
+    active:scale-[0.98]
+  "
+>
+  {/* Soft glow blobs */}
+  <div className="pointer-events-none absolute -left-8 -top-10 h-32 w-32 rounded-full bg-white/20 blur-2xl" />
+  <div className="pointer-events-none absolute -bottom-12 right-6 h-28 w-28 rounded-full bg-teal-300/30 blur-2xl" />
+
+  {/* Shine sweep on hover */}
+  <div
     className="
-      flex
-      min-h-[64px]
-      w-full
-      items-center
-      gap-3
-      bg-emerald-700
-      px-4
-      py-3
-      text-white
-      transition
-      active:bg-emerald-800
+      pointer-events-none absolute inset-y-0 -left-1/2 w-1/3
+      -skew-x-12 bg-gradient-to-r from-transparent via-white/25 to-transparent
+      opacity-0 transition-all duration-700
+      group-hover:left-[130%] group-hover:opacity-100
     "
-  >
+  />
 
+  {/* Icon with pulsing ring */}
+  <div className="relative shrink-0">
+    <span className="absolute inset-0 animate-ping rounded-full bg-white/40" />
     <div
       className="
-        flex
-        h-10
-        w-10
-        shrink-0
-        items-center
-        justify-center
-        rounded-full
-        bg-white/15
-        text-lg
+        relative flex h-12 w-12 items-center justify-center
+        rounded-full bg-white/20 text-2xl
+        shadow-inner ring-1 ring-white/40 backdrop-blur-md
+        transition-transform duration-300
+        group-hover:rotate-[-12deg] group-hover:scale-110
       "
     >
       📞
     </div>
+  </div>
 
-    <div className="flex-1">
-
-      <p
-        className="
-          text-[8px]
-          font-bold
-          uppercase
-          tracking-[0.15em]
-          text-emerald-100
-        "
-      >
-        Emergency Helpline
+  {/* Text */}
+  <div className="relative flex-1">
+    <div className="flex items-center gap-1.5">
+      <span className="relative flex h-1.5 w-1.5">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-lime-300 opacity-75" />
+        <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-lime-300" />
+      </span>
+      <p className="text-[9px] font-bold uppercase tracking-[0.22em] text-emerald-50">
+        Emergency Helpline • 24×7
       </p>
-
-      <p className="mt-0.5 text-xl font-black leading-none">
-        7086803380
-      </p>
-
     </div>
 
-    <div
-      className="
-        flex
-        h-8
-        w-8
-        shrink-0
-        items-center
-        justify-center
-        rounded-full
-        bg-white
-        font-black
-        text-emerald-700
-      "
-    >
-      →
-    </div>
+    <p className="mt-1 text-[26px] font-black leading-none tracking-wider drop-shadow-sm">
+      7086803380
+    </p>
+  </div>
 
-  </a>
-
-</div>
+  {/* Arrow button */}
+  <div
+    className="
+      relative flex h-10 w-10 shrink-0 items-center justify-center
+      rounded-full bg-white text-lg font-black text-emerald-700
+      shadow-lg transition-all duration-300
+      group-hover:translate-x-1 group-hover:bg-lime-100
+      group-active:translate-x-2
+    "
+  >
+    →
+  </div>
+</a>
 
 
 
