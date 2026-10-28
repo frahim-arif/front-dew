@@ -1,3 +1,4 @@
+
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -10,13 +11,23 @@ const nextConfig: NextConfig = {
         pathname: "/uploads/**",
       },
 
-      // Production backend (Render) use karoge to isko apne domain se replace kar dena
+      // Production backend (Render)
       // {
       //   protocol: "https",
       //   hostname: "your-backend.onrender.com",
       //   pathname: "/uploads/**",
       // },
     ],
+  },
+
+  async redirects() {
+    return [
+      {
+        source: "/appointment/success",
+        destination: "/",
+        permanent: false,
+      },
+    ];
   },
 };
 
