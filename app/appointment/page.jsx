@@ -300,28 +300,30 @@ export default function AppointmentPage() {
       return;
     }
 
-    if (
-      String(selectedDoctor.status || "").toLowerCase() !== "active" ||
-      selectedDoctor.opdAvailable === false
-    ) {
-      setMessage({
-        type: "error",
-        text: "Selected doctor is currently unavailable.",
-      });
-      return;
-    }
+    
+if (
+  String(selectedDoctor.status || "").trim().toLowerCase() !== "active" ||
+  selectedDoctor.opdAvailable === false
+) {
+  setMessage({
+    type: "error",
+    text: "Selected doctor is currently unavailable.",
+  });
+  return;
+}
 
-    if (
-      !selectedDoctor.department ||
-      !selectedDoctor._id ||
-      !selectedDoctor.name
-    ) {
-      setMessage({
-        type: "error",
-        text: "Doctor details incomplete hain. Please select another doctor.",
-      });
-      return;
-    }
+if (
+  !Number.isFinite(Number(selectedDoctor.opdFee)) ||
+  Number(selectedDoctor.opdFee) <= 0
+) {
+  setMessage({
+    type: "error",
+    text: "Is doctor ki OPD fee set nahi hai. Please hospital se contact karein.",
+  });
+  return;
+}
+
+
 
     setSubmitting(true);
 
@@ -346,7 +348,7 @@ export default function AppointmentPage() {
         date: form.date,
         time: form.time,
         message: form.message.trim(),
-        doctorFee: selectedDoctorFee,
+        
       };
 
       const appointmentResponse = await fetch(
@@ -420,8 +422,20 @@ export default function AppointmentPage() {
         orderData?.key ||
         process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
 
-      const razorpayAmount = orderData?.amount;
-      const razorpayCurrency = orderData?.currency || "INR";
+      const razorpayAmount = Number(orderData?.amount);
+const razorpayCurrency = orderData?.currency || "INR";
+
+if (
+  !razorpayOrderId ||
+  !razorpayKey ||
+  !Number.isSafeInteger(razorpayAmount) ||
+  razorpayAmount <= 0 ||
+  razorpayCurrency !== "INR"
+) {
+  throw new Error(
+    "Payment order response invalid hai. Backend response check karein."
+  );
+}
 
       if (!razorpayOrderId || !razorpayKey || !razorpayAmount) {
         throw new Error(
