@@ -12,7 +12,7 @@ const BACKEND_URL = API_URL.replace(/\/api\/?$/, "");
 /* =========================================================
    DESIGN TOKENS
    ink   #0F2B2E  deep teal-black (hero, headings)
-   dew   #5FD3C2  bright accent (only on the dark hero)
+   dew   #FDE047  bright accent (only on the dark hero)
    teal  #1F8F83  accent on light surfaces
    mist  #EEF6F3  soft surface
    line  #DCE8E4  borders
@@ -32,7 +32,17 @@ const STATUS_PILL = {
   Cancelled: "bg-[#FBE0D9] text-[#A8402A]",
 };
 
-const CARD = "rounded-2xl border border-[#DCE8E4] bg-white";
+const CARD =
+  "rounded-3xl border border-white bg-white shadow-[0_12px_40px_-14px_rgba(91,33,182,0.28)]";
+
+const KPI_GRADIENTS = [
+  "from-[#0EA5E9] to-[#2563EB]",
+  "from-[#8B5CF6] to-[#6D28D9]",
+  "from-[#10B981] to-[#047857]",
+  "from-[#F59E0B] to-[#EA580C]",
+  "from-[#EC4899] to-[#BE185D]",
+  "from-[#06B6D4] to-[#0E7490]",
+];
 
 /* =========================================================
    SMALL HELPERS
@@ -167,14 +177,29 @@ function Icon({ name, className = "h-5 w-5" }) {
    REUSABLE PIECES
 ========================================================= */
 
-function SectionHead({ title, sub, right }) {
+function SectionHead({
+  title,
+  sub,
+  right,
+  icon,
+  gradient = "from-[#8B5CF6] to-[#EC4899]",
+}) {
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-      <div>
-        <h2 className="dc-display text-xl font-bold text-[#0F2B2E]">
-          {title}
-        </h2>
-        {sub && <p className="mt-0.5 text-sm text-slate-500">{sub}</p>}
+      <div className="flex items-center gap-3">
+        {icon && (
+          <div
+            className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br ${gradient} text-white shadow-md`}
+          >
+            <Icon name={icon} className="h-5 w-5" />
+          </div>
+        )}
+        <div>
+          <h2 className="dc-display text-xl font-bold text-[#1E1B4B]">
+            {title}
+          </h2>
+          {sub && <p className="mt-0.5 text-sm text-slate-500">{sub}</p>}
+        </div>
       </div>
       {right}
     </div>
@@ -222,8 +247,16 @@ function RankList({ items, max, color, emptyText }) {
       {items.map((item, index) => (
         <li key={item.name}>
           <div className="mb-1.5 flex items-center justify-between gap-3 text-sm">
-            <span className="truncate font-semibold text-[#0F2B2E]">
-              {item.name}
+            <span className="flex min-w-0 items-center gap-2">
+              <span
+                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white"
+                style={{ background: color }}
+              >
+                {index + 1}
+              </span>
+              <span className="truncate font-semibold text-[#1E1B4B]">
+                {item.name}
+              </span>
             </span>
             <span className="font-bold tabular-nums text-slate-600">
               {item.count}
@@ -568,19 +601,19 @@ export default function AdminDashboard() {
       title: "Manage appointments",
       href: "/admin/appointments",
       desc: "View and update bookings",
-      color: "#1F8F83",
+      color: "#0EA5E9",
     },
     {
       title: "Add doctor",
       href: "/admin/doctors",
       desc: "Manage hospital doctors",
-      color: "#3B82C4",
+      color: "#8B5CF6",
     },
     {
       title: "Manage services",
       href: "/admin/services",
       desc: "Add and update services",
-      color: "#7C5CC4",
+      color: "#10B981",
     },
     {
       title: "Doctor reports",
@@ -598,7 +631,7 @@ export default function AdminDashboard() {
       title: "Hospital settings",
       href: "/admin/settings",
       desc: "Update hospital details",
-      color: "#475569",
+      color: "#6366F1",
     },
   ];
 
@@ -610,7 +643,7 @@ export default function AdminDashboard() {
     return (
       <div className="dc-root space-y-6" aria-busy="true">
         <DashboardStyles />
-        <div className="h-72 animate-pulse rounded-3xl bg-[#0F2B2E]/90" />
+        <div className="h-72 animate-pulse rounded-3xl bg-gradient-to-br from-[#0EA5E9] to-[#DB2777] opacity-70" />
         <div className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className="h-24 animate-pulse rounded-2xl bg-[#EEF6F3]" />
@@ -634,7 +667,7 @@ export default function AdminDashboard() {
   const barW = 34;
 
   return (
-    <div className="dc-root space-y-8">
+    <div className="dc-root space-y-8 rounded-[2rem] bg-gradient-to-br from-[#E8F4FF] via-[#F5EEFF] to-[#FFF0F0] p-3 sm:p-6">
       <DashboardStyles />
 
       {/* ================= ERROR BANNER ================= */}
@@ -659,26 +692,26 @@ export default function AdminDashboard() {
 
       {/* ================= HERO ================= */}
 
-      <section className="relative overflow-hidden rounded-3xl bg-[#0F2B2E] p-6 text-white sm:p-8 lg:p-10">
+      <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#0EA5E9] via-[#6D28D9] to-[#DB2777] p-6 text-white shadow-2xl shadow-violet-300/50 sm:p-8 lg:p-10">
         {/* dew ripples */}
         <div
-          className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full border border-[#5FD3C2]/15"
+          className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full border border-white/20"
           aria-hidden="true"
         />
         <div
-          className="pointer-events-none absolute -right-10 -top-10 h-68 w-68 rounded-full border border-[#5FD3C2]/20"
+          className="pointer-events-none absolute -right-10 -top-10 rounded-full border border-white/25"
           style={{ height: "17rem", width: "17rem" }}
           aria-hidden="true"
         />
         <div
-          className="pointer-events-none absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-[#5FD3C2]/10 blur-3xl"
+          className="pointer-events-none absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-[#F472B6]/40 blur-3xl"
           aria-hidden="true"
         />
 
         <div className="relative grid gap-10 lg:grid-cols-5 lg:items-center">
           {/* Left */}
           <div className="lg:col-span-2">
-            <p className="text-sm font-medium text-[#5FD3C2]">
+            <p className="text-sm font-medium text-[#FDE047]">
               Dew Care Hospital admin
             </p>
 
@@ -718,7 +751,7 @@ export default function AdminDashboard() {
               <button
                 onClick={() => fetchDashboardData(true)}
                 disabled={refreshing}
-                className="inline-flex items-center gap-2 rounded-xl bg-[#5FD3C2] px-5 py-2.5 text-sm font-bold text-[#0F2B2E] transition hover:bg-[#7BE0D1] disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-[#FDE047] px-5 py-2.5 text-sm font-bold text-[#3B0764] transition hover:bg-[#FEF08A] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Icon
                   name="refresh"
@@ -795,8 +828,8 @@ export default function AdminDashboard() {
                       width={barW}
                       height={height}
                       rx="7"
-                      fill={isToday ? "#5FD3C2" : "white"}
-                      fillOpacity={isToday ? 1 : 0.22}
+                      fill={isToday ? "#FDE047" : "white"}
+                      fillOpacity={isToday ? 1 : 0.4}
                       style={{ animationDelay: `${index * 60}ms` }}
                     />
                     <text
@@ -805,7 +838,7 @@ export default function AdminDashboard() {
                       textAnchor="middle"
                       fontSize="12"
                       fontWeight="700"
-                      fill={isToday ? "#5FD3C2" : "white"}
+                      fill={isToday ? "#FDE047" : "white"}
                     >
                       {item.count}
                     </text>
@@ -828,34 +861,30 @@ export default function AdminDashboard() {
         </div>
       </section>
 
-      {/* ================= KPI STRIP ================= */}
+      {/* ================= KPI TILES ================= */}
 
-      <section
-        className={`${CARD} grid grid-cols-2 divide-[#DCE8E4] md:grid-cols-3 xl:grid-cols-6 xl:divide-x`}
-      >
+      <section className="grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-6">
         {kpis.map((kpi, index) => (
           <div
             key={kpi.label}
-            className={`p-5 ${
-              index % 2 === 0 ? "" : "border-l border-[#DCE8E4] md:border-l-0"
-            } ${index >= 2 ? "border-t border-[#DCE8E4] xl:border-t-0" : ""} ${
-              index >= 3 ? "md:border-t" : "md:border-t-0"
-            } ${index % 3 !== 0 ? "md:border-l md:border-[#DCE8E4]" : ""} xl:border-t-0 ${
-              index === 0 ? "xl:border-l-0" : ""
-            }`}
+            className={`relative overflow-hidden rounded-3xl bg-gradient-to-br ${
+              KPI_GRADIENTS[index % KPI_GRADIENTS.length]
+            } p-5 text-white shadow-lg`}
           >
-            <div className="flex items-center gap-2 text-[#1F8F83]">
-              <Icon name={kpi.icon} className="h-[18px] w-[18px]" />
-              <span className="text-sm font-semibold text-slate-600">
-                {kpi.label}
-              </span>
+            <div
+              className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-white/20"
+              aria-hidden="true"
+            />
+            <div className="relative">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/25">
+                <Icon name={kpi.icon} className="h-5 w-5" />
+              </div>
+              <p className="dc-display mt-4 text-4xl font-extrabold tabular-nums">
+                {kpi.value}
+              </p>
+              <p className="mt-1 text-sm font-bold">{kpi.label}</p>
+              <p className="text-xs text-white/75">{kpi.note}</p>
             </div>
-
-            <p className="dc-display mt-3 text-4xl font-extrabold tabular-nums text-[#0F2B2E]">
-              {kpi.value}
-            </p>
-
-            <p className="mt-1 text-xs text-slate-500">{kpi.note}</p>
           </div>
         ))}
       </section>
@@ -867,6 +896,8 @@ export default function AdminDashboard() {
         <div className={`${CARD} p-6 xl:col-span-2`}>
           <SectionHead
             title="Today's schedule"
+            icon="calendar"
+            gradient="from-[#0EA5E9] to-[#2563EB]"
             sub="Patients booked for today"
             right={
               <span className="w-fit rounded-full bg-[#EEF6F3] px-3 py-1 text-sm font-bold text-[#0F6B60]">
@@ -924,7 +955,12 @@ export default function AdminDashboard() {
 
         {/* Status donut */}
         <div className={`${CARD} p-6`}>
-          <SectionHead title="Booking status" sub="All appointments" />
+          <SectionHead
+            title="Booking status"
+            sub="All appointments"
+            icon="chart"
+            gradient="from-[#8B5CF6] to-[#EC4899]"
+          />
 
           <div className="mt-6 flex justify-center">
             <svg
@@ -986,7 +1022,8 @@ export default function AdminDashboard() {
             {statusSegments.map((segment) => (
               <li
                 key={segment.label}
-                className="rounded-xl bg-[#F6FAF8] px-3 py-2.5"
+                className="rounded-xl px-3 py-2.5"
+                style={{ background: STATUS_COLORS[segment.label] + "22" }}
               >
                 <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
                   <span
@@ -1010,12 +1047,14 @@ export default function AdminDashboard() {
         <div className={`${CARD} p-6`}>
           <SectionHead
             title="Top doctors"
+            icon="pulse"
+            gradient="from-[#10B981] to-[#047857]"
             sub="Most appointments booked"
           />
           <RankList
             items={doctorAnalytics}
             max={maximumDoctorCount}
-            color="#1F8F83"
+            color="#10B981"
             emptyText="No doctor data yet."
           />
         </div>
@@ -1023,53 +1062,54 @@ export default function AdminDashboard() {
         <div className={`${CARD} p-6`}>
           <SectionHead
             title="Departments"
+            icon="grid"
+            gradient="from-[#F59E0B] to-[#EA580C]"
             sub="Appointments by department"
           />
           <RankList
             items={departmentAnalytics}
             max={maximumDepartmentCount}
-            color="#3B82C4"
+            color="#F59E0B"
             emptyText="No department data yet."
           />
         </div>
 
         <div className={`${CARD} p-6`}>
-          <SectionHead title="Quick actions" sub="Jump to a section" />
+          <SectionHead
+            title="Quick actions"
+            sub="Jump to a section"
+            icon="users"
+            gradient="from-[#EC4899] to-[#BE185D]"
+          />
 
-          <ul className="mt-4 divide-y divide-[#E6EFEC]">
+          <div className="mt-5 grid grid-cols-2 gap-3">
             {quickActions.map((action) => (
-              <li key={action.title}>
-                <Link
-                  href={action.href}
-                  className="group flex items-center gap-3 py-3 transition"
-                >
-                  <span
-                    className="h-9 w-1.5 shrink-0 rounded-full"
-                    style={{ background: action.color }}
-                  />
-                  <span className="min-w-0 flex-1">
-                    <span className="block font-bold text-[#0F2B2E] group-hover:text-[#1F8F83]">
-                      {action.title}
-                    </span>
-                    <span className="block truncate text-xs text-slate-500">
-                      {action.desc}
-                    </span>
-                  </span>
-                  <Icon
-                    name="chevron"
-                    className="h-4 w-4 shrink-0 text-slate-400 transition group-hover:translate-x-0.5 group-hover:text-[#1F8F83]"
-                  />
-                </Link>
-              </li>
+              <Link
+                key={action.title}
+                href={action.href}
+                className="group relative overflow-hidden rounded-2xl p-4 text-white shadow-md transition hover:-translate-y-1 hover:shadow-xl"
+                style={{ background: action.color }}
+              >
+                <span
+                  className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/25 to-transparent"
+                  aria-hidden="true"
+                />
+                <span className="relative block text-sm font-bold leading-snug">
+                  {action.title}
+                </span>
+                <span className="relative mt-1 block text-xs leading-snug text-white/80">
+                  {action.desc}
+                </span>
+              </Link>
             ))}
-          </ul>
+          </div>
         </div>
       </section>
 
       {/* ================= PRESCRIPTIONS ================= */}
 
       <section className={`${CARD} overflow-hidden`}>
-        <div className="flex flex-col gap-4 border-b border-[#DCE8E4] p-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-4 border-b border-pink-100 bg-gradient-to-r from-[#FDF2F8] to-[#FFF1F2] p-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="dc-display text-xl font-bold text-[#0F2B2E]">
               Recent prescriptions
@@ -1081,7 +1121,7 @@ export default function AdminDashboard() {
 
           <Link
             href="/admin/appointments"
-            className="w-fit rounded-xl bg-[#0F2B2E] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#1B4348]"
+            className="w-fit rounded-xl bg-gradient-to-r from-[#EC4899] to-[#E11D48] px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:brightness-110"
           >
             Manage prescriptions
           </Link>
@@ -1175,7 +1215,7 @@ export default function AdminDashboard() {
                               href={fileUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex rounded-lg bg-[#1F8F83] px-4 py-2 text-xs font-bold text-white transition hover:bg-[#187A70]"
+                              className="inline-flex rounded-lg bg-gradient-to-r from-[#EC4899] to-[#E11D48] px-4 py-2 text-xs font-bold text-white transition hover:brightness-110"
                             >
                               {isPdf ? "View PDF" : "View image"}
                             </a>
@@ -1231,7 +1271,7 @@ export default function AdminDashboard() {
                         href={fileUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="mt-4 flex w-full justify-center rounded-xl bg-[#1F8F83] px-4 py-3 text-sm font-bold text-white transition hover:bg-[#187A70]"
+                        className="mt-4 flex w-full justify-center rounded-xl bg-gradient-to-r from-[#EC4899] to-[#E11D48] px-4 py-3 text-sm font-bold text-white transition hover:brightness-110"
                       >
                         {isPdf ? "View prescription PDF" : "View prescription image"}
                       </a>
@@ -1251,7 +1291,7 @@ export default function AdminDashboard() {
       {/* ================= RECENT APPOINTMENTS ================= */}
 
       <section className={`${CARD} overflow-hidden`}>
-        <div className="flex flex-col gap-4 border-b border-[#DCE8E4] p-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="flex flex-col gap-4 border-b border-violet-100 bg-gradient-to-r from-[#EFF6FF] to-[#F5F3FF] p-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 className="dc-display text-xl font-bold text-[#0F2B2E]">
               Recent appointments
@@ -1275,8 +1315,8 @@ export default function AdminDashboard() {
                     aria-pressed={statusFilter === option}
                     className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                       statusFilter === option
-                        ? "bg-[#0F2B2E] text-white"
-                        : "bg-[#EEF6F3] text-slate-600 hover:bg-[#DDEDE7]"
+                        ? "bg-gradient-to-r from-[#0EA5E9] to-[#8B5CF6] text-white shadow"
+                        : "bg-[#F1F5FF] text-slate-600 hover:bg-[#E3EAFF]"
                     }`}
                   >
                     {option}
@@ -1287,7 +1327,7 @@ export default function AdminDashboard() {
 
             <Link
               href="/admin/appointments"
-              className="w-fit rounded-xl bg-[#1F8F83] px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-[#187A70]"
+              className="w-fit rounded-xl bg-gradient-to-r from-[#0EA5E9] to-[#8B5CF6] px-5 py-2.5 text-sm font-semibold text-white shadow-md transition hover:brightness-110"
             >
               View all appointments
             </Link>
