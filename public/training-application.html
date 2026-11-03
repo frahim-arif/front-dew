@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Training Application – Dew Care Hospital</title>
+<!--
+  ============================================================
+  DEW CARE HOSPITAL – TRAINING APPLICATION FORM
+  For: 3-Day Hands-On Training in Basic Laparoscopic Surgery
+       & Observership in Advanced Laparoscopy
+  ------------------------------------------------------------
+  INTEGRATION NOTES FOR THE WEB DEVELOPER
+  1. Fill in CONFIG below (Razorpay Key ID + your 3 API endpoints).
+  2. Payment MUST be created and verified on the server.
+     The browser only opens Razorpay Checkout. Never put the
+     Razorpay Key SECRET in this file.
+  3. Flow:
+     a) User fills form + uploads documents
+     b) POST multipart to CONFIG.submitUrl
+        -> server saves application (status: PENDING_PAYMENT),
+           checks seats left, creates Razorpay order
+        -> returns { application_id, order_id, amount }
+     c) Browser opens Razorpay Checkout with order_id
+     d) On success, POST payment ids + signature to CONFIG.verifyUrl
+        -> server verifies HMAC signature, marks PAID,
+           sends confirmation email/WhatsApp
+     e) Show success screen with Application ID
+  4. If submitUrl is empty, the form runs in DEMO MODE
+     (validates and shows the success screen without payment).
+  5. Batch list: load from CONFIG.batches or from CONFIG.batchesUrl.
+  ============================================================
+-->
+<script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
+<style>
+  :root{
+    --bg:#f4f8f8; --card:#ffffff; --ink:#14213d; --muted:#5b6b7a;
+    --line:#d8e2e6; --brand:#0f766e; --brand-dark:#0b5a54; --brand-soft:#e6f4f2;
+    --accent:#b8860b; --error:#b42318; --error-soft:#fdecea; --ok:#127a3e;
+    --radius:12px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans",sans-serif}
+  .wrap{max-width:860px;margin:0 auto;padding:24px 16px 64px}
+  header.hero{background:linear-gradient(135deg,#0b3c5d,#0f766e);color:#fff;
+    border-radius:var(--radius);padding:28px 24px;margin-bottom:20px}
+  .hero small{letter-spacing:.08em;text-transform:uppercase;opacity:.85;font-size:12px}
+  .hero h1{margin:6px 0 8px;font-size:clamp(22px,4vw,30px);line-height:1.2}
+  .hero p{margin:0;opacity:.92}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .chip{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);
+    border-radius:999px;padding:4px 12px;font-size:13px}
+  .steps{display:flex;gap:6px;margin:0 0 16px;flex-wrap:wrap}
+  .steps span{flex:1 1 0;min-width:90px;text-align:center;font-size:12px;padding:6px 4px;
+    border-radius:8px;background:#e9eff1;color:var(--muted)}
+  .steps span.on{background:var(--brand);color:#fff}
+  fieldset{border:1px solid var(--line);background:var(--card);border-radius:var(--radius);
+    padding:20px 18px 8px;margin:0 0 16px}
+  legend{font-weight:700;font-size:17px;padding:0 6px;color:var(--brand-dark)}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 16px}
+  .full{grid-column:1/-1}
+  @media (max-width:640px){.grid{grid-template-columns:1fr}}
+  label{display:block;font-weight:600;font-size:14px;margin-bottom:4px}
+  .req::after{content:" *";color:var(--error)}
+  .hint{font-size:12.5px;color:var(--muted);margin-top:3px}
+  input[type=text],input[type=email],input[type=tel],input[type=date],input[type=number],select,textarea{
+    width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:8px;font:inherit;
+    background:#fff;color:var(--ink)}
+  textarea{min-height:84px;resize:vertical}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--brand);outline-offset:1px;border-color:var(--brand)}
+  .field{margin-bottom:12px}
+  .invalid input,.invalid select,.invalid textarea,.invalid .drop{border-color:var(--error);background:var(--error-soft)}
+  .err{display:none;color:var(--error);font-size:12.5px;margin-top:3px}
+  .invalid .err{display:block}
+  .radio-row{display:flex;flex-wrap:wrap;gap:8px 18px}
+  .radio-row label,.check label{font-weight:500;display:flex;gap:8px;align-items:flex-start}
+  .check{margin:10px 0}
+  .check input{margin-top:4px;flex:none}
+  .drop{border:1.5px dashed var(--line);border-radius:10px;padding:12px;background:#fbfdfd;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .drop input[type=file]{font-size:14px;max-width:100%}
+  .fname{font-size:13px;color:var(--ok);word-break:break-all}
+  .summary{background:var(--brand-soft);border:1px solid #bfe3de;border-radius:10px;padding:14px 16px}
+  .summary table{width:100%;border-collapse:collapse;font-size:15px}
+  .summary td{padding:5px 0}
+  .summary td:last-child{text-align:right;font-weight:600}
+  .summary tr.total td{border-top:1px solid #bfe3de;padding-top:9px;font-size:17px}
+  .btn{appearance:none;border:0;border-radius:10px;padding:14px 20px;font:inherit;font-weight:700;
+    cursor:pointer;width:100%;margin-top:14px;background:var(--brand);color:#fff;font-size:17px}
+  .btn:hover{background:var(--brand-dark)}
+  .btn[disabled]{opacity:.6;cursor:wait}
+  .note{font-size:13px;color:var(--muted);margin-top:10px;text-align:center}
+  .alert{display:none;border-radius:10px;padding:12px 14px;margin:12px 0;font-size:14px}
+  .alert.show{display:block}
+  .alert.err-box{background:var(--error-soft);color:var(--error);border:1px solid #f5c2bd}
+  .alert.demo{background:#fff8e6;color:#7a5600;border:1px solid #f1d58a}
+  #success{display:none;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+    padding:32px 22px;text-align:center}
+  #success .tick{width:64px;height:64px;border-radius:50%;background:var(--ok);color:#fff;
+    display:grid;place-items:center;font-size:34px;margin:0 auto 12px}
+  #success code{background:var(--brand-soft);padding:3px 8px;border-radius:6px;font-size:16px}
+  a{color:var(--brand-dark)}
+  .hidden{display:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="hero">
+    <small>Dew Care Hospital &amp; Research Centre · Nagaon</small>
+    <h1>Training Application Form</h1>
+    <p>3-Day Hands-On Training in Basic Laparoscopic Surgery &amp; Observership in Advanced Laparoscopy</p>
+    <div class="chips">
+      <span class="chip">3 days</span>
+      <span class="chip">6 seats per batch</span>
+      <span class="chip">₹15,000 incl. accommodation</span>
+      <span class="chip">Faculty: Dr. Foridul Hussain</span>
+    </div>
+  </header>
+
+  <div class="steps" aria-hidden="true">
+    <span class="on">1 · Details</span><span class="on">2 · Documents</span><span class="on">3 · Payment</span><span id="stepDone">4 · Confirmed</span>
+  </div>
+
+  <div id="demoBanner" class="alert demo">Demo mode: payment gateway not yet connected. Submitting will only show a sample confirmation.</div>
+
+  <form id="appForm" novalidate>
+
+    <!-- ===== 1. PROGRAMME ===== -->
+    <fieldset>
+      <legend>1. Programme</legend>
+      <div class="grid">
+        <div class="field full">
+          <label>Course</label>
+          <input type="text" name="course" value="3-Day Hands-On Training in Basic Laparoscopic Surgery & Observership in Advanced Laparoscopy" readonly>
+        </div>
+        <div class="field full">
+          <label for="batch" class="req">Preferred batch</label>
+          <select id="batch" name="batch" required></select>
+          <div class="hint">Seats are allotted on a first-come, first-served basis.</div>
+          <div class="err">Please select a batch.</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- ===== 2. PERSONAL ===== -->
+    <fieldset>
+      <legend>2. Personal details</legend>
+      <div class="grid">
+        <div class="field full">
+          <label for="fullName" class="req">Full name (as on degree certificate)</label>
+          <input id="fullName" name="full_name" type="text" required autocomplete="name" placeholder="Dr. ">
+          <div class="err">Please enter your full name.</div>
+        </div>
+        <div class="field">
+          <label for="gender" class="req">Gender</label>
+          <select id="gender" name="gender" required>
+            <option value="">Select</option><option>Male</option><option>Female</option><option>Other</option><option>Prefer not to say</option>
+          </select>
+          <div class="err">Please select.</div>
+        </div>
+        <div class="field">
+          <label for="dob" class="req">Date of birth</label>
+          <input id="dob" name="dob" type="date" required>
+          <div class="err">Please enter your date of birth.</div>
+        </div>
+        <div class="field">
+          <label for="mobile" class="req">Mobile number</label>
+          <input id="mobile" name="mobile" type="tel" inputmode="numeric" maxlength="10" required placeholder="10-digit mobile">
+          <div class="err">Enter a valid 10-digit Indian mobile number.</div>
+        </div>
+        <div class="field">
+          <label for="whatsapp">WhatsApp number</label>
+          <input id="whatsapp" name="whatsapp" type="tel" inputmode="numeric" maxlength="10" placeholder="If different from mobile">
+          <div class="err">Enter a valid 10-digit number.</div>
+        </div>
+        <div class="field full">
+          <label for="email" class="req">Email</label>
+          <input id="email" name="email" type="email" required autocomplete="email">
+          <div class="hint">Your confirmation and receipt will be sent here.</div>
+          <div class="err">Enter a valid email address.</div>
+        </div>
+        <div class="field full">
+          <label for="address" class="req">Postal address</label>
+          <textarea id="address" name="address" required></textarea>
+          <div class="err">Please enter your address.</div>
+        </div>
+        <div class="field">
+          <label for="city" class="req">City</label>
+          <input id="city" name="city" type="text" required>
+          <div class="err">Required.</div>
+        </div>
+        <div class="field">
+          <label for="state" class="req">State</label>
+          <input id="state" name="state" type="text" required>
+          <div class="err">Required.</div>
+        </div>
+        <div class="field">
+          <label for="pin" class="req">PIN code</label>
+          <input id="pin" name="pin" type="text" inputmode="numeric" maxlength="6" required>
+          <div class="err">Enter a valid 6-digit PIN code.</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- ===== 3. QUALIFICATION ===== -->
+    <fieldset>
+      <legend>3. Qualification &amp; registration</legend>
+      <div class="grid">
+        <div class="field full">
+          <label for="qual" class="req">Postgraduate surgical qualification</label>
+          <select id="qual" name="qualification" required>
+            <option value="">Select</option>
+            <option>MS (General Surgery)</option>
+            <option>DNB (General Surgery)</option>
+            <option value="Other">Other equivalent postgraduate surgical qualification</option>
+          </select>
+          <div class="err">Please select your qualification.</div>
+        </div>
+        <div class="field full hidden" id="qualOtherWrap">
+          <label for="qualOther" class="req">Please specify qualification</label>
+          <input id="qualOther" name="qualification_other" type="text">
+          <div class="err">Please specify your qualification.</div>
+        </div>
+        <div class="field">
+          <label for="inst" class="req">University / institution</label>
+          <input id="inst" name="institution" type="text" required>
+          <div class="err">Required.</div>
+        </div>
+        <div class="field">
+          <label for="pgYear" class="req">Year of passing</label>
+          <input id="pgYear" name="pg_year" type="number" min="1970" max="2030" required>
+          <div class="err">Enter a valid year.</div>
+        </div>
+        <div class="field">
+          <label for="regBody" class="req">Registration council / board</label>
+          <input id="regBody" name="registration_body" type="text" required placeholder="e.g. Assam Medical Council">
+          <div class="err">Required.</div>
+        </div>
+        <div class="field">
+          <label for="regNo" class="req">Registration number</label>
+          <input id="regNo" name="registration_number" type="text" required>
+          <div class="err">Required.</div>
+        </div>
+        <div class="field">
+          <label for="desig" class="req">Current designation</label>
+          <input id="desig" name="designation" type="text" required placeholder="e.g. Consultant Surgeon">
+          <div class="err">Required.</div>
+        </div>
+        <div class="field">
+          <label for="hosp" class="req">Current hospital / workplace</label>
+          <input id="hosp" name="workplace" type="text" required>
+          <div class="err">Required.</div>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- ===== 4. LAPAROSCOPIC BACKGROUND ===== -->
+    <fieldset>
+      <legend>4. Laparoscopic background</legend>
+      <div class="field">
+        <label class="req">Theoretical knowledge of laparoscopic surgery</label>
+        <div class="radio-row" data-group="theory">
+          <label><input type="radio" name="theory_level" value="Basic" required> Basic</label>
+          <label><input type="radio" name="theory_level" value="Good"> Good</label>
+          <label><input type="radio" name="theory_level" value="Advanced"> Advanced</label>
+        </div>
+        <div class="hint">Basic theoretical knowledge is required for this programme.</div>
+        <div class="err">Please select one.</div>
+      </div>
+      <div class="grid">
+        <div class="field">
+          <label for="assisted" class="req">Laparoscopic cases assisted</label>
+          <select id="assisted" name="cases_assisted" required>
+            <option value="">Select</option><option>None</option><option>1–10</option><option>11–50</option><option>More than 50</option>
+          </select>
+          <div class="err">Please select.</div>
+        </div>
+        <div class="field">
+          <label for="performed" class="req">Laparoscopic cases performed</label>
+          <select id="performed" name="cases_performed" required>
+            <option value="">Select</option><option>None</option><option>1–10</option><option>11–50</option><option>More than 50</option>
+          </select>
+          <div class="err">Please select.</div>
+        </div>
+      </div>
+      <div class="field">
+        <label class="req">Have you practised on a box trainer / simulator?</label>
+        <div class="radio-row" data-group="box">
+          <label><input type="radio" name="box_trainer" value="Yes" required> Yes</label>
+          <label><input type="radio" name="box_trainer" value="No"> No</label>
+        </div>
+        <div class="err">Please select one.</div>
+      </div>
+      <div class="field">
+        <label for="courses">Previous laparoscopic courses attended</label>
+        <input id="courses" name="previous_courses" type="text" placeholder="Course name, institute, year">
+      </div>
+      <div class="field">
+        <label for="goals">What do you hope to achieve from this programme?</label>
+        <textarea id="goals" name="goals" maxlength="600"></textarea>
+      </div>
+    </fieldset>
+
+    <!-- ===== 5. ACCOMMODATION ===== -->
+    <fieldset>
+      <legend>5. Accommodation (included in fee)</legend>
+      <div class="field">
+        <label class="req">Do you need accommodation?</label>
+        <div class="radio-row" data-group="stay">
+          <label><input type="radio" name="accommodation" value="Yes" required> Yes</label>
+          <label><input type="radio" name="accommodation" value="No"> No, I will arrange my own</label>
+        </div>
+        <div class="hint">Stay is provided on campus or in a nearby hotel, as allotted by the hospital.</div>
+        <div class="err">Please select one.</div>
+      </div>
+      <div class="grid" id="stayDetails">
+        <div class="field">
+          <label for="arrival">Expected arrival date</label>
+          <input id="arrival" name="arrival_date" type="date">
+        </div>
+        <div class="field">
+          <label for="diet">Food preference</label>
+          <select id="diet" name="food_preference">
+            <option value="">Select</option><option>Vegetarian</option><option>Non-vegetarian</option>
+          </select>
+        </div>
+      </div>
+    </fieldset>
+
+    <!-- ===== 6. DOCUMENTS ===== -->
+    <fieldset>
+      <legend>6. Upload documents</legend>
+      <p class="hint" style="margin-top:0">PDF, JPG or PNG only · maximum 2 MB per file. Clear scans of original documents.</p>
+
+      <div class="field" data-file>
+        <label for="docDegree" class="req">Postgraduate degree certificate</label>
+        <div class="drop"><input id="docDegree" name="doc_pg_degree" type="file" accept=".pdf,.jpg,.jpeg,.png" required><span class="fname"></span></div>
+        <div class="err">Please upload a PDF/JPG/PNG under 2 MB.</div>
+      </div>
+      <div class="field" data-file>
+        <label for="docReg" class="req">Registration certificate</label>
+        <div class="drop"><input id="docReg" name="doc_registration" type="file" accept=".pdf,.jpg,.jpeg,.png" required><span class="fname"></span></div>
+        <div class="err">Please upload a PDF/JPG/PNG under 2 MB.</div>
+      </div>
+      <div class="field" data-file>
+        <label for="docId" class="req">Government photo ID</label>
+        <div class="drop"><input id="docId" name="doc_photo_id" type="file" accept=".pdf,.jpg,.jpeg,.png" required><span class="fname"></span></div>
+        <div class="hint">PAN, passport, driving licence or voter ID. If using Aadhaar, please mask the first 8 digits.</div>
+        <div class="err">Please upload a PDF/JPG/PNG under 2 MB.</div>
+      </div>
+      <div class="field" data-file>
+        <label for="docPhoto" class="req">Passport-size photograph</label>
+        <div class="drop"><input id="docPhoto" name="doc_photo" type="file" accept=".jpg,.jpeg,.png" required><span class="fname"></span></div>
+        <div class="err">Please upload a JPG/PNG under 2 MB.</div>
+      </div>
+      <div class="field" data-file>
+        <label for="docLog">Surgical logbook (optional)</label>
+        <div class="drop"><input id="docLog" name="doc_logbook" type="file" accept=".pdf,.jpg,.jpeg,.png"><span class="fname"></span></div>
+        <div class="err">Please upload a PDF/JPG/PNG under 2 MB.</div>
+      </div>
+    </fieldset>
+
+    <!-- ===== 7. DECLARATION ===== -->
+    <fieldset>
+      <legend>7. Declaration</legend>
+      <div class="check field">
+        <label><input type="checkbox" name="decl_true" required> I confirm that all information and documents submitted are true and correct.</label>
+        <div class="err">Required.</div>
+      </div>
+      <div class="check field">
+        <label><input type="checkbox" name="decl_participation" required> I understand that operative participation is graded and supervised, and decided by faculty case by case in the interest of patient safety.</label>
+        <div class="err">Required.</div>
+      </div>
+      <div class="check field">
+        <label><input type="checkbox" name="decl_refund" required> I have read the <a href="https://dewcarehospital.com/training/courses" target="_blank" rel="noopener">fee and refund policy</a>, including the full refund if my application is found ineligible.</label>
+        <div class="err">Required.</div>
+      </div>
+      <div class="check field">
+        <label><input type="checkbox" name="decl_consent" required> I consent to Dew Care Hospital processing my personal data and documents for the purpose of this training programme.</label>
+        <div class="err">Required.</div>
+      </div>
+    </fieldset>
+
+    <!-- ===== 8. PAYMENT ===== -->
+    <fieldset>
+      <legend>8. Payment</legend>
+      <div class="summary">
+        <table>
+          <tr><td>Course fee (incl. accommodation)</td><td id="feeBase">₹15,000</td></tr>
+          <tr id="gstRow" class="hidden"><td>GST</td><td id="feeGst">₹0</td></tr>
+          <tr class="total"><td>Total payable now</td><td id="feeTotal">₹15,000</td></tr>
+        </table>
+      </div>
+      <div id="formError" class="alert err-box" role="alert"></div>
+      <button type="submit" class="btn" id="payBtn">Submit &amp; Pay ₹15,000</button>
+      <p class="note">Secure payment via Razorpay · UPI, cards, net banking accepted.<br>Your seat is confirmed only after successful payment.</p>
+    </fieldset>
+  </form>
+
+  <section id="success" aria-live="polite">
+    <div class="tick">✓</div>
+    <h2 style="margin:0 0 6px">Application received</h2>
+    <p>Your Application ID is <code id="appId">—</code></p>
+    <p>Payment reference: <strong id="payRef">—</strong></p>
+    <p class="hint">A confirmation has been sent to your email. Our training coordinator will verify your documents and contact you within 2 working days.</p>
+    <p class="hint">Enquiries: 7086803380 · <a href="https://wa.me/917086803380">WhatsApp</a></p>
+  </section>
+
+</div>
+
+<script>
+/* =========================== CONFIG =========================== */
+const CONFIG = {
+  razorpayKeyId: "YOUR_RAZORPAY_KEY_ID", // Set public Key ID only; never add the secret
+  submitUrl: "https://backend-dew-c2to.onrender.com/api/training/applications", // POST multipart
+  verifyUrl: "https://backend-dew-c2to.onrender.com/api/training/payments/verify",
+  batchesUrl: "https://backend-dew-c2to.onrender.com/api/training/applications/batches",
+  feeInRupees: 15000,
+  gstPercent: 0,                // set to 18 if GST applies (confirm with accountant)
+  maxFileMB: 2,
+  batches: [                    // fallback list if batchesUrl is empty
+    { id: "2026-12", label: "10–12 December 2026", seats_left: 6 },
+    { id: "2027-01", label: "10–12 January 2027", seats_left: 6 },
+    { id: "2027-02", label: "10–12 February 2027", seats_left: 6 }
+  ]
+};
+/* ============================================================== */
+
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
+const form = $("#appForm");
+const demo = false;
+if (demo) $("#demoBanner").classList.add("show");
+
+const inr = n => "₹" + Math.round(n).toLocaleString("en-IN");
+const gst = CONFIG.feeInRupees * CONFIG.gstPercent / 100;
+const total = CONFIG.feeInRupees + gst;
+$("#feeBase").textContent = inr(CONFIG.feeInRupees);
+if (CONFIG.gstPercent > 0) { $("#gstRow").classList.remove("hidden"); $("#feeGst").textContent = inr(gst) + ` (${CONFIG.gstPercent}%)`; }
+$("#feeTotal").textContent = inr(total);
+$("#payBtn").textContent = `Submit & Pay ${inr(total)}`;
+
+/* ---- Batches ---- */
+function renderBatches(list) {
+  const sel = $("#batch");
+  sel.innerHTML = '<option value="">Select a batch</option>';
+  list.forEach(b => {
+    const o = document.createElement("option");
+    o.value = b.id;
+    const full = Number(b.seats_left) <= 0;
+    o.textContent = `${b.label} — ${full ? "Full" : b.seats_left + " seat" + (b.seats_left == 1 ? "" : "s") + " left"}`;
+    o.disabled = full;
+    sel.appendChild(o);
+  });
+}
+if (CONFIG.batchesUrl) {
+  fetch(CONFIG.batchesUrl).then(r => r.json()).then(renderBatches).catch(() => renderBatches(CONFIG.batches));
+} else renderBatches(CONFIG.batches);
+
+/* ---- Conditional fields ---- */
+$("#qual").addEventListener("change", e => {
+  const other = e.target.value === "Other";
+  $("#qualOtherWrap").classList.toggle("hidden", !other);
+  $("#qualOther").required = other;
+});
+$$('input[name="accommodation"]').forEach(r => r.addEventListener("change", () => {
+  $("#stayDetails").classList.toggle("hidden", form.accommodation.value !== "Yes");
+}));
+
+/* ---- File inputs ---- */
+const okTypes = ["application/pdf", "image/jpeg", "image/png"];
+function checkFile(input) {
+  const f = input.files[0];
+  const wrap = input.closest("[data-file]");
+  const name = wrap.querySelector(".fname");
+  if (!f) { name.textContent = ""; return !input.required; }
+  const ok = okTypes.includes(f.type) && f.size <= CONFIG.maxFileMB * 1024 * 1024 &&
+             !(input.accept === ".jpg,.jpeg,.png" && f.type === "application/pdf");
+  name.textContent = ok ? `✓ ${f.name} (${(f.size / 1024 / 1024).toFixed(2)} MB)` : "";
+  return ok;
+}
+$$('input[type=file]').forEach(i => i.addEventListener("change", () => {
+  const ok = checkFile(i);
+  i.closest(".field").classList.toggle("invalid", !ok);
+}));
+
+/* ---- Validation ---- */
+const rules = {
+  mobile: v => /^[6-9]\d{9}$/.test(v),
+  whatsapp: v => v === "" || /^[6-9]\d{9}$/.test(v),
+  email: v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v),
+  pin: v => /^[1-9]\d{5}$/.test(v),
+  pg_year: v => +v >= 1970 && +v <= new Date().getFullYear()
+};
+function validate() {
+  let firstBad = null;
+  $$(".field", form).forEach(field => {
+    let ok = true;
+    const inputs = $$("input,select,textarea", field).filter(el => !el.readOnly && !el.closest(".hidden"));
+    if (!inputs.length) return;
+    const first = inputs[0];
+    if (first.type === "radio") ok = !first.required || inputs.some(r => r.checked);
+    else if (first.type === "checkbox") ok = !first.required || first.checked;
+    else if (first.type === "file") ok = checkFile(first);
+    else {
+      const v = first.value.trim();
+      if (first.required && !v) ok = false;
+      else if (rules[first.name]) ok = rules[first.name](v);
+    }
+    field.classList.toggle("invalid", !ok);
+    if (!ok && !firstBad) firstBad = field;
+  });
+  if (firstBad) firstBad.scrollIntoView({ behavior: "smooth", block: "center" });
+  return !firstBad;
+}
+form.addEventListener("input", e => {
+  const f = e.target.closest(".field");
+  if (f && f.classList.contains("invalid")) f.classList.remove("invalid");
+});
+
+/* ---- Submit -> Pay -> Verify ---- */
+function showError(msg) { const b = $("#formError"); b.textContent = msg; b.classList.add("show"); }
+function busy(on) { const b = $("#payBtn"); b.disabled = on; b.textContent = on ? "Please wait…" : `Submit & Pay ${inr(total)}`; }
+function done(appId, payRef) {
+  form.style.display = "none";
+  $("#appId").textContent = appId;
+  $("#payRef").textContent = payRef;
+  $("#success").style.display = "block";
+  $("#stepDone").classList.add("on");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  $("#formError").classList.remove("show");
+  if (!validate()) { showError("Please correct the highlighted fields."); return; }
+
+  if (demo) { done("DCH-DEMO-" + Date.now().toString().slice(-6), "Demo – no payment taken"); return; }
+
+  busy(true);
+  try {
+    // 1) Save application + documents, server creates Razorpay order
+    const res = await fetch(CONFIG.submitUrl, { method: "POST", body: new FormData(form) });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message || "Could not submit your application.");
+    const { application_id, order_id, amount, key_id } = data;
+
+    // 2) Open Razorpay Checkout
+    const rzp = new Razorpay({
+      key: key_id || CONFIG.razorpayKeyId,
+      amount: amount,                       // in paise, from server
+      currency: "INR",
+      order_id: order_id,
+      name: "Dew Care Hospital & Research Centre",
+      description: "3-Day Laparoscopic Training – Course Fee",
+      prefill: { name: form.full_name.value, email: form.email.value, contact: form.mobile.value },
+      notes: { application_id, batch: form.batch.value },
+      theme: { color: "#0f766e" },
+      handler: async resp => {
+        // 3) Server verifies signature and marks application PAID
+        try {
+          const v = await fetch(CONFIG.verifyUrl, {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ application_id, ...resp })
+          });
+          const vd = await v.json();
+          if (!v.ok) throw new Error(vd.message || "Payment verification failed.");
+          done(application_id, resp.razorpay_payment_id);
+        } catch (err) {
+          busy(false);
+          showError(err.message + " If money was debited, please call 7086803380 with Application ID " + application_id + ".");
+        }
+      },
+      modal: { ondismiss: () => { busy(false); showError("Payment was not completed. Your seat is not confirmed. You can try again."); } }
+    });
+    rzp.on("payment.failed", r => { busy(false); showError("Payment failed: " + (r.error && r.error.description || "please try again.")); });
+    rzp.open();
+  } catch (err) {
+    busy(false);
+    showError(err.message);
+  }
+});
+</script>
+</body>
+</html>
