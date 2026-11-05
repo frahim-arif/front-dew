@@ -4,17 +4,122 @@
   box-sizing: border-box;
 }
 
+/* ===== Pink + Brown theme (Tailwind v4) =====
+   Page me use hui emerald / cyan / slate / gray / amber classes ke shades
+   yahan override hote hain, isliye page.jsx ko badalna nahi padega. */
+@theme {
+  /* emerald -> raspberry pink */
+  --color-emerald-50: #fff1f6;
+  --color-emerald-100: #ffe3ee;
+  --color-emerald-200: #ffc7dd;
+  --color-emerald-300: #fba0c3;
+  --color-emerald-400: #f56d9f;
+  --color-emerald-500: #e8417d;
+  --color-emerald-600: #d02a68;
+  --color-emerald-700: #b01c57;
+  --color-emerald-800: #8f1a4a;
+  --color-emerald-900: #72173d;
+  --color-emerald-950: #430a23;
+
+  /* cyan -> chocolate brown */
+  --color-cyan-50: #fbf4ef;
+  --color-cyan-100: #f5e6dc;
+  --color-cyan-200: #e9cdbb;
+  --color-cyan-300: #d6ac92;
+  --color-cyan-400: #bc8566;
+  --color-cyan-500: #9e6648;
+  --color-cyan-600: #82503a;
+  --color-cyan-700: #6a3f2f;
+  --color-cyan-800: #573326;
+  --color-cyan-900: #43271d;
+  --color-cyan-950: #27150f;
+
+  /* slate -> warm cocoa */
+  --color-slate-50: #fdf7f4;
+  --color-slate-100: #f7ece6;
+  --color-slate-200: #ecd9cf;
+  --color-slate-300: #dbbdae;
+  --color-slate-400: #b49484;
+  --color-slate-500: #8c6c5d;
+  --color-slate-600: #6e5246;
+  --color-slate-700: #533c33;
+  --color-slate-800: #3b2a23;
+  --color-slate-900: #291b16;
+  --color-slate-950: #190f0b;
+
+  /* gray -> same cocoa */
+  --color-gray-50: #fdf7f4;
+  --color-gray-100: #f7ece6;
+  --color-gray-200: #ecd9cf;
+  --color-gray-300: #dbbdae;
+  --color-gray-400: #b49484;
+  --color-gray-500: #8c6c5d;
+  --color-gray-600: #6e5246;
+  --color-gray-700: #533c33;
+  --color-gray-800: #3b2a23;
+  --color-gray-900: #291b16;
+
+  /* amber -> soft blush */
+  --color-amber-50: #fff3ee;
+  --color-amber-100: #ffe4d8;
+  --color-amber-200: #ffc9b0;
+  --color-amber-300: #f7a889;
+  --color-amber-400: #e88a66;
+  --color-amber-500: #d4694a;
+  --color-amber-600: #b44f35;
+  --color-amber-700: #93402c;
+  --color-amber-800: #773626;
+  --color-amber-900: #6a2f1f;
+
+  /* pink-brown glow shadows */
+  --shadow-lg: 0 12px 30px -8px rgb(143 26 74 / 0.25);
+  --shadow-xl: 0 20px 40px -12px rgb(106 63 47 / 0.35);
+  --shadow-2xl: 0 28px 60px -14px rgb(106 63 47 / 0.45);
+}
+
+:root {
+  --cocoa: #43271d;
+  --cream-pink: #fff6f1;
+}
+
 body {
   margin: 0;
-  background: #f8fafc;
-  color: #0f172a;
+  color: var(--cocoa);
+  background:
+    radial-gradient(900px 500px at 10% -10%, rgb(251 160 195 / 0.35), transparent 60%),
+    radial-gradient(800px 500px at 100% 0%, rgb(188 133 102 / 0.28), transparent 60%),
+    var(--cream-pink);
+  background-attachment: fixed;
 }
 
 html {
   scroll-behavior: smooth;
 }
 
+::selection {
+  background: #f56d9f;
+  color: #fff;
+}
 
+h1, h2, h3 {
+  font-family: "Playfair Display", Georgia, serif;
+  letter-spacing: -0.01em;
+}
+
+/* Hero card: pink -> brown gradient (v4 me class ka naam bg-linear-to-br bhi hota hai,
+   dono cover kiye hain) */
+.bg-gradient-to-br,
+.bg-linear-to-br {
+  background-image: linear-gradient(135deg, #b01c57 0%, #8f1a4a 45%, #573326 100%) !important;
+}
+
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(#e8417d, #82503a);
+  border-radius: 8px;
+}
+
+/* Aapka purana marquee animation (as it is) */
 @keyframes marquee {
   0% {
     transform: translateX(100%);
