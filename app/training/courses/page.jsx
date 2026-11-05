@@ -197,7 +197,7 @@ export default function TrainingCoursesPage() {
     <>
       {/* HERO SECTION */}
 
-      <section className="bg-gradient-to-br from-emerald-700 via-cyan-700 to-sky-900 py-20 md:py-24">
+      {/* <section className="bg-gradient-to-br from-emerald-700 via-cyan-700 to-sky-900 py-20 md:py-24">
         <div className="mx-auto max-w-7xl px-4">
           <div className="mx-auto max-w-4xl text-center">
             <span className="inline-block rounded-full bg-white/20 px-6 py-2 font-bold text-white">
@@ -228,7 +228,7 @@ export default function TrainingCoursesPage() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* LAPAROSCOPIC COURSE DETAILS BUTTON */}
 
