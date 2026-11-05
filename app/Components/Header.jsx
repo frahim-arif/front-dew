@@ -418,7 +418,7 @@ Message: ${message || "Please call me back."}`
                     </Link>
 
                     <Link
-                      href="/training/course-files"
+                      href="/training/login"
                       className="
                         block
                         px-5
@@ -430,24 +430,10 @@ Message: ${message || "Please call me back."}`
                         hover:text-emerald-700
                       "
                     >
-                      Courses Files
+                      Login
                     </Link>
 
-                    <Link
-                      href="/training/course-videos"
-                      className="
-                        block
-                        px-5
-                        py-3
-                        text-sm
-                        font-semibold
-                        text-slate-700
-                        hover:bg-emerald-50
-                        hover:text-emerald-700
-                      "
-                    >
-                      Courses Videos
-                    </Link>
+                    
                   </div>
                 </div>
               ) : (
