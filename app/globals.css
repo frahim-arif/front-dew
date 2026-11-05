@@ -106,13 +106,6 @@ h1, h2, h3 {
   letter-spacing: -0.01em;
 }
 
-/* Hero card: pink -> brown gradient (v4 me class ka naam bg-linear-to-br bhi hota hai,
-   dono cover kiye hain) */
-.bg-gradient-to-br,
-.bg-linear-to-br {
-  background-image: linear-gradient(135deg, #b01c57 0%, #8f1a4a 45%, #573326 100%) !important;
-}
-
 ::-webkit-scrollbar { width: 10px; }
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(#e8417d, #82503a);
