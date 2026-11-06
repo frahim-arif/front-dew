@@ -10,24 +10,12 @@ const nextConfig: NextConfig = {
         port: "5000",
         pathname: "/uploads/**",
       },
-
-      // Production backend (Render)
-      // {
-      //   protocol: "https",
-      //   hostname: "your-backend.onrender.com",
-      //   pathname: "/uploads/**",
-      // },
-    ],
-  },
-
-  async redirects() {
-    return [
       {
-        source: "/appointment/success",
-        destination: "/",
-        permanent: false,
+        protocol: "https",
+        hostname: "backend-dew-c2to.onrender.com",
+        pathname: "/uploads/**",
       },
-    ];
+    ],
   },
 };
 

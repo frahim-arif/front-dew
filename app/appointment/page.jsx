@@ -2,7 +2,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
 import { siteInfo } from "../data/siteData";
 
 const API_URL =
@@ -36,59 +35,6 @@ const getEmptyForm = () => ({
   message: "",
 });
 
-const loadRazorpayScript = () =>
-  new Promise((resolve) => {
-    if (typeof window === "undefined") {
-      resolve(false);
-      return;
-    }
-
-    if (window.Razorpay) {
-      resolve(true);
-      return;
-    }
-
-    const scriptUrl = "https://checkout.razorpay.com/v1/checkout.js";
-    let script = document.querySelector(`script[src="${scriptUrl}"]`);
-
-    if (script) {
-      if (script.dataset.loaded === "true" && window.Razorpay) {
-        resolve(true);
-        return;
-      }
-
-      const onLoad = () => {
-        cleanup();
-        resolve(!!window.Razorpay);
-      };
-
-      const onError = () => {
-        cleanup();
-        resolve(false);
-      };
-
-      const cleanup = () => {
-        script.removeEventListener("load", onLoad);
-        script.removeEventListener("error", onError);
-      };
-
-      script.addEventListener("load", onLoad);
-      script.addEventListener("error", onError);
-      return;
-    }
-
-    script = document.createElement("script");
-    script.src = scriptUrl;
-    script.async = true;
-    script.onload = () => {
-      script.dataset.loaded = "true";
-      resolve(!!window.Razorpay);
-    };
-    script.onerror = () => resolve(false);
-
-    document.head.appendChild(script);
-  });
-
 const inputClass =
   "w-full rounded-xl border border-slate-200 bg-white px-4 py-3.5 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-600/10 disabled:cursor-not-allowed disabled:bg-slate-100";
 
@@ -96,20 +42,11 @@ const labelClass =
   "mb-2 block text-sm font-semibold text-slate-700";
 
 export default function AppointmentPage() {
-  const router = useRouter();
-
   const [doctors, setDoctors] = useState([]);
   const [loadingDoctors, setLoadingDoctors] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
   const [form, setForm] = useState(getEmptyForm());
-
-  // Load Razorpay before the user submits the form.
-  useEffect(() => {
-    loadRazorpayScript().catch((error) => {
-      console.error("RAZORPAY PRELOAD ERROR:", error);
-    });
-  }, []);
 
   // Fetch active doctors.
   useEffect(() => {
@@ -217,31 +154,6 @@ export default function AppointmentPage() {
     });
   };
 
-  const markPaymentFailed = async ({
-    appointmentId,
-    razorpayOrderId,
-    errorCode = "",
-    errorDescription = "",
-  }) => {
-    try {
-      const response = await fetch(`${API_URL}/payments/failed`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          appointmentId,
-          razorpay_order_id: razorpayOrderId,
-          reason: `${errorCode}: ${errorDescription}`.trim(),
-        }),
-      });
-
-      if (!response.ok) {
-        console.error("Failed-payment API returned:", response.status);
-      }
-    } catch (error) {
-      console.error("FAILED PAYMENT UPDATE ERROR:", error);
-    }
-  };
-
   const handleSubmit = async (event) => {
     event.preventDefault();
 
@@ -300,41 +212,35 @@ export default function AppointmentPage() {
       return;
     }
 
-    
-if (
-  String(selectedDoctor.status || "").trim().toLowerCase() !== "active" ||
-  selectedDoctor.opdAvailable === false
-) {
-  setMessage({
-    type: "error",
-    text: "Selected doctor is currently unavailable.",
-  });
-  return;
-}
+    if (
+      String(selectedDoctor.status || "").trim().toLowerCase() !== "active" ||
+      selectedDoctor.opdAvailable === false
+    ) {
+      setMessage({
+        type: "error",
+        text: "Selected doctor is currently unavailable.",
+      });
+      return;
+    }
 
-if (
-  !Number.isFinite(Number(selectedDoctor.opdFee)) ||
-  Number(selectedDoctor.opdFee) <= 0
-) {
-  setMessage({
-    type: "error",
-    text: "Is doctor ki OPD fee set nahi hai. Please hospital se contact karein.",
-  });
-  return;
-}
-
-
+    if (
+      !Number.isFinite(Number(selectedDoctor.opdFee)) ||
+      Number(selectedDoctor.opdFee) <= 0
+    ) {
+      setMessage({
+        type: "error",
+        text: "Is doctor ki OPD fee set nahi hai. Please hospital se contact karein.",
+      });
+      return;
+    }
 
     setSubmitting(true);
 
     try {
-      // Start script check and appointment creation together.
       setMessage({
         type: "success",
         text: "Appointment prepare ho rahi hai...",
       });
-
-      const razorpayScriptPromise = loadRazorpayScript();
 
       const appointmentData = {
         name: form.name.trim(),
@@ -348,24 +254,17 @@ if (
         date: form.date,
         time: form.time,
         message: form.message.trim(),
-        
       };
 
-      const appointmentResponse = await fetch(
-        `${API_URL}/appointments`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(appointmentData),
-        }
-      );
+      const appointmentResponse = await fetch(`${API_URL}/appointments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(appointmentData),
+      });
 
       const appointmentResult = await appointmentResponse.json();
 
-      if (
-        !appointmentResponse.ok ||
-        !isApiSuccess(appointmentResult)
-      ) {
+      if (!appointmentResponse.ok || !isApiSuccess(appointmentResult)) {
         throw new Error(
           getApiMessage(appointmentResult, "Unable to create appointment.")
         );
@@ -393,14 +292,11 @@ if (
         text: "Secure payment order create ho raha hai...",
       });
 
-      const paymentResponse = await fetch(
-        `${API_URL}/payments/create-order`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ appointmentId }),
-        }
-      );
+      const paymentResponse = await fetch(`${API_URL}/payments/create-order`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ appointmentId }),
+      });
 
       const paymentResult = await paymentResponse.json();
 
@@ -411,165 +307,74 @@ if (
       }
 
       const orderData = getApiData(paymentResult);
-
       const razorpayOrderId =
-        orderData?.orderId ||
-        orderData?.id ||
-        orderData?.order_id;
-
+        orderData?.orderId || orderData?.id || orderData?.order_id;
       const razorpayKey =
         orderData?.keyId ||
         orderData?.key ||
         process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
-
       const razorpayAmount = Number(orderData?.amount);
-const razorpayCurrency = orderData?.currency || "INR";
+      const razorpayCurrency = orderData?.currency || "INR";
 
-if (
-  !razorpayOrderId ||
-  !razorpayKey ||
-  !Number.isSafeInteger(razorpayAmount) ||
-  razorpayAmount <= 0 ||
-  razorpayCurrency !== "INR"
-) {
-  throw new Error(
-    "Payment order response invalid hai. Backend response check karein."
-  );
-}
-
-      if (!razorpayOrderId || !razorpayKey || !razorpayAmount) {
+      if (
+        !razorpayOrderId ||
+        !razorpayKey ||
+        !Number.isSafeInteger(razorpayAmount) ||
+        razorpayAmount <= 0 ||
+        razorpayCurrency !== "INR"
+      ) {
         throw new Error(
-          "Payment order response incomplete hai. Backend response check karein."
+          "Payment order response invalid hai. Backend response check karein."
         );
       }
 
-      // If the script was not preloaded successfully, wait for it here.
-      const razorpayLoaded = await razorpayScriptPromise;
-
-      if (!razorpayLoaded || !window.Razorpay) {
-        throw new Error(
-          "Razorpay load nahi ho saka. Internet connection check karein."
-        );
-      }
+      // Razorpay Hosted Checkout callback/cancel endpoints.
+      const callbackUrl = `${API_URL}/payments/hosted-callback`;
+      const cancelUrl = `${API_URL}/payments/hosted-cancel?appointmentId=${encodeURIComponent(appointmentId)}`;
 
       setMessage({
         type: "success",
-        text: "Payment window open ho raha hai...",
+        text: "Secure Razorpay payment page par redirect ho raha hai...",
       });
 
-      const razorpayOptions = {
-        key: razorpayKey,
-        amount: razorpayAmount,
+      // Hosted Checkout uses a normal HTML POST form, not checkout.js.
+      const checkoutForm = document.createElement("form");
+      checkoutForm.method = "POST";
+      checkoutForm.action =
+        "https://api.razorpay.com/v1/checkout/embedded";
+      checkoutForm.style.display = "none";
+
+      const fields = {
+        key_id: razorpayKey,
+        amount: String(razorpayAmount),
         currency: razorpayCurrency,
-        name: "Dew Care Hospital",
-        description: `Appointment with ${selectedDoctor.name}`,
         order_id: razorpayOrderId,
-
-        prefill: {
-          name: form.name.trim(),
-          email: form.email.trim(),
-          contact: form.phone.trim(),
-        },
-
-        notes: {
-          appointmentId: String(appointmentId),
-          doctorId: String(selectedDoctor._id),
-          doctorName: selectedDoctor.name,
-          appointmentDate: form.date,
-          appointmentTime: form.time,
-        },
-
-        theme: { color: "#08745b" },
-
-        modal: {
-          confirm_close: true,
-          ondismiss: () => {
-            setSubmitting(false);
-            setMessage({
-              type: "error",
-              text:
-                "Payment window close hui. Dobara payment karne se pehle appointment ka payment status check karein.",
-            });
-          },
-        },
-
-        handler: async (razorpayResponse) => {
-          try {
-            setMessage({
-              type: "success",
-              text: "Payment receive hui. Verification chal rahi hai...",
-            });
-
-            const verifyResponse = await fetch(
-              `${API_URL}/payments/verify`,
-              {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  appointmentId,
-                  razorpay_order_id: razorpayResponse.razorpay_order_id,
-                  razorpay_payment_id: razorpayResponse.razorpay_payment_id,
-                  razorpay_signature: razorpayResponse.razorpay_signature,
-                }),
-              }
-            );
-
-            const verifyResult = await verifyResponse.json();
-
-            if (!verifyResponse.ok || !isApiSuccess(verifyResult)) {
-              throw new Error(
-                getApiMessage(verifyResult, "Payment verification failed.")
-              );
-            }
-
-            setMessage({
-              type: "success",
-              text: "Appointment booked successfully! Payment received.",
-            });
-
-            setForm(getEmptyForm());
-
-            router.push(
-              `/appointment/success?id=${encodeURIComponent(appointmentId)}`
-            );
-          } catch (error) {
-            console.error("PAYMENT VERIFY ERROR:", error);
-
-            setMessage({
-              type: "error",
-              text:
-                error.message ||
-                "Payment verification failed. Payment status check karein before retrying.",
-            });
-          } finally {
-            setSubmitting(false);
-          }
-        },
+        name: "Dew Care Hospital & Research Centre",
+        description: `Appointment with ${selectedDoctor.name}`,
+        "prefill[name]": form.name.trim(),
+        "prefill[contact]": form.phone.trim(),
+        "prefill[email]": form.email.trim(),
+        "notes[appointmentId]": String(appointmentId),
+        "notes[doctorId]": String(selectedDoctor._id),
+        "notes[doctorName]": String(selectedDoctor.name),
+        "notes[appointmentDate]": form.date,
+        "notes[appointmentTime]": form.time,
+        callback_url: callbackUrl,
+        cancel_url: cancelUrl,
       };
 
-      const razorpay = new window.Razorpay(razorpayOptions);
-
-      razorpay.on("payment.failed", async (response) => {
-        console.error("RAZORPAY PAYMENT FAILED:", response);
-
-        const errorCode = response?.error?.code || "PAYMENT_FAILED";
-        const errorDescription =
-          response?.error?.description || "Razorpay payment failed.";
-
-        await markPaymentFailed({
-          appointmentId,
-          razorpayOrderId,
-          errorCode,
-          errorDescription,
-        });
-
-        setSubmitting(false);
-        setMessage({ type: "error", text: errorDescription });
+      Object.entries(fields).forEach(([name, value]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = name;
+        input.value = value;
+        checkoutForm.appendChild(input);
       });
 
-      razorpay.open();
+      document.body.appendChild(checkoutForm);
+      checkoutForm.submit();
     } catch (error) {
-      console.error("APPOINTMENT PAYMENT ERROR:", error);
+      console.error("APPOINTMENT HOSTED CHECKOUT ERROR:", error);
 
       setMessage({
         type: "error",
@@ -1002,7 +807,7 @@ if (
                       </p>
                     </div>
                     <p className="mt-3 text-xs leading-5 text-slate-500">
-                      Payment is processed through Razorpay secure checkout.
+                      Payment is processed through Razorpay Hosted Checkout.
                     </p>
                   </div>
                 )}

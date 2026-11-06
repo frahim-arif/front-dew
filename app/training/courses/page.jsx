@@ -195,40 +195,7 @@ export default function TrainingCoursesPage() {
 
   return (
     <>
-      {/* HERO SECTION */}
-
-      {/* <section className="bg-gradient-to-br from-emerald-700 via-cyan-700 to-sky-900 py-20 md:py-24">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="mx-auto max-w-4xl text-center">
-            <span className="inline-block rounded-full bg-white/20 px-6 py-2 font-bold text-white">
-              Dew Care Hospital Training
-            </span>
-
-            <h1 className="mt-6 text-4xl font-black text-white md:text-5xl">
-              Healthcare Training Courses
-            </h1>
-
-            <p className="mx-auto mt-5 max-w-3xl text-lg text-cyan-100">
-              Choose the right healthcare training program and start your
-              professional career.
-            </p>
-
-            <div className="mx-auto mt-10 max-w-xl">
-              <div className="flex items-center rounded-2xl bg-white px-5 shadow-xl">
-                <Search className="shrink-0 text-gray-400" size={22} />
-
-                <input
-                  type="text"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search Course..."
-                  className="w-full bg-transparent px-4 py-5 text-slate-900 outline-none"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section> */}
+     
 
       {/* LAPAROSCOPIC COURSE DETAILS BUTTON */}
 
