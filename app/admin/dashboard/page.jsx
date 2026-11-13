@@ -633,6 +633,12 @@ export default function AdminDashboard() {
       desc: "Update hospital details",
       color: "#6366F1",
     },
+    {
+  title: "Payment Transactions",
+  href: "/admin/payment-transactions",
+  desc: "View payments and audit records",
+  color: "#0F766E",
+},
   ];
 
   /* =========================================================
