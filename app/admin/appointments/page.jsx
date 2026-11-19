@@ -149,6 +149,18 @@ export default function AdminAppointmentsPage() {
 
   const notify = (type, text) => setToast({ type, text });
 
+  const copyOrderId = async (orderId) => {
+    if (!orderId) return;
+
+    try {
+      await navigator.clipboard.writeText(orderId);
+      notify("success", "Razorpay Order ID copied.");
+    } catch (error) {
+      console.error("Copy Order ID error:", error);
+      notify("error", "Unable to copy Order ID. Please copy it manually.");
+    }
+  };
+
   useEffect(() => {
     if (!toast) return;
     const t = setTimeout(() => setToast(null), 3200);
@@ -195,6 +207,7 @@ export default function AdminAppointmentsPage() {
         item.department,
         item.date,
         item.status,
+        item.razorpayOrderId,
         doctorName,
         doctorSpecialist,
       ]
@@ -413,6 +426,7 @@ export default function AdminAppointmentsPage() {
                     <th className="px-5 py-3 font-semibold">Phone</th>
                     <th className="px-5 py-3 font-semibold">Department</th>
                     <th className="px-5 py-3 font-semibold">Date</th>
+                    <th className="px-5 py-3 font-semibold">Razorpay Order ID</th>
                     <th className="px-5 py-3 font-semibold">Doctor</th>
                     <th className="px-5 py-3 font-semibold">Status</th>
                     <th className="px-5 py-3 font-semibold">Actions</th>
@@ -449,6 +463,30 @@ export default function AdminAppointmentsPage() {
                       <td className="px-5 py-4 text-slate-700">{getDoctorDepartment(a)}</td>
 
                       <td className="whitespace-nowrap px-5 py-4 text-slate-700">{a.date}</td>
+
+                      <td className="px-5 py-4">
+                        {a.razorpayOrderId ? (
+                          <div className="flex max-w-[230px] items-center gap-2">
+                            <span
+                              title={a.razorpayOrderId}
+                              className="truncate font-mono text-xs font-semibold text-slate-700"
+                            >
+                              {a.razorpayOrderId}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => copyOrderId(a.razorpayOrderId)}
+                              title="Copy Razorpay Order ID"
+                              aria-label="Copy Razorpay Order ID"
+                              className="shrink-0 rounded-lg bg-teal-50 px-2 py-1 text-xs font-bold text-teal-700 hover:bg-teal-100"
+                            >
+                              Copy
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-slate-400">Not available</span>
+                        )}
+                      </td>
 
                       <td className="px-5 py-4">
                         <p className="font-bold text-[#04222a]">{getDoctorName(a)}</p>
@@ -505,6 +543,28 @@ export default function AdminAppointmentsPage() {
                       <Icon name="calendar" className="h-4 w-4 text-teal-600" />
                       {a.date}
                     </p>
+                    <div className="flex items-start gap-2">
+                      <Icon name="file" className="mt-0.5 h-4 w-4 shrink-0 text-teal-600" />
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold text-slate-500">Razorpay Order ID</p>
+                        {a.razorpayOrderId ? (
+                          <div className="mt-1 flex flex-wrap items-center gap-2">
+                            <span className="break-all font-mono text-xs font-semibold text-slate-700">
+                              {a.razorpayOrderId}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => copyOrderId(a.razorpayOrderId)}
+                              className="rounded-lg bg-teal-50 px-2 py-1 text-xs font-bold text-teal-700 hover:bg-teal-100"
+                            >
+                              Copy
+                            </button>
+                          </div>
+                        ) : (
+                          <p className="text-xs text-slate-400">Not available</p>
+                        )}
+                      </div>
+                    </div>
                     <p className="flex items-center gap-2">
                       <Icon name="doctor" className="h-4 w-4 text-teal-600" />
                       {getDoctorName(a)}
@@ -588,6 +648,7 @@ export default function AdminAppointmentsPage() {
                   rows: [
                     ["Department", getDoctorDepartment(selected)],
                     ["Date", selected.date],
+                    ["Razorpay Order ID", selected.razorpayOrderId || "Not available"],
                   ],
                 },
               ].map((section) => (
