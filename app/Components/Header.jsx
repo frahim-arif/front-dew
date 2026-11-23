@@ -596,7 +596,7 @@ Message: ${message || "Please call me back."}`
 
                   <div className="flex-1">
                     <h4 className="text-[15px] font-bold text-[#2F3A2F]">
-                      Dew Care Hospital & Research Centre
+                      Deww Care Hospital & Research Centre
                     </h4>
 
                     <p className="mt-1 text-sm text-[#6B705B]">
