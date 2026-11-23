@@ -1,5 +1,5 @@
 
-import LegalPage from "@/components/LegalPage";
+import LegalPage from "./Components/LegalPage";
 
 export const metadata = {
   title: "Our Services | Dew Care Hospital & Research Centre",

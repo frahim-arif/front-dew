@@ -1,5 +1,5 @@
 
-import LegalPage from "@/components/LegalPage";
+import LegalPage from "./Components/LegalPage";
 
 export const metadata = {
   title: "Refund and Cancellation Policy | Dew Care Hospital & Research Centre",
