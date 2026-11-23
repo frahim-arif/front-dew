@@ -246,98 +246,59 @@ Message: ${message || "Please call me back."}`
                 /* ==================================================
                    ABOUT DROPDOWN
                 ================================================== */
-                <div key={link.href} className="group relative">
-                  <button
-                    type="button"
-                    className="
-                      flex
-                      items-center
-                      gap-1
-                      text-sm
-                      font-bold
-                      text-slate-700
-                      transition
-                      hover:text-emerald-700
-                    "
-                  >
-                    About
+                
+<div
+  className="
+    invisible
+    absolute
+    left-0
+    top-full
+    mt-3
+    w-72
+    rounded-2xl
+    border
+    border-emerald-100
+    bg-white
+    py-2
+    opacity-0
+    shadow-2xl
+    transition-all
+    duration-300
+    group-hover:visible
+    group-hover:opacity-100
+    group-focus-within:visible
+    group-focus-within:opacity-100
+  "
+>
+  <Link href="/about" className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
+    About Hospital
+  </Link>
 
-                    <ChevronDown
-                      size={16}
-                      className="transition group-hover:rotate-180"
-                    />
-                  </button>
+  <Link href="/gallery" className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
+    Gallery
+  </Link>
 
-                  <div
-                    className="
-                      invisible
-                      absolute
-                      left-0
-                      top-full
-                      mt-3
-                      w-56
-                      rounded-2xl
-                      border
-                      border-emerald-100
-                      bg-white
-                      py-2
-                      opacity-0
-                      shadow-2xl
-                      transition-all
-                      duration-300
-                      group-hover:visible
-                      group-hover:opacity-100
-                    "
-                  >
-                    <Link
-                      href="/about"
-                      className="
-                        block
-                        px-5
-                        py-3
-                        text-sm
-                        font-semibold
-                        text-slate-700
-                        hover:bg-emerald-50
-                        hover:text-emerald-700
-                      "
-                    >
-                      About Hospital
-                    </Link>
+  <Link href="/contact" className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
+    Contact Us
+  </Link>
 
-                    <Link
-                      href="/gallery"
-                      className="
-                        block
-                        px-5
-                        py-3
-                        text-sm
-                        font-semibold
-                        text-slate-700
-                        hover:bg-emerald-50
-                        hover:text-emerald-700
-                      "
-                    >
-                      Gallery
-                    </Link>
+  <Link href="/our-services" className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
+    Our Services
+  </Link>
 
-                    <Link
-                      href="/contact"
-                      className="
-                        block
-                        px-5
-                        py-3
-                        text-sm
-                        font-semibold
-                        text-slate-700
-                        hover:bg-emerald-50
-                        hover:text-emerald-700
-                      "
-                    >
-                      Contact Us
-                    </Link>
-                  </div>
-                </div>
+  <Link href="/privacy-policy" className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
+    Privacy Policy
+  </Link>
+
+  <Link href="/refund-and-cancellation-policy" className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
+    Refund & Cancellation Policy
+  </Link>
+
+  <Link href="/terms-and-conditions" className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
+    Terms & Conditions
+  </Link>
+</div>
+
               ) : link.name === "Training" ? (
                 /* ==================================================
                    TRAINING DROPDOWN
