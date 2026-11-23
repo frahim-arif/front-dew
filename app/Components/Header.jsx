@@ -799,67 +799,53 @@ Message: ${message || "Please call me back."}`
                     </div>
                   </div>
                 ) : link.name === "About" ? (
-                  <div
-                    key={link.href}
-                    className="rounded-xl border border-emerald-100"
-                  >
-                    <div className="px-4 py-3 text-sm font-bold text-slate-700">
-                      About
-                    </div>
+                 
+<div
+  key={link.href}
+  className="rounded-xl border border-emerald-100"
+>
+  <div className="px-4 py-3 text-sm font-bold text-slate-700">
+    About
+  </div>
 
-                    <div className="space-y-1 px-3 pb-3">
-                      <Link
-                        href="/about"
-                        onClick={() => setOpen(false)}
-                        className="
-                          block
-                          rounded-lg
-                          px-3
-                          py-2
-                          text-sm
-                          text-slate-700
-                          hover:bg-emerald-50
-                          hover:text-emerald-700
-                        "
-                      >
-                        About Hospital
-                      </Link>
+  <div className="space-y-1 px-3 pb-3">
+    <Link href="/about" onClick={() => setOpen(false)}
+      className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
+      About Hospital
+    </Link>
 
-                      <Link
-                        href="/gallery"
-                        onClick={() => setOpen(false)}
-                        className="
-                          block
-                          rounded-lg
-                          px-3
-                          py-2
-                          text-sm
-                          text-slate-700
-                          hover:bg-emerald-50
-                          hover:text-emerald-700
-                        "
-                      >
-                        Gallery
-                      </Link>
+    <Link href="/gallery" onClick={() => setOpen(false)}
+      className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
+      Gallery
+    </Link>
 
-                      <Link
-                        href="/contact"
-                        onClick={() => setOpen(false)}
-                        className="
-                          block
-                          rounded-lg
-                          px-3
-                          py-2
-                          text-sm
-                          text-slate-700
-                          hover:bg-emerald-50
-                          hover:text-emerald-700
-                        "
-                      >
-                        Contact Us
-                      </Link>
-                    </div>
-                  </div>
+    <Link href="/contact" onClick={() => setOpen(false)}
+      className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
+      Contact Us
+    </Link>
+
+    <Link href="/our-services" onClick={() => setOpen(false)}
+      className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
+      Our Services
+    </Link>
+
+    <Link href="/privacy-policy" onClick={() => setOpen(false)}
+      className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
+      Privacy Policy
+    </Link>
+
+    <Link href="/refund-and-cancellation-policy" onClick={() => setOpen(false)}
+      className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
+      Refund & Cancellation Policy
+    </Link>
+
+    <Link href="/terms-and-conditions" onClick={() => setOpen(false)}
+      className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
+      Terms & Conditions
+    </Link>
+  </div>
+</div>
+
                 ) : (
                   <Link
                     key={link.href}
