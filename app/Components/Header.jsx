@@ -8,6 +8,7 @@ import {
   X,
   MessageCircle,
 } from "lucide-react";
+
 import Link from "next/link";
 import { useState } from "react";
 import { siteInfo } from "../data/siteData";
@@ -16,15 +17,6 @@ export default function Header() {
   const [open, setOpen] = useState(false);
   const [locationOpen, setLocationOpen] = useState(false);
   const [callbackOpen, setCallbackOpen] = useState(false);
-
-  const locations = [
-    {
-      id: 1,
-      name: "Dew Care Hospital LLP",
-      address: "Burigaon, Kharupetia, Darrang, Assam",
-      active: true,
-    },
-  ];
 
   const links = [
     { name: "Home", href: "/" },
@@ -35,23 +27,17 @@ export default function Header() {
     { name: "Training", href: "/training" },
   ];
 
-  /*
-   * Hospital phone number
-   * Used for Call and WhatsApp actions.
-   */
+  // Hospital phone number
   const hospitalPhone = String(siteInfo.phone || "");
   const cleanHospitalPhone = hospitalPhone.replace(/\D/g, "");
 
-  /*
-   * Make Indian WhatsApp number safe.
-   * If siteInfo.phone is 10 digit, add 91.
-   * If already contains country code, keep it.
-   */
+  // WhatsApp number
   const whatsappPhone =
     cleanHospitalPhone.length === 10
       ? `91${cleanHospitalPhone}`
       : cleanHospitalPhone;
 
+  // Close menus and open callback modal
   const openCallback = () => {
     setCallbackOpen(true);
     setOpen(false);
@@ -62,14 +48,15 @@ export default function Header() {
     setCallbackOpen(false);
   };
 
+  // Callback form submit
   const handleCallbackSubmit = (e) => {
     e.preventDefault();
 
     const form = e.currentTarget;
 
-    const name = form.name.value.trim();
-    const phone = form.phone.value.trim();
-    const message = form.message.value.trim();
+    const name = form.elements.namedItem("name").value.trim();
+    const phone = form.elements.namedItem("phone").value.trim();
+    const message = form.elements.namedItem("message").value.trim();
 
     if (!name) {
       alert("Please enter your name.");
@@ -81,6 +68,11 @@ export default function Header() {
       return;
     }
 
+    if (!whatsappPhone) {
+      alert("Hospital WhatsApp number is not configured.");
+      return;
+    }
+
     const whatsappMessage = encodeURIComponent(
       `Callback Request - Dew Care Hospital LLP
 
@@ -89,40 +81,63 @@ Mobile: ${phone}
 Message: ${message || "Please call me back."}`
     );
 
-    if (whatsappPhone) {
-      window.open(
-        `https://wa.me/${whatsappPhone}?text=${whatsappMessage}`,
-        "_blank",
-        "noopener,noreferrer"
-      );
-    } else {
-      alert("Hospital WhatsApp number is not configured.");
-    }
+    window.open(
+      `https://wa.me/${whatsappPhone}?text=${whatsappMessage}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
 
     form.reset();
     setCallbackOpen(false);
   };
 
+  // Close mobile menu after navigation
+  const closeMobileMenu = () => {
+    setOpen(false);
+    setLocationOpen(false);
+  };
+
   return (
     <>
-    <style>{`
-      @keyframes callBlink {
-        0%, 100% { background-color: #e30613; box-shadow: 0 0 0 0 rgba(227,6,19,.7); }
-        50%      { background-color: #ff4b57; box-shadow: 0 0 18px 6px rgba(255,75,87,.55); }
-      }
-      .call-blink { animation: callBlink 1s ease-in-out infinite; }
-      .call-blink:hover { animation-play-state: paused; }
-      @media (prefers-reduced-motion: reduce) {
-        .call-blink { animation: none; }
-      }
-    `}</style>
+      {/* Callback button animation */}
+      <style>{`
+        @keyframes callBlink {
+          0%, 100% {
+            background-color: #e30613;
+            box-shadow: 0 0 0 0 rgba(227,6,19,.7);
+          }
+
+          50% {
+            background-color: #ff4b57;
+            box-shadow: 0 0 18px 6px rgba(255,75,87,.55);
+          }
+        }
+
+        .call-blink {
+          animation: callBlink 1s ease-in-out infinite;
+        }
+
+        .call-blink:hover {
+          animation-play-state: paused;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .call-blink {
+            animation: none;
+          }
+        }
+      `}</style>
+
       <header className="sticky top-0 z-50 border-b border-emerald-100 bg-white/95 shadow-xl backdrop-blur-xl">
-        {/* ==================================================
+
+        {/* =========================================
             TOP HELPLINE BAR
-        ================================================== */}
+        ========================================= */}
+
         <div className="bg-[#0b2d68] text-white">
           <div className="mx-auto flex max-w-7xl items-center justify-between">
-            {/* Left Information */}
+
+            {/* Address and Email */}
             <div className="hidden min-w-0 items-center gap-4 px-4 py-2 text-xs font-semibold sm:flex md:text-sm">
               <span className="truncate">
                 📍 {siteInfo.address}
@@ -135,32 +150,32 @@ Message: ${message || "Please call me back."}`
               </span>
             </div>
 
-            {/* Mobile / Desktop Phone CTA */}
+            {/* Phone / Callback Button */}
             <button
-  type="button"
-  onClick={openCallback}
-  className="
-    call-blink
-    group
-    ml-auto
-    flex
-    shrink-0
-    items-center
-    gap-2
-    bg-[#e30613]
-    px-4
-    py-2
-    text-sm
-    font-black
-    text-white
-    transition-all
-    duration-300
-    hover:bg-[#c9000b]
-    sm:px-5
-    md:px-6
-  "
-  aria-label="Request a callback"
->
+              type="button"
+              onClick={openCallback}
+              className="
+                call-blink
+                group
+                ml-auto
+                flex
+                shrink-0
+                items-center
+                gap-2
+                bg-[#e30613]
+                px-4
+                py-2
+                text-sm
+                font-black
+                text-white
+                transition-all
+                duration-300
+                hover:bg-[#c9000b]
+                sm:px-5
+                md:px-6
+              "
+              aria-label="Request a callback"
+            >
               <span
                 className="
                   flex
@@ -187,19 +202,16 @@ Message: ${message || "Please call me back."}`
           </div>
         </div>
 
-        {/* ==================================================
+        {/* =========================================
             MAIN NAVBAR
-        ================================================== */}
+        ========================================= */}
+
         <nav className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-3 py-3 sm:px-4 md:py-4">
-          {/* ==================================================
-              LOGO
-          ================================================== */}
+
+          {/* LOGO */}
           <Link
             href="/"
-            onClick={() => {
-              setOpen(false);
-              setLocationOpen(false);
-            }}
+            onClick={closeMobileMenu}
             className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3 lg:flex-none"
           >
             <div className="relative shrink-0">
@@ -237,170 +249,199 @@ Message: ${message || "Please call me back."}`
             </div>
           </Link>
 
-          {/* ==================================================
-              DESKTOP LINKS
-          ================================================== */}
+          {/* =========================================
+              DESKTOP NAVIGATION
+          ========================================= */}
+
           <div className="hidden items-center gap-6 xl:flex">
-            {links.map((link) =>
-              link.name === "About" ? (
-                /* ==================================================
-                   ABOUT DROPDOWN
-                ================================================== */
-                
-<div
-  className="
-    invisible
-    absolute
-    left-0
-    top-full
-    mt-3
-    w-72
-    rounded-2xl
-    border
-    border-emerald-100
-    bg-white
-    py-2
-    opacity-0
-    shadow-2xl
-    transition-all
-    duration-300
-    group-hover:visible
-    group-hover:opacity-100
-    group-focus-within:visible
-    group-focus-within:opacity-100
-  "
->
-  <Link href="/about" className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
-    About Hospital
-  </Link>
 
-  <Link href="/gallery" className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
-    Gallery
-  </Link>
+            {links.map((link) => {
 
-  <Link href="/contact" className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
-    Contact Us
-  </Link>
-
-  <Link href="/our-services" className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
-    Our Services
-  </Link>
-
-  <Link href="/privacy-policy" className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
-    Privacy Policy
-  </Link>
-
-  <Link href="/refund-and-cancellation-policy" className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
-    Refund & Cancellation Policy
-  </Link>
-
-  <Link href="/terms-and-conditions" className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
-    Terms & Conditions
-  </Link>
-</div>
-
-              ) : link.name === "Training" ? (
-                /* ==================================================
-                   TRAINING DROPDOWN
-                ================================================== */
-                <div key={link.href} className="group relative">
-                  <button
-                    type="button"
-                    className="
-                      flex
-                      items-center
-                      gap-1
-                      text-sm
-                      font-bold
-                      text-slate-700
-                      transition
-                      hover:text-emerald-700
-                    "
-                  >
-                    Training
-
-                    <ChevronDown
-                      size={16}
-                      className="transition group-hover:rotate-180"
-                    />
-                  </button>
-
+              // ABOUT DROPDOWN
+              if (link.name === "About") {
+                return (
                   <div
-                    className="
-                      invisible
-                      absolute
-                      left-0
-                      top-full
-                      mt-3
-                      w-72
-                      rounded-2xl
-                      border
-                      border-emerald-100
-                      bg-white
-                      py-2
-                      opacity-0
-                      shadow-2xl
-                      transition-all
-                      duration-300
-                      group-hover:visible
-                      group-hover:opacity-100
-                    "
+                    key={link.href}
+                    className="group relative"
                   >
-                    <Link
-                      href="/training/application-form"
+                    <button
+                      type="button"
                       className="
-                        block
-                        px-5
-                        py-3
+                        flex
+                        items-center
+                        gap-1
                         text-sm
-                        font-semibold
-                        text-slate-700
-                        hover:bg-emerald-50
+                        font-bold
+                        text-yellow-500
+                        transition
                         hover:text-emerald-700
                       "
+                      aria-haspopup="true"
                     >
-                      Training Application Form
-                    </Link>
+                      About
 
-                    <Link
-                      href="/training/courses"
+                      <ChevronDown
+                        size={16}
+                        className="transition-transform duration-300 group-hover:rotate-180"
+                      />
+                    </button>
+
+                    {/* About Dropdown */}
+                    <div
                       className="
-                        block
-                        px-5
-                        py-3
-                        text-sm
-                        font-semibold
-                        text-slate-700
-                        hover:bg-emerald-50
-                        hover:text-emerald-700
+                        invisible
+                        absolute
+                        left-0
+                        top-full
+                        z-50
+                        w-80
+                        pt-3
+                        opacity-0
+                        transition-all
+                        duration-200
+                        group-hover:visible
+                        group-hover:opacity-100
+                        group-focus-within:visible
+                        group-focus-within:opacity-100
                       "
                     >
-                      Training Courses
-                    </Link>
+                      <div className="overflow-hidden rounded-2xl border border-emerald-100 bg-white py-2 shadow-2xl">
 
-                    <Link
-                      href="/training/login"
-                      className="
-                        block
-                        px-5
-                        py-3
-                        text-sm
-                        font-semibold
-                        text-slate-700
-                        hover:bg-emerald-50
-                        hover:text-emerald-700
-                      "
-                    >
-                      Login
-                    </Link>
+                        <Link
+                          href="/about"
+                          className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          About Hospital
+                        </Link>
 
-                    
+                        <Link
+                          href="/gallery"
+                          className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Gallery
+                        </Link>
+
+                        <Link
+                          href="/contact"
+                          className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Contact Us
+                        </Link>
+
+                        <div className="my-1 border-t border-slate-100" />
+
+                        <Link
+                          href="/our-services"
+                          className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Our Services
+                        </Link>
+
+                        <Link
+                          href="/privacy-policy"
+                          className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Privacy Policy
+                        </Link>
+
+                        <Link
+                          href="/refund-and-cancellation-policy"
+                          className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Refund & Cancellation Policy
+                        </Link>
+
+                        <Link
+                          href="/terms-and-conditions"
+                          className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Terms & Conditions
+                        </Link>
+
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ) : (
-                /* ==================================================
-                   NORMAL LINK
-                ================================================== */
+                );
+              }
+
+              // TRAINING DROPDOWN
+              if (link.name === "Training") {
+                return (
+                  <div
+                    key={link.href}
+                    className="group relative"
+                  >
+                    <button
+                      type="button"
+                      className="
+                        flex
+                        items-center
+                        gap-1
+                        text-sm
+                        font-bold
+                        text-slate-700
+                        transition
+                        hover:text-emerald-700
+                      "
+                      aria-haspopup="true"
+                    >
+                      Training
+
+                      <ChevronDown
+                        size={16}
+                        className="transition-transform duration-300 group-hover:rotate-180"
+                      />
+                    </button>
+
+                    <div
+                      className="
+                        invisible
+                        absolute
+                        left-0
+                        top-full
+                        z-50
+                        w-72
+                        pt-3
+                        opacity-0
+                        transition-all
+                        duration-200
+                        group-hover:visible
+                        group-hover:opacity-100
+                        group-focus-within:visible
+                        group-focus-within:opacity-100
+                      "
+                    >
+                      <div className="overflow-hidden rounded-2xl border border-emerald-100 bg-white py-2 shadow-2xl">
+
+                        <Link
+                          href="/training/application-form"
+                          className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Training Application Form
+                        </Link>
+
+                        <Link
+                          href="/training/courses"
+                          className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Training Courses
+                        </Link>
+
+                        <Link
+                          href="/training/login"
+                          className="block px-5 py-3 text-sm font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Login
+                        </Link>
+
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
+
+              // NORMAL NAVIGATION LINKS
+              return (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -424,14 +465,17 @@ Message: ${message || "Please call me back."}`
                 >
                   {link.name}
                 </Link>
-              )
-            )}
+              );
+            })}
+
           </div>
 
-          {/* ==================================================
+          {/* =========================================
               LOCATION DROPDOWN
-          ================================================== */}
+          ========================================= */}
+
           <div className="relative hidden lg:block">
+
             <button
               type="button"
               onClick={() => setLocationOpen(!locationOpen)}
@@ -457,6 +501,7 @@ Message: ${message || "Please call me back."}`
                 active:shadow-[0_3px_0_#45493B]
               "
               aria-expanded={locationOpen}
+              aria-haspopup="true"
             >
               <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/15">
                 <MapPin size={15} className="text-white" />
@@ -477,6 +522,7 @@ Message: ${message || "Please call me back."}`
                 className="
                   absolute
                   right-0
+                  z-50
                   mt-3
                   w-80
                   overflow-hidden
@@ -487,7 +533,8 @@ Message: ${message || "Please call me back."}`
                   shadow-[0_20px_50px_rgba(0,0,0,.18)]
                 "
               >
-                {/* Header */}
+
+                {/* Location Header */}
                 <div className="bg-gradient-to-r from-[#5C604F] via-[#72755F] to-[#8A8F79] px-6 py-4">
                   <h3 className="text-lg font-bold text-white">
                     Our Locations
@@ -499,10 +546,8 @@ Message: ${message || "Please call me back."}`
                 </div>
 
                 {/* Active Location */}
-                <button
-                  type="button"
+                <div
                   className="
-                    group
                     flex
                     w-full
                     items-start
@@ -512,26 +557,9 @@ Message: ${message || "Please call me back."}`
                     px-6
                     py-5
                     text-left
-                    transition-all
-                    duration-300
-                    hover:bg-[#F8F7F3]
                   "
                 >
-                  <div
-                    className="
-                      flex
-                      h-12
-                      w-12
-                      shrink-0
-                      items-center
-                      justify-center
-                      rounded-2xl
-                      bg-[#5C604F]
-                      shadow-md
-                      transition
-                      group-hover:scale-110
-                    "
-                  >
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#5C604F] shadow-md">
                     <MapPin size={20} className="text-white" />
                   </div>
 
@@ -548,13 +576,11 @@ Message: ${message || "Please call me back."}`
                   <span className="rounded-full bg-green-100 px-3 py-1 text-[11px] font-bold text-green-700">
                     Active
                   </span>
-                </button>
+                </div>
 
-                {/* Opening Soon */}
-                <button
-                  type="button"
+                {/* Upcoming Location */}
+                <div
                   className="
-                    group
                     flex
                     w-full
                     items-start
@@ -562,28 +588,9 @@ Message: ${message || "Please call me back."}`
                     px-6
                     py-5
                     text-left
-                    transition-all
-                    duration-300
-                    hover:bg-[#F8F7F3]
                   "
                 >
-                  <div
-                    className="
-                      flex
-                      h-12
-                      w-12
-                      shrink-0
-                      items-center
-                      justify-center
-                      rounded-2xl
-                      bg-gradient-to-r
-                      from-[#C89B3C]
-                      to-[#B8860B]
-                      shadow-md
-                      transition
-                      group-hover:scale-110
-                    "
-                  >
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-r from-[#C89B3C] to-[#B8860B] shadow-md">
                     <MapPin size={20} className="text-white" />
                   </div>
 
@@ -600,14 +607,16 @@ Message: ${message || "Please call me back."}`
                   <span className="rounded-full bg-yellow-100 px-3 py-1 text-[11px] font-bold text-yellow-700">
                     Opening Soon
                   </span>
-                </button>
+                </div>
+
               </div>
             )}
           </div>
 
-          {/* ==================================================
+          {/* =========================================
               APPOINTMENT BUTTON
-          ================================================== */}
+          ========================================= */}
+
           <Link
             href="/appointment"
             className="
@@ -635,12 +644,15 @@ Message: ${message || "Please call me back."}`
             "
           >
             Book
-            <span className="hidden lg:inline">&nbsp;Appointment</span>
+            <span className="hidden lg:inline">
+              &nbsp;Appointment
+            </span>
           </Link>
 
-          {/* ==================================================
+          {/* =========================================
               MOBILE MENU BUTTON
-          ================================================== */}
+          ========================================= */}
+
           <button
             type="button"
             onClick={() => {
@@ -671,147 +683,160 @@ Message: ${message || "Please call me back."}`
           >
             {open ? "×" : "☰"}
           </button>
+
         </nav>
 
-        {/* ==================================================
+        {/* =========================================
             MOBILE MENU
-        ================================================== */}
+        ========================================= */}
+
         {open && (
           <div className="border-t border-emerald-100 bg-white px-4 py-5 shadow-2xl xl:hidden">
+
             <div className="grid gap-2">
-              {links.map((link) =>
-                link.name === "Training" ? (
-                  <div
-                    key={link.href}
-                    className="rounded-xl border border-emerald-100"
-                  >
-                    <div className="px-4 py-3 text-sm font-bold text-slate-700">
-                      Training
+
+              {links.map((link) => {
+
+                // MOBILE ABOUT MENU
+                if (link.name === "About") {
+                  return (
+                    <div
+                      key={link.href}
+                      className="rounded-xl border border-emerald-100"
+                    >
+                      <div className="px-4 py-3 text-sm font-bold text-slate-700">
+                        About
+                      </div>
+
+                      <div className="space-y-1 px-3 pb-3">
+
+                        <Link
+                          href="/about"
+                          onClick={closeMobileMenu}
+                          className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          About Hospital
+                        </Link>
+
+                        <Link
+                          href="/gallery"
+                          onClick={closeMobileMenu}
+                          className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Gallery
+                        </Link>
+
+                        <Link
+                          href="/contact"
+                          onClick={closeMobileMenu}
+                          className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Contact Us
+                        </Link>
+
+                        <div className="my-1 border-t border-slate-100" />
+
+                        <Link
+                          href="/our-services"
+                          onClick={closeMobileMenu}
+                          className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Our Services
+                        </Link>
+
+                        <Link
+                          href="/privacy-policy"
+                          onClick={closeMobileMenu}
+                          className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Privacy Policy
+                        </Link>
+
+                        <Link
+                          href="/refund-and-cancellation-policy"
+                          onClick={closeMobileMenu}
+                          className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Refund & Cancellation Policy
+                        </Link>
+
+                        <Link
+                          href="/terms-and-conditions"
+                          onClick={closeMobileMenu}
+                          className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Terms & Conditions
+                        </Link>
+
+                      </div>
                     </div>
+                  );
+                }
 
-                    <div className="space-y-1 px-3 pb-3">
-                      <Link
-                        href="/training/application-form"
-                        onClick={() => setOpen(false)}
-                        className="
-                          block
-                          rounded-lg
-                          px-3
-                          py-2
-                          text-sm
-                          text-slate-700
-                          hover:bg-emerald-50
-                          hover:text-emerald-700
-                        "
-                      >
-                        Training Application Form
-                      </Link>
+                // MOBILE TRAINING MENU
+                if (link.name === "Training") {
+                  return (
+                    <div
+                      key={link.href}
+                      className="rounded-xl border border-emerald-100"
+                    >
+                      <div className="px-4 py-3 text-sm font-bold text-slate-700">
+                        Training
+                      </div>
 
-                      <Link
-                        href="/training/courses"
-                        onClick={() => setOpen(false)}
-                        className="
-                          block
-                          rounded-lg
-                          px-3
-                          py-2
-                          text-sm
-                          text-slate-700
-                          hover:bg-emerald-50
-                          hover:text-emerald-700
-                        "
-                      >
-                        Training Courses
-                      </Link>
+                      <div className="space-y-1 px-3 pb-3">
 
-                      <Link
-                        href="/training/course-files"
-                        onClick={() => setOpen(false)}
-                        className="
-                          block
-                          rounded-lg
-                          px-3
-                          py-2
-                          text-sm
-                          text-slate-700
-                          hover:bg-emerald-50
-                          hover:text-emerald-700
-                        "
-                      >
-                        Courses Files
-                      </Link>
+                        <Link
+                          href="/training/application-form"
+                          onClick={closeMobileMenu}
+                          className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Training Application Form
+                        </Link>
 
-                      <Link
-                        href="/training/course-videos"
-                        onClick={() => setOpen(false)}
-                        className="
-                          block
-                          rounded-lg
-                          px-3
-                          py-2
-                          text-sm
-                          text-slate-700
-                          hover:bg-emerald-50
-                          hover:text-emerald-700
-                        "
-                      >
-                        Courses Videos
-                      </Link>
+                        <Link
+                          href="/training/courses"
+                          onClick={closeMobileMenu}
+                          className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Training Courses
+                        </Link>
+
+                        <Link
+                          href="/training/login"
+                          onClick={closeMobileMenu}
+                          className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Login
+                        </Link>
+
+                        <Link
+                          href="/training/course-files"
+                          onClick={closeMobileMenu}
+                          className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Courses Files
+                        </Link>
+
+                        <Link
+                          href="/training/course-videos"
+                          onClick={closeMobileMenu}
+                          className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700"
+                        >
+                          Courses Videos
+                        </Link>
+
+                      </div>
                     </div>
-                  </div>
-                ) : link.name === "About" ? (
-                 
-<div
-  key={link.href}
-  className="rounded-xl border border-emerald-100"
->
-  <div className="px-4 py-3 text-sm font-bold text-slate-700">
-    About
-  </div>
+                  );
+                }
 
-  <div className="space-y-1 px-3 pb-3">
-    <Link href="/about" onClick={() => setOpen(false)}
-      className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
-      About Hospital
-    </Link>
-
-    <Link href="/gallery" onClick={() => setOpen(false)}
-      className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
-      Gallery
-    </Link>
-
-    <Link href="/contact" onClick={() => setOpen(false)}
-      className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
-      Contact Us
-    </Link>
-
-    <Link href="/our-services" onClick={() => setOpen(false)}
-      className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
-      Our Services
-    </Link>
-
-    <Link href="/privacy-policy" onClick={() => setOpen(false)}
-      className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
-      Privacy Policy
-    </Link>
-
-    <Link href="/refund-and-cancellation-policy" onClick={() => setOpen(false)}
-      className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
-      Refund & Cancellation Policy
-    </Link>
-
-    <Link href="/terms-and-conditions" onClick={() => setOpen(false)}
-      className="block rounded-lg px-3 py-2 text-sm text-slate-700 hover:bg-emerald-50 hover:text-emerald-700">
-      Terms & Conditions
-    </Link>
-  </div>
-</div>
-
-                ) : (
+                // OTHER MOBILE LINKS
+                return (
                   <Link
                     key={link.href}
                     href={link.href}
-                    onClick={() => setOpen(false)}
+                    onClick={closeMobileMenu}
                     className="
                       rounded-2xl
                       px-4
@@ -826,11 +851,12 @@ Message: ${message || "Please call me back."}`
                   >
                     {link.name}
                   </Link>
-                )
-              )}
+                );
+              })}
+
             </div>
 
-            {/* Mobile Callback */}
+            {/* MOBILE CALLBACK BUTTON */}
             <button
               type="button"
               onClick={openCallback}
@@ -860,10 +886,10 @@ Message: ${message || "Please call me back."}`
               Request a Callback
             </button>
 
-            {/* Mobile Appointment */}
+            {/* MOBILE APPOINTMENT */}
             <Link
               href="/appointment"
-              onClick={() => setOpen(false)}
+              onClick={closeMobileMenu}
               className="
                 mt-4
                 block
@@ -888,8 +914,9 @@ Message: ${message || "Please call me back."}`
               Book Appointment
             </Link>
 
-            {/* Mobile Contact Info */}
+            {/* MOBILE CONTACT INFORMATION */}
             <div className="mt-4 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-sm text-emerald-900">
+
               <a
                 href={`tel:${hospitalPhone}`}
                 className="flex items-center gap-2 font-semibold"
@@ -905,14 +932,17 @@ Message: ${message || "Please call me back."}`
               <p className="mt-2 text-xs text-emerald-700">
                 📍 {siteInfo.address}
               </p>
+
             </div>
           </div>
         )}
+
       </header>
 
-      {/* ==================================================
+      {/* =========================================
           CALLBACK MODAL
-      ================================================== */}
+      ========================================= */}
+
       {callbackOpen && (
         <div
           className="
@@ -932,6 +962,7 @@ Message: ${message || "Please call me back."}`
           aria-modal="true"
           aria-label="Request a Callback"
         >
+
           <div
             className="
               relative
@@ -939,17 +970,16 @@ Message: ${message || "Please call me back."}`
               w-full
               max-w-md
               overflow-y-auto
-              overflow-hidden
               rounded-3xl
               bg-white
               shadow-[0_25px_80px_rgba(0,0,0,.30)]
             "
             onClick={(e) => e.stopPropagation()}
           >
-            {/* ==================================================
-                MODAL HEADER
-            ================================================== */}
-            <div className="bg-gradient-to-r from-[#0b2d68] to-[#123f87] px-6 py-6 text-white">
+
+            {/* MODAL HEADER */}
+            <div className="relative bg-gradient-to-r from-[#0b2d68] to-[#123f87] px-6 py-6 text-white">
+
               <button
                 type="button"
                 onClick={closeCallback}
@@ -974,19 +1004,8 @@ Message: ${message || "Please call me back."}`
               </button>
 
               <div className="flex items-center gap-4">
-                <div
-                  className="
-                    flex
-                    h-14
-                    w-14
-                    shrink-0
-                    items-center
-                    justify-center
-                    rounded-full
-                    bg-[#e30613]
-                    shadow-lg
-                  "
-                >
+
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#e30613] shadow-lg">
                   <PhoneCall size={25} />
                 </div>
 
@@ -999,17 +1018,17 @@ Message: ${message || "Please call me back."}`
                     Our hospital team will contact you shortly.
                   </p>
                 </div>
+
               </div>
             </div>
 
-            {/* ==================================================
-                CALLBACK FORM
-            ================================================== */}
+            {/* CALLBACK FORM */}
             <form
               onSubmit={handleCallbackSubmit}
               className="space-y-4 p-6"
             >
-              {/* Name */}
+
+              {/* NAME */}
               <div>
                 <label
                   htmlFor="callback-name"
@@ -1044,7 +1063,7 @@ Message: ${message || "Please call me back."}`
                 />
               </div>
 
-              {/* Mobile */}
+              {/* MOBILE NUMBER */}
               <div>
                 <label
                   htmlFor="callback-phone"
@@ -1054,6 +1073,7 @@ Message: ${message || "Please call me back."}`
                 </label>
 
                 <div className="flex">
+
                   <span
                     className="
                       flex
@@ -1080,7 +1100,7 @@ Message: ${message || "Please call me back."}`
                     maxLength={10}
                     pattern="[0-9]{10}"
                     placeholder="10 digit mobile number"
-                    autoComplete="tel"
+                    autoComplete="tel-national"
                     required
                     className="
                       min-w-0
@@ -1100,10 +1120,11 @@ Message: ${message || "Please call me back."}`
                       focus:ring-[#0b2d68]/10
                     "
                   />
+
                 </div>
               </div>
 
-              {/* Message */}
+              {/* MESSAGE */}
               <div>
                 <label
                   htmlFor="callback-message"
@@ -1137,7 +1158,7 @@ Message: ${message || "Please call me back."}`
                 />
               </div>
 
-              {/* WhatsApp Request */}
+              {/* WHATSAPP REQUEST */}
               <button
                 type="submit"
                 className="
@@ -1167,7 +1188,7 @@ Message: ${message || "Please call me back."}`
                 Request Callback
               </button>
 
-              {/* Direct Call */}
+              {/* DIRECT CALL */}
               <a
                 href={`tel:${hospitalPhone}`}
                 className="
@@ -1196,6 +1217,7 @@ Message: ${message || "Please call me back."}`
               <p className="text-center text-[11px] text-slate-400">
                 Your information is safe with us.
               </p>
+
             </form>
           </div>
         </div>
@@ -1203,4 +1225,3 @@ Message: ${message || "Please call me back."}`
     </>
   );
 }
-
