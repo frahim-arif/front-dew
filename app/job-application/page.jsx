@@ -50,7 +50,6 @@ export default function JobApplicationPage() {
   const [form, setForm] = useState(emptyForm);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
-  const [applicationId, setApplicationId] = useState("");
   const [success, setSuccess] = useState(false);
 
   const change = (field, value) => {
@@ -83,10 +82,14 @@ export default function JobApplicationPage() {
   async function submitApplication(e) {
     e.preventDefault();
     setMessage("");
-    setApplicationId("");
 
     if (!/^[0-9]{10}$/.test(form.mobileNumber)) {
       setMessage("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+
+    if (!form.applyBranch) {
+      setMessage("Please select a hospital branch.");
       return;
     }
 
@@ -100,14 +103,17 @@ export default function JobApplicationPage() {
     try {
       const payload = {
         ...form,
+
         professionalQualifications:
           form.professionalQualifications.filter(
             (item) => item.qualification.trim()
           ),
+
         workPlaces:
           form.employmentStatus === "Experienced"
             ? form.workPlaces.filter((item) => item.workplace.trim())
             : [],
+
         experience:
           form.employmentStatus === "Experienced"
             ? form.experience
@@ -125,18 +131,34 @@ export default function JobApplicationPage() {
       const data = await response.json();
 
       if (!response.ok || !data.success) {
-        throw new Error(data.message || "Application submission failed.");
+        throw new Error(
+          data.message || "Application submission failed."
+        );
       }
 
-      setApplicationId(data.applicationId || "");
-      setMessage("Your application has been submitted successfully.");
+      // Application ID remains stored in the backend.
+      // It is intentionally not displayed to the applicant.
+      setMessage(
+        "Your application has been submitted successfully."
+      );
+
       setSuccess(true);
-      setForm(emptyForm);
+      setForm({
+        ...emptyForm,
+        professionalQualifications: [
+          { qualification: "", yearOfPassing: "" },
+        ],
+        workPlaces: [
+          { workplace: "", fromYear: "", toYear: "" },
+        ],
+      });
 
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
       setSuccess(false);
-      setMessage(error.message || "Unable to submit application.");
+      setMessage(
+        error.message || "Unable to submit application."
+      );
     } finally {
       setLoading(false);
     }
@@ -174,20 +196,9 @@ export default function JobApplicationPage() {
           </p>
         </header>
 
-        {message && (
-          <div
-            className={`mb-5 rounded-xl border p-4 text-sm ${
-              success
-                ? "border-green-200 bg-green-50 text-green-800"
-                : "border-red-200 bg-red-50 text-red-700"
-            }`}
-          >
+        {!success && message && (
+          <div className="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
             <p className="font-semibold">{message}</p>
-            {applicationId && (
-              <p className="mt-2 font-bold">
-                Your Application ID: {applicationId}
-              </p>
-            )}
           </div>
         )}
 
@@ -212,26 +223,36 @@ export default function JobApplicationPage() {
                       className={inputClass}
                       required
                       value={form.applyFor}
-                      onChange={(e) => change("applyFor", e.target.value)}
+                      onChange={(e) =>
+                        change("applyFor", e.target.value)
+                      }
                     >
                       <option value="">Select Position</option>
                       {positions.map((v) => (
-                        <option key={v} value={v}>{v}</option>
+                        <option key={v} value={v}>
+                          {v}
+                        </option>
                       ))}
                     </select>
                   </div>
 
                   <div>
-                    <label className={labelClass}>Apply Which Branch *</label>
+                    <label className={labelClass}>
+                      Apply Which Branch *
+                    </label>
                     <select
                       className={inputClass}
                       required
                       value={form.applyBranch}
-                      onChange={(e) => change("applyBranch", e.target.value)}
+                      onChange={(e) =>
+                        change("applyBranch", e.target.value)
+                      }
                     >
                       <option value="">Select Branch</option>
                       {branches.map((v) => (
-                        <option key={v} value={v}>{v}</option>
+                        <option key={v} value={v}>
+                          {v}
+                        </option>
                       ))}
                     </select>
                   </div>
@@ -245,18 +266,24 @@ export default function JobApplicationPage() {
 
                 <div className="grid gap-5 sm:grid-cols-2">
                   <div>
-                    <label className={labelClass}>Applicant Name *</label>
+                    <label className={labelClass}>
+                      Applicant Name *
+                    </label>
                     <input
                       className={inputClass}
                       required
                       value={form.applicantName}
-                      onChange={(e) => change("applicantName", e.target.value)}
+                      onChange={(e) =>
+                        change("applicantName", e.target.value)
+                      }
                       placeholder="Full name"
                     />
                   </div>
 
                   <div>
-                    <label className={labelClass}>Mobile Number *</label>
+                    <label className={labelClass}>
+                      Mobile Number *
+                    </label>
                     <input
                       className={inputClass}
                       required
@@ -275,24 +302,32 @@ export default function JobApplicationPage() {
                   </div>
 
                   <div>
-                    <label className={labelClass}>Email Address</label>
+                    <label className={labelClass}>
+                      Email Address
+                    </label>
                     <input
                       className={inputClass}
                       type="email"
                       value={form.emailAddress}
-                      onChange={(e) => change("emailAddress", e.target.value)}
+                      onChange={(e) =>
+                        change("emailAddress", e.target.value)
+                      }
                       placeholder="Email address"
                     />
                   </div>
 
                   <div>
-                    <label className={labelClass}>Full Address *</label>
+                    <label className={labelClass}>
+                      Full Address *
+                    </label>
                     <textarea
                       className={inputClass}
                       required
                       rows={3}
                       value={form.address}
-                      onChange={(e) => change("address", e.target.value)}
+                      onChange={(e) =>
+                        change("address", e.target.value)
+                      }
                       placeholder="Your complete address"
                     />
                   </div>
@@ -321,12 +356,16 @@ export default function JobApplicationPage() {
                   </div>
 
                   <div>
-                    <label className={labelClass}>Year of Passing *</label>
+                    <label className={labelClass}>
+                      Year of Passing *
+                    </label>
                     <input
                       className={inputClass}
                       required
                       value={form.highestPassing}
-                      onChange={(e) => change("highestPassing", e.target.value)}
+                      onChange={(e) =>
+                        change("highestPassing", e.target.value)
+                      }
                       placeholder="e.g. 2022"
                     />
                   </div>
@@ -364,7 +403,9 @@ export default function JobApplicationPage() {
                       </div>
 
                       <div>
-                        <label className={labelClass}>Year of Passing</label>
+                        <label className={labelClass}>
+                          Year of Passing
+                        </label>
                         <input
                           className={inputClass}
                           value={item.yearOfPassing}
@@ -386,7 +427,10 @@ export default function JobApplicationPage() {
                         type="button"
                         className="mt-3 text-xs font-bold text-red-600"
                         onClick={() =>
-                          removeItem("professionalQualifications", index)
+                          removeItem(
+                            "professionalQualifications",
+                            index
+                          )
                         }
                       >
                         Remove
@@ -414,7 +458,9 @@ export default function JobApplicationPage() {
                   05. Employment Details
                 </h2>
 
-                <label className={labelClass}>Employment Status *</label>
+                <label className={labelClass}>
+                  Employment Status *
+                </label>
 
                 <div className="mb-6 flex flex-wrap gap-6">
                   {["Fresher", "Experienced"].map((v) => (
@@ -427,7 +473,9 @@ export default function JobApplicationPage() {
                         name="employmentStatus"
                         required
                         checked={form.employmentStatus === v}
-                        onChange={() => change("employmentStatus", v)}
+                        onChange={() =>
+                          change("employmentStatus", v)
+                        }
                         className="h-4 w-4 accent-teal-700"
                       />
                       {v}
@@ -444,7 +492,9 @@ export default function JobApplicationPage() {
                       <input
                         className={inputClass}
                         value={form.experience}
-                        onChange={(e) => change("experience", e.target.value)}
+                        onChange={(e) =>
+                          change("experience", e.target.value)
+                        }
                         placeholder="e.g. 2 Years"
                       />
                     </div>
@@ -479,7 +529,9 @@ export default function JobApplicationPage() {
                           </div>
 
                           <div>
-                            <label className={labelClass}>From Year</label>
+                            <label className={labelClass}>
+                              From Year
+                            </label>
                             <input
                               className={inputClass}
                               value={item.fromYear}
@@ -496,7 +548,9 @@ export default function JobApplicationPage() {
                           </div>
 
                           <div>
-                            <label className={labelClass}>To Year</label>
+                            <label className={labelClass}>
+                              To Year
+                            </label>
                             <input
                               className={inputClass}
                               value={item.toYear}
@@ -517,7 +571,9 @@ export default function JobApplicationPage() {
                           <button
                             type="button"
                             className="mt-3 text-xs font-bold text-red-600"
-                            onClick={() => removeItem("workPlaces", index)}
+                            onClick={() =>
+                              removeItem("workPlaces", index)
+                            }
                           >
                             Remove Workplace
                           </button>
@@ -554,7 +610,9 @@ export default function JobApplicationPage() {
                 disabled={loading}
                 className="w-full rounded-xl bg-teal-800 px-5 py-4 text-base font-bold text-white shadow-lg transition hover:bg-teal-900 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {loading ? "Submitting Application..." : "Submit Application"}
+                {loading
+                  ? "Submitting Application..."
+                  : "Submit Application"}
               </button>
             </form>
           </>
@@ -562,28 +620,27 @@ export default function JobApplicationPage() {
 
         {success && (
           <div className="rounded-2xl border border-green-200 bg-white p-8 text-center shadow-sm">
-            <div className="text-5xl">✓</div>
+            <div className="text-5xl text-green-600">✓</div>
+
             <h2 className="mt-4 text-xl font-extrabold text-green-800">
-              Application Submitted!
+              Application Submitted Successfully!
             </h2>
-            <p className="mt-2 text-sm text-slate-600">
+
+            <p className="mt-2 text-sm leading-6 text-slate-600">
               Thank you for applying to Dew Care Hospital.
               Your application has been received successfully.
+              Our team will review your application.
             </p>
 
-            <div className="mt-5 rounded-xl bg-green-50 p-4">
-              <p className="text-xs text-green-700">Application ID</p>
-              <p className="mt-1 text-lg font-extrabold text-green-900">
-                {applicationId}
-              </p>
-            </div>
-
             <button
+              type="button"
               onClick={() => {
                 setSuccess(false);
                 setMessage("");
-                setApplicationId("");
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                window.scrollTo({
+                  top: 0,
+                  behavior: "smooth",
+                });
               }}
               className="mt-6 rounded-xl bg-teal-800 px-6 py-3 text-sm font-bold text-white"
             >
