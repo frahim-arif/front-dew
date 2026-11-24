@@ -56,6 +56,7 @@ const menuGroups = [
       { name: "Facilities", href: "/admin/facilities", icon: "facilities" },
       { name: "Services", href: "/admin/services", icon: "services" },
       { name: "Gallery", href: "/admin/gallery", icon: "gallery" },
+      { name: "Job Applications", href: "/admin/job-applications", icon: "applications" },
     ],
   },
   {
