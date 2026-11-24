@@ -414,6 +414,158 @@ export default function JobApplicationsPage() {
       setExporting("");
     }
   };
+    // Download one applicant as Excel
+  const downloadSingleExcel = async (application) => {
+    try {
+      const XLSX = await import("xlsx");
+
+      const rows = getExportRows([application]);
+      const worksheet = XLSX.utils.json_to_sheet(rows);
+
+      worksheet["!cols"] = Object.keys(rows[0]).map(() => ({
+        wch: 28,
+      }));
+
+      const workbook = XLSX.utils.book_new();
+
+      XLSX.utils.book_append_sheet(
+        workbook,
+        worksheet,
+        "Application Details"
+      );
+
+      const id = getValue(
+        application.applicationId,
+        application._id
+      );
+
+      XLSX.writeFile(
+        workbook,
+        `Dew-Care-Application-${id}.xlsx`
+      );
+    } catch (error) {
+      console.error(error);
+      alert("Excel download failed.");
+    }
+  };
+
+  // Download one applicant as PDF
+  const downloadSinglePDF = async (application) => {
+    try {
+      const { jsPDF } = await import("jspdf");
+      const autoTableModule = await import("jspdf-autotable");
+
+      const autoTable =
+        autoTableModule.default || autoTableModule.autoTable;
+
+      const doc = new jsPDF("portrait", "mm", "a4");
+
+      const rows = getExportRows([application]);
+      const item = rows[0];
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(19);
+
+      doc.text("DEW CARE HOSPITAL", 105, 18, {
+        align: "center",
+      });
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
+
+      doc.text("Hospital & Research Centre", 105, 25, {
+        align: "center",
+      });
+
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(15);
+
+      doc.text("JOB APPLICATION DETAILS", 105, 37, {
+        align: "center",
+      });
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+
+      doc.text(
+        `Generated: ${new Date().toLocaleString("en-IN")}`,
+        14,
+        47
+      );
+
+      autoTable(doc, {
+        startY: 53,
+        head: [["Applicant Information", "Details"]],
+        body: [
+          ["Application ID", item["Application ID"]],
+          ["Applicant Name", item["Applicant Name"]],
+          ["Mobile Number", item["Mobile Number"]],
+          ["Email Address", item["Email Address"]],
+          ["Address", item.Address],
+          ["Position", item.Position],
+          ["Branch", item.Branch],
+          ["Highest Qualification", item["Highest Qualification"]],
+          ["Passing Year", item["Highest Passing Year"]],
+          [
+            "Professional Qualification",
+            item["Professional Qualifications"],
+          ],
+          ["Employment Status", item["Employment Status"]],
+          ["Total Experience", item["Total Experience"]],
+          ["Previous Workplaces", item["Previous Workplaces"]],
+          ["Application Status", item.Status],
+          ["Application Date", item["Application Date"]],
+        ],
+        theme: "grid",
+        styles: {
+          fontSize: 9,
+          cellPadding: 4,
+          overflow: "linebreak",
+        },
+        headStyles: {
+          fillColor: [15, 118, 110],
+          textColor: 255,
+          fontStyle: "bold",
+        },
+        columnStyles: {
+          0: { cellWidth: 58, fontStyle: "bold" },
+          1: { cellWidth: 122 },
+        },
+        margin: {
+          left: 14,
+          right: 14,
+          bottom: 18,
+        },
+      });
+
+      const pageCount = doc.internal.getNumberOfPages();
+
+      for (let page = 1; page <= pageCount; page++) {
+        doc.setPage(page);
+
+        doc.setFontSize(8);
+        doc.text(
+          "Confidential - Dew Care Hospital",
+          14,
+          287
+        );
+
+        doc.text(`Page ${page} of ${pageCount}`, 196, 287, {
+          align: "right",
+        });
+      }
+
+      const id = getValue(
+        application.applicationId,
+        application._id
+      );
+
+      doc.save(`Dew-Care-Application-${id}.pdf`);
+    } catch (error) {
+      console.error(error);
+      alert("PDF download failed.");
+    }
+  };
 
   // ==============================
   // PDF EXPORT
@@ -1088,20 +1240,38 @@ export default function JobApplicationsPage() {
               </div>
             </div>
 
-            <div className="flex flex-wrap justify-end gap-3 border-t p-4">
-              <button
-                onClick={printApplication}
-                className="rounded-xl bg-slate-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-900"
-              >
-                Print Application
-              </button>
+                      <div className="flex flex-wrap justify-between gap-3 border-t p-4">
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => downloadSinglePDF(selected)}
+                  className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700"
+                >
+                  ↓ Download PDF
+                </button>
 
-              <button
-                onClick={() => setSelected(null)}
-                className="rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
-              >
-                Close
-              </button>
+                <button
+                  onClick={() => downloadSingleExcel(selected)}
+                  className="rounded-xl bg-green-700 px-4 py-2.5 text-sm font-semibold text-white hover:bg-green-800"
+                >
+                  ↓ Download Excel
+                </button>
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={printApplication}
+                  className="rounded-xl bg-slate-800 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-900"
+                >
+                  Print Application
+                </button>
+
+                <button
+                  onClick={() => setSelected(null)}
+                  className="rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50"
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>
