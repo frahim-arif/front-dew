@@ -22,6 +22,15 @@ const getTodayDate = () =>
     timeZone: "Asia/Kolkata",
   }).format(new Date());
 
+const getTomorrowDate = () => {
+  const [year, month, day] = getTodayDate().split("-").map(Number);
+  const tomorrow = new Date(Date.UTC(year, month - 1, day + 1));
+
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "UTC",
+  }).format(tomorrow);
+};
+
 const getEmptyForm = () => ({
   name: "",
   phone: "",
@@ -31,7 +40,6 @@ const getEmptyForm = () => ({
   doctor: "",
   department: "",
   date: getTodayDate(),
-  time: "",
   message: "",
 });
 
@@ -138,7 +146,6 @@ export default function AppointmentPage() {
 
       if (name === "department") {
         next.doctor = "";
-        next.time = "";
       }
 
       if (name === "doctor") {
@@ -147,7 +154,6 @@ export default function AppointmentPage() {
         );
 
         next.department = doctor?.department || "";
-        next.time = "";
       }
 
       return next;
@@ -182,18 +188,21 @@ export default function AppointmentPage() {
       return;
     }
 
-    if (!form.date || !form.time) {
+    if (!form.date) {
       setMessage({
         type: "error",
-        text: "Please select appointment date and time.",
+        text: "Please select appointment date.",
       });
       return;
     }
 
-    if (form.date < getTodayDate()) {
+    const today = getTodayDate();
+    const tomorrow = getTomorrowDate();
+
+    if (form.date !== today && form.date !== tomorrow) {
       setMessage({
         type: "error",
-        text: "Past date appointment allowed nahi hai.",
+        text: "Appointment booking is available only for today and tomorrow.",
       });
       return;
     }
@@ -252,7 +261,6 @@ export default function AppointmentPage() {
         doctorId: selectedDoctor._id,
         department: selectedDoctor.department,
         date: form.date,
-        time: form.time,
         message: form.message.trim(),
       };
 
@@ -358,7 +366,6 @@ export default function AppointmentPage() {
         "notes[doctorId]": String(selectedDoctor._id),
         "notes[doctorName]": String(selectedDoctor.name),
         "notes[appointmentDate]": form.date,
-        "notes[appointmentTime]": form.time,
         callback_url: callbackUrl,
         cancel_url: cancelUrl,
       };
@@ -407,9 +414,9 @@ export default function AppointmentPage() {
             </h1>
 
             <p className="mt-5 max-w-2xl text-base leading-7 text-emerald-50/75 sm:text-lg sm:leading-8">
-              Book your consultation with ease. Choose your doctor, select a
-              convenient time and confirm your appointment through secure
-              online payment.
+              Book your consultation with ease. Choose your doctor, select today
+              or tomorrow, and confirm your appointment through secure online
+              payment.
             </p>
 
             <div className="mt-7 flex flex-wrap gap-3">
@@ -730,50 +737,27 @@ export default function AppointmentPage() {
                       03
                     </span>
                     <h4 className="font-bold text-slate-800">
-                      Date & time
+                      Appointment date
                     </h4>
                   </div>
 
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div>
-                      <label className={labelClass}>
-                        Appointment date *
-                      </label>
-                      <input
-                        type="date"
-                        name="date"
-                        value={form.date}
-                        onChange={handleChange}
-                        min={getTodayDate()}
-                        className={inputClass}
-                        required
-                      />
-                      <p className="mt-2 text-xs text-slate-500">
-                        Choose today or a future date.
-                      </p>
-                    </div>
-
-                    <div>
-                      <label className={labelClass}>
-                        Appointment time *
-                      </label>
-                      <input
-                        type="time"
-                        name="time"
-                        value={form.time}
-                        onChange={handleChange}
-                        min={selectedDoctor?.opdStartTime || undefined}
-                        max={selectedDoctor?.opdEndTime || undefined}
-                        className={inputClass}
-                        required
-                      />
-                      {selectedDoctor && (
-                        <p className="mt-2 text-xs text-slate-500">
-                          OPD: {selectedDoctor.opdStartTime || "--"} –{" "}
-                          {selectedDoctor.opdEndTime || "--"}
-                        </p>
-                      )}
-                    </div>
+                  <div>
+                    <label className={labelClass}>
+                      Appointment date *
+                    </label>
+                    <input
+                      type="date"
+                      name="date"
+                      value={form.date}
+                      onChange={handleChange}
+                      min={getTodayDate()}
+                      max={getTomorrowDate()}
+                      className={inputClass}
+                      required
+                    />
+                    <p className="mt-2 text-xs text-slate-500">
+                      You can book an appointment for today or tomorrow only.
+                    </p>
                   </div>
                 </div>
 
@@ -868,19 +852,11 @@ export default function AppointmentPage() {
                   </p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-xs text-slate-500">Date</p>
-                    <p className="mt-1 text-sm font-bold text-slate-800">
-                      {form.date || "Not selected"}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-slate-500">Time</p>
-                    <p className="mt-1 text-sm font-bold text-slate-800">
-                      {form.time || "Not selected"}
-                    </p>
-                  </div>
+                <div>
+                  <p className="text-xs text-slate-500">Appointment date</p>
+                  <p className="mt-1 text-sm font-bold text-slate-800">
+                    {form.date || "Not selected"}
+                  </p>
                 </div>
               </div>
 
@@ -920,9 +896,6 @@ export default function AppointmentPage() {
               </p>
               <p className="mt-2 text-sm leading-6 text-slate-500">
                 {siteInfo.opdDays || "Monday - Saturday"}
-              </p>
-              <p className="text-sm leading-6 text-slate-500">
-                {siteInfo.opdTime || "10:00 AM – 05:00 PM"}
               </p>
             </div>
           </aside>
